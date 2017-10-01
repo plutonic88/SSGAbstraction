@@ -11182,7 +11182,19 @@ public class SecurityGameContraction
 
 
 		}
-		return paths.get(0);
+		
+		if(paths.size()>0)
+		{
+
+			return paths.get(0);
+		}
+		
+		
+		System.out.println("attack "+ attackedtarget);
+		
+		ArrayList<Integer> p  = new ArrayList<Integer>();
+		
+		return p;
 			}
 	
 	
@@ -29335,7 +29347,12 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					
 					ArrayList<Integer> attackpath = pathForAT(dmax, tmpgraph, currenttargets, nRes, attackedtargetrestrgraph);
 					
-					newpathseq.add(attackpath);
+					
+					if(attackpath.size()>0)
+					{
+					
+						newpathseq.add(attackpath);
+					}
 					
 					
 					stop = new Date();

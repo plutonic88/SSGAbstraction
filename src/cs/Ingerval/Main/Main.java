@@ -77,20 +77,20 @@ public class Main {
 	
 		
 		
-		int nrow = 14;
-		int ncol = 14;
-		int dmax = 45;
-		int k = 14;
-		int RADIUS = 2;
+		int nrow = 5;
+		int ncol = 5;
+		int dmax = 8;
+		int k = 5;
+		int RADIUS = 1;
 		
-		/*int nrow =Integer.parseInt(args[0]);
+	/*	int nrow =Integer.parseInt(args[0]);
 		int ncol = Integer.parseInt(args[1]);
 		int dmax = Integer.parseInt(args[2]);
 		int k = Integer.parseInt(args[3]);
 		int RADIUS = Integer.parseInt(args[4]);*/
 		
 		
-		int ITER = 5;
+		int ITER = 1;
 		
 		
 		int nRes=2;
@@ -195,7 +195,7 @@ public class Main {
 		
 		
 		//4 DO + GC multi + GP 3 + LP + GC multi 
-		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
 		
 		// DO + Incremental clustering
@@ -204,10 +204,10 @@ public class Main {
 		
 		
 		// DO + weka
-		//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
+		ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
 		
 		//14 baseline
-		//SecurityGameContraction.noContractionNoColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps );
+		SecurityGameContraction.noContractionNoColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps );
 		SecurityGameContraction.targets.clear();
 		
 		
