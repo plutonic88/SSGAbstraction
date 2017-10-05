@@ -5297,10 +5297,12 @@ public class SecurityGameContraction
 
 			start = new Date();
 			l1 = start.getTime();
+			
+			System.out.println("Solving...");
 
 			HashMap<Integer, Double> astrategy = new HashMap<Integer, Double>();
 			double[] probdistribution = MIPSolver4.solveForAttackerLP(p, gamedata, targets, nRes, astrategy );
-
+			System.out.println("Solving done.");
 
 			stop = new Date();
 			l2 = stop.getTime();
@@ -20671,9 +20673,25 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			long solvingtime, long slavetime, long totaltime, int nTargets ) 
 	{
 
+		
+		
+		
+		
+		
 
 		try
 		{
+			
+			File f = new File("grp-result.csv");
+			 
+			 if(f.exists())
+			 {
+				 f.delete();
+				 f.createNewFile();
+			 }
+			
+			
+			
 			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("grp-result.csv"),true));
 			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
 			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");

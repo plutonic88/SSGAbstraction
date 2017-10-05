@@ -1658,10 +1658,12 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 		
 		//Random rand = new Random();
 		
+		int size = k;
 		
-		int nlclus = (int)Math.floor(nTargets*(percforranges[0]/100.0))-1;
-		int nmidclus = (int)Math.ceil(nTargets*(percforranges[1]/100.0));
-		int nhighclus = nTargets - nlclus - nmidclus;
+		
+		int nlclus = (int)Math.floor(size*(percforranges[0]/100.0))-1;
+		int nmidclus = (int)Math.ceil(size*(percforranges[1]/100.0));
+		int nhighclus = size - nlclus - nmidclus;
 		int limit[] = {nlclus, nmidclus, nhighclus};
 		
 		System.out.println("low clus: "+ nlclus + ", mid clus "+ nmidclus + ", high clus "+ nhighclus);
@@ -1671,7 +1673,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 		for(int clusid=0; clusid<k; clusid++)
 		{
 			
-			if(clusid==0)
+			/*if(clusid==0)
 			{
 				density[iter][0] = ranges[2][1];
 			}
@@ -1697,10 +1699,10 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 					
 				}
 				
-			}
+			}*/
 			
 			
-			/*if(counter[2]<nhighclus)
+			if(counter[2]<nhighclus)
 			{
 				counter[2]++;
 				for(Integer n: cluster[clusid])
@@ -1743,7 +1745,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 					}
 					
 				}
-			}*/
+			}
 		}
 
 		

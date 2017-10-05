@@ -3102,7 +3102,7 @@ public static double pathAPForST( HashMap<Integer,TargetNode> nodes, double dmax
 
 private static double[] DOWithClus(int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
-		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS) throws Exception {
+		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram) throws Exception {
 
 
 	
@@ -3962,6 +3962,18 @@ private static double[] DOWithClus(int[][] gamedata,
 	double defpayoff = SecurityGameContraction.expectedPayoffDef(attackedtarget, origpmat, gamedata, probdistribution);
 
 	System.out.println("def exp : "+ defpayoff);
+	
+	
+	for(SuperTarget st: sts.values())
+	{
+		int value = st.nodes.size();
+		if(clusterhistogram.containsKey(st.stid))
+		{
+			value += clusterhistogram.get(st.stid);
+			
+		}
+		clusterhistogram.put(st.stid, value);
+	}
 
 
 	//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
@@ -4372,7 +4384,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		}
 
 		
-		//System.out.println("trying to add more targets in the clusters");
+		System.out.println("trying to add more targets in the clusters");
 		
 		int nclus = attackclustershisotry.size();
 		
@@ -4429,10 +4441,10 @@ private static double[] DOWithClus(int[][] gamedata,
 		
 		for(TargetNode nei: centernode.getNeighbors())
 		{
-			if( (nei.getTargetid() != 0) && (!clusteredtargets.contains(nei.getTargetid()))  && (centernode.getDistance(nei) < RADIUS) && tmpgraph.contains(nei) )
+			if( (nei.getTargetid() != 0) && (!clusteredtargets.contains(nei.getTargetid()))  && (centernode.getDistance(nei) <= RADIUS) && tmpgraph.contains(nei) )
 			{
 				
-				//System.out.println("adding target "+ nei.getTargetid() + " to cluster "+ clusid);
+				System.out.println("adding target "+ nei.getTargetid() + " to cluster "+ clusid);
 				tmpclus.add(nei.getTargetid());
 				clusteredtargets.add(nei.getTargetid());
 			}
@@ -5480,9 +5492,11 @@ private static double[] DOWithClus(int[][] gamedata,
 		long sumthreshold = 0;
 		long sumslavetime = 0;
 		long totaltime = 0;
+		
+		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
 
 
-		for(int iter=1; iter<ITER; iter++)
+		for(int iter=0; iter<ITER; iter++)
 		{
 
 			
@@ -5500,11 +5514,14 @@ private static double[] DOWithClus(int[][] gamedata,
 
 			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
 			
+			
+			
+			
 			gamedata = constructGameData(targets);
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = DOWithClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS);
+			double[] res = DOWithClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -5528,12 +5545,57 @@ private static double[] DOWithClus(int[][] gamedata,
 		}
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+		
+		writeClusterHist(clusterhistogram, ITER, nTargets);
 
 		SecurityGameContraction.writeInFile("DOWithClusteing",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
 	}
+	
+	
+	public static void writeClusterHist(HashMap<Integer,Integer> clusterhistogram, int ITER, int nTargets) 
+	{
+
+
+		try
+		{
+			
+			File f = new File("cluster-hist"+nTargets+".csv");
+			 
+			 if(f.exists())
+			 {
+				 f.delete();
+				 f.createNewFile();
+			 }
+			
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("cluster-hist"+nTargets+".csv"),true));
+			
+			for(Integer stid: clusterhistogram.keySet())
+			{
+				double size = clusterhistogram.get(stid)/ITER;
+				pw.append(stid+","+size+"\n");
+			}
+			
+			
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+			pw.close();
+
+		}
+		catch(Exception e)
+		{
+
+		}
+
+
+
+
+
+	}
+	
 
 
 	
