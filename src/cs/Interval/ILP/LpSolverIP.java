@@ -1,15 +1,6 @@
 package cs.Interval.ILP;
 
-import ilog.concert.IloException;
-import ilog.concert.IloIntVar;
-import ilog.concert.IloLinearNumExpr;
-import ilog.concert.IloNumVar;
-import ilog.concert.IloRange;
-import ilog.cplex.IloCplex;
-import ilog.cplex.IloCplex.IIS.Status;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +8,11 @@ import java.util.Set;
 
 import cs.Interval.contraction.SecurityGameContraction;
 import cs.Interval.contraction.TargetNode;
+import ilog.concert.IloException;
+import ilog.concert.IloLinearNumExpr;
+import ilog.concert.IloNumVar;
+import ilog.concert.IloRange;
+import ilog.cplex.IloCplex;
 
 public class LpSolverIP {
 

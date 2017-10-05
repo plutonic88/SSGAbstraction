@@ -99,8 +99,8 @@ public class Main {
 		int nTargets = nrow*ncol;
 		
 		int ncat = 3;
-		int ranges[][] = {{0,1},{3,8},{9, 10}};
-		int[] percforranges = {90, 0, 10};
+		int ranges[][] = {{0,1},{6,8},{9, 10}};
+		int[] percforranges = {80, 10, 10};
 		int[] targetsincat = getTargetsInCats(nTargets, percforranges);
 		double[][] density=SecurityGameContraction.generateRandomDensityV2(ncat, ITER, ranges, nTargets, targetsincat);
 		
@@ -193,22 +193,29 @@ public class Main {
 		
 		
 		
-		
+		//System.out.println(java.lang.System.getProperty("java.library.path"));
 		//4 DO + GC multi + GP 3 + LP + GC multi 
-		SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
 		
 		// DO + Incremental clustering
-		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		//ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		
 		// DO + weka
-		ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
+		//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
 		
 		//14 baseline
 		SecurityGameContraction.noContractionNoColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps );
 		SecurityGameContraction.targets.clear();
+		
+		//SecurityGameContraction.noContractionWithColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		SecurityGameContraction.targets.clear();
+		
+		//SecurityGameContraction.noContractionWithColumnGenerationHeuTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		SecurityGameContraction.targets.clear();
+
 		
 		
 		

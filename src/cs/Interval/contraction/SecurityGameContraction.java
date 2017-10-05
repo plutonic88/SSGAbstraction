@@ -16142,7 +16142,8 @@ public class SecurityGameContraction
 
 
 	public static void noContractionNoColumnGenerationTest(double[][] density, int ITER, int nrow, int ncol,
-			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps) throws Exception 
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,
+			HashMap<Integer,TargetNode>> alltargetmaps) throws Exception 
 	{
 
 
@@ -20375,9 +20376,9 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 
 
-	public static void noContractionWithColumnGenerationTest(double[][] density,
-			int ITER, int nrow, int ncol, int[] percentages, int[] thresholds,
-			double dmax, int nRes) throws Exception {
+	public static void noContractionWithColumnGenerationTest(double[][] density, int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,
+			HashMap<Integer,TargetNode>> alltargetmaps) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -20386,6 +20387,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long sumsolvtime =0;
 		long sumfinaltargetsize = 0;
 		long sumthreshold = 0;
+		long sumslavetime = 0;
 		long totaltime = 0;
 
 
@@ -20393,11 +20395,28 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		{
 
 
-			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			//int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
 
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			
+			
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			gamedata = constructGameData(targets);
+			double [] result = new double[2];
+			
+			
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
+			
+			
+			
+			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -20411,6 +20430,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			sumsolvtime += res[2];
 			sumfinaltargetsize += res[3];
 			sumthreshold += res[4];
+			sumslavetime += res[5];
 
 			//writeInFile(sumthreshold/ITER, sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, 0);
 
@@ -20418,11 +20438,82 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("15", (int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+		//writeInFile("15", (int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
 
-
+		writeInFile("ColumnGeneration",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
 
 	}
+	
+	
+	
+	public static void noContractionWithColumnGenerationHeuTest(double[][] density, int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,
+			HashMap<Integer,TargetNode>> alltargetmaps) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+
+			//int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			
+			
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			gamedata = constructGameData(targets);
+			double [] result = new double[2];
+			
+			
+			Date start = new Date();
+			long l1 = start.getTime();
+			
+			
+			
+			double[] res = noContractionWithColumnGenerationHeu(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets);
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+
+			//writeInFile(sumthreshold/ITER, sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, 0);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+
+		//writeInFile("15", (int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+		writeInFile("ColumnGenerationHeu",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
+
+	}
+	
 	
 	
 	public static void baselineTest(double[][] density,
@@ -20447,7 +20538,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
+			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -33385,13 +33476,14 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 	private static double[] noContractionWithColumnGeneration(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
-			dmax, int iter, int nrow, int ncol) throws Exception {
+			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets) throws Exception {
 
 
 
-		targets.clear();
-		SecurityGameContraction sgc = new SecurityGameContraction(nrow, ncol, gamedata);
-		assignRandomDensityZeroSum(density, gamedata, targets, iter);
+		//targets.clear();
+		//SecurityGameContraction sgc = new SecurityGameContraction(nrow, ncol, gamedata);
+		//SecurityGameContraction sgc = new SecurityGameContraction(nrow, ncol, gamedata);
+		//assignRandomDensityZeroSum(density, gamedata, targets, iter);
 
 
 		//printtargets(targets);
@@ -33433,6 +33525,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		long contractiontime=0;
 		long solvingtime=0;
+		long slavetime = 0;
 		long revmaptime=0;
 		int targetsize=0;
 		int [][] origpmat;
@@ -33486,6 +33579,25 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		//apply greedy approach
 		//TODO generate paths where there will be at least one target
 		ArrayList<TargetNode> goals = generatePaths(dmax, gamedata, targets);
+		
+		
+		
+//		pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, targets, currenttargets, nRes);
+//		
+//		int icount =0;
+//		//map = new HashMap<Integer, Integer>();
+//		//mapback = new HashMap<Integer, Integer>();
+//
+//
+//		for(int i=0; i<targets.size(); i++)
+//		{
+//
+//			map.put(targets.get(i).getTargetid(), icount);
+//			//System.out.println("Target "+ targets.get(i).getTargetid() +" --> "+icount);
+//			mapback.put(icount, targets.get(i).getTargetid());
+//			icount++;
+//
+//		}
 
 		makePathSeq(pathseq, goals, goals.size(), targets.size(), map, mapback, targets);
 		//printPaths(pathseq);
@@ -33599,8 +33711,16 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					throw new Exception("Prob null...");
 				}
 
+				
+				
+				
+				start = new Date();
+				l1 = start.getTime();
+
+			
 
 
+				
 				/**
 				 * apply greedy slave
 				 * 
@@ -33610,6 +33730,13 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 				System.out.println("attacked target after rev map "+ attackedtarget);
 
 				ArrayList<ArrayList<Integer>> newpathseq = buildGreedyCoverMultRes2(targets,dmax, targets.size(), 0, nRes);
+				
+				stop = new Date();
+				l2 = stop.getTime();
+				diff = l2 - l1;
+
+				slavetime += diff;
+
 
 				if(newpathseq.size()==0)
 				{
@@ -33672,9 +33799,342 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
 
-		double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru};
+		double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime};
 		return res;
 	}	
+	
+	
+	private static double[] noContractionWithColumnGenerationHeu(int[][] gamedata,
+			int nTargets, int nRes, double[][] density, double
+			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets) throws Exception {
+
+
+
+		//targets.clear();
+		//SecurityGameContraction sgc = new SecurityGameContraction(nrow, ncol, gamedata);
+		//SecurityGameContraction sgc = new SecurityGameContraction(nrow, ncol, gamedata);
+		//assignRandomDensityZeroSum(density, gamedata, targets, iter);
+
+
+		//printtargets(targets);
+
+		/**
+		 * 1. sort the targets
+		 */
+		int[][] targetssorted = sortTargets(targets);
+		printSortedTargets(targetssorted);
+
+		ArrayList<Integer> currenttargets = new ArrayList<Integer>();//buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+		/*currenttargets.add(targetssorted[0][0]);
+		currenttargets.add(targetssorted[1][0]);*/
+		for(int i=0; i<targetssorted.length; i++)
+		{
+			currenttargets.add(targetssorted[i][0]);
+		}
+
+
+
+		//int currentPlace = currenttargets.size()-1;
+
+
+		//ArrayList<TargetNode> domindatednodes = new ArrayList<TargetNode>();
+
+		//ArrayList<TargetNode> tmpgraph = new ArrayList<TargetNode>();
+		int attackedtarget=-1;
+		int[][] p;
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> mapback = new HashMap<Integer, Integer>();
+		HashSet jSet=new HashSet();
+		ArrayList<ArrayList<Integer>> pathseq = new ArrayList<ArrayList<Integer>>();
+		List<ArrayList<Integer>> jset = new ArrayList<ArrayList<Integer>>(jSet);
+		double[] probdistribution;
+		double attackeru;
+		double attackerv;
+
+
+
+		long contractiontime=0;
+		long solvingtime=0;
+		long slavetime = 0;
+		long revmaptime=0;
+		int targetsize=0;
+		int [][] origpmat;
+
+
+
+
+
+
+		boolean canaddpath = true;
+
+
+		pathseq = new ArrayList<ArrayList<Integer>>();
+
+		//System.out.println("\nCurrent place : "+ currentPlace);
+
+		System.out.print("Current target list : ");
+
+		for(int i=0; i<currenttargets.size(); i++)
+		{
+			System.out.print(currenttargets.get(i)+",");
+		}
+
+
+		//tmpgraph = getDuplicateGraph(targets);
+
+
+		//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
+
+
+		Date start = new Date();
+		long l1 = start.getTime();
+
+
+		//instantContraction(domindatednodes, tmpgraph, dmax);
+
+
+		Date stop = new Date();
+		long l2 = stop.getTime();
+		long diff = l2 - l1;
+
+		contractiontime += diff;
+		//SecurityGameContraction.removePathsToDominatedNodes(domindatednodes, tmpgraph);
+		//SecurityGameContraction.removeDominatedTargets(domindatednodes, tmpgraph);
+
+		System.out.println("tmpgraph size "+ targets.size());
+		//System.out.println("dom size "+ domindatednodes.size());
+		//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
+		p = new int[targets.size()][]; // p matrix
+
+		//apply greedy approach
+		//TODO generate paths where there will be at least one target
+		//ArrayList<TargetNode> goals = generatePaths(dmax, gamedata, targets);
+		
+		
+		
+		pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, targets, currenttargets, nRes);
+		
+		int icount =0;
+		//map = new HashMap<Integer, Integer>();
+		//mapback = new HashMap<Integer, Integer>();
+
+
+		for(int i=0; i<targets.size(); i++)
+		{
+
+			map.put(targets.get(i).getTargetid(), icount);
+			//System.out.println("Target "+ targets.get(i).getTargetid() +" --> "+icount);
+			mapback.put(icount, targets.get(i).getTargetid());
+			icount++;
+
+		}
+
+		//makePathSeq(pathseq, goals, goals.size(), targets.size(), map, mapback, targets);
+		//printPaths(pathseq);
+		System.out.println("Total path with duplicates "+pathseq.size());
+		pathseq = removeDuplicatePathSimple(pathseq);
+		System.out.println("Total path without duplicates "+pathseq.size()+"\n");
+		//printPaths(pathseq);
+
+		/**
+		 * keep only nRes*3 paths from the end
+		 */
+
+		//ArrayList<ArrayList<Integer>> initpaths =	filterPaths(pathseq, 3*nRes, currenttargets);
+		//System.out.println("Initial number of paths "+ pathseq.size());
+		//printPaths(pathseq);
+
+		int internaliter = 0;
+
+
+		while(true)
+		{
+			internaliter++;
+
+			canaddpath = true;
+
+			Integer[] input = new Integer[pathseq.size()];
+			int[] branch = new int[nRes];//{0,0};//new char[k];
+
+			for(int i=0; i<input.length; i++)
+			{
+				input[i] = i;
+			}
+			jSet=new HashSet();
+			if(pathseq.size()==0)
+			{
+				//System.out.println("pathseq 0, iter"+ iter+", contrac "+ contractionsize);
+				//choose the worst payoff for defender
+
+				Double mAxpayoff = Double.MIN_VALUE;
+				Double defpayoff = 0.0;
+
+				for(TargetNode x: targets)
+				{
+					if(x.attackerreward>mAxpayoff)
+					{
+						mAxpayoff= x.attackerreward;
+						defpayoff = x.defenderpenalty;
+					}
+				}
+			}
+			else
+			{
+				//System.out.println("pathseq "+pathseq.size()+", iter"+ iter+", contrac "+ contractionsize);
+				if(pathseq.size()<nRes)
+				{
+
+					branch = new int[pathseq.size()];
+					jSet=combine(input, pathseq.size(), 0, branch, 0, jSet);
+				}
+				else
+				{
+					jSet=combine(input, nRes, 0, branch, 0, jSet);
+				}
+
+				jset = new ArrayList<ArrayList<Integer>>(jSet);
+				/**
+				 * columns will be combination of paths for each resources. 
+				 */
+				/**
+				 * pmat, where columns will be combination of paths. 
+				 * rows are targets. 
+				 * each entry will say whether the target is in the joint schedule
+				 */
+				//jSet.
+
+				//printJointSchedule(jset);
+
+				p = makePmat(pathseq, jset, mapback, targets);
+				//printPathMat(p);
+
+				start = new Date();
+				l1 = start.getTime();
+
+				HashMap<Integer, Double> attackerstrategy = new HashMap<Integer, Double>();
+
+				probdistribution = MIPSolver4.solveForAttackerLP(p, gamedata, targets, nRes, attackerstrategy);
+
+
+
+				stop = new Date();
+				l2 = stop.getTime();
+				diff = l2 - l1;
+
+				solvingtime += diff;
+
+				attackedtarget = findAttackTargetWMapping(p, probdistribution, gamedata, map, mapback);
+				//attackedtarget = mapback.get(attackedtarget);
+				System.out.println("attack target before rev map "+ attackedtarget);
+				//int u = getTargetNode(MIPSolver4.attackedtarget, tmpgraph).getTargetid();
+				attackeru = expectedAttackerPayoff(attackedtarget, p, probdistribution, gamedata, map);
+				System.out.println("attacker u= "+attackeru);
+
+				//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
+
+
+
+
+
+				if(probdistribution.equals(null))
+				{
+					throw new Exception("Prob null...");
+				}
+
+				
+				
+				
+				start = new Date();
+				l1 = start.getTime();
+
+			
+
+
+				
+				/**
+				 * apply greedy slave
+				 * 
+				 * find the attack target and find a path that includes that target
+
+				 */
+				System.out.println("attacked target after rev map "+ attackedtarget);
+
+				ArrayList<ArrayList<Integer>> newpathseq = buildGreedyCoverMultRes2(targets,dmax, targets.size(), 0, nRes);
+				
+				stop = new Date();
+				l2 = stop.getTime();
+				diff = l2 - l1;
+
+				slavetime += diff;
+
+
+				if(newpathseq.size()==0)
+				{
+					canaddpath = false;
+					System.out.println("Slave can't add any new path ###############");
+					break;
+				}
+				System.out.println("tcur: ");
+				//printGreedyPath(currenttargets);
+				System.out.println("newpathseq: ");
+				//printPaths(newpathseq);
+
+				System.out.println("Old path seq size "+ pathseq.size());
+
+				int oldsize = pathseq.size();
+				for(ArrayList<Integer> q: newpathseq)
+				{
+					pathseq.add(q);
+				}
+
+				System.out.println("new paths added by slave *************, attacked target "+ attackedtarget);
+
+				pathseq = removeDuplicatePathSimple(pathseq);
+				System.out.println("New path seq size "+ pathseq.size());
+				//printPaths(pathseq);
+				int newsize = pathseq.size();
+				System.out.println("haa ");
+
+
+				if((oldsize==newsize) || (internaliter>=10))
+				{
+					canaddpath = false;
+					System.out.println("Slave can't add any new path ###############");
+					break;
+				}
+
+
+
+
+			} // end if else
+			
+		} // inner while loop 
+
+
+
+
+
+		System.out.println("Final target list size : "+ currenttargets.size());
+
+		for(int i=0; i<currenttargets.size(); i++)
+		{
+			System.out.print(currenttargets.get(i)+",");
+		}
+
+		//double defpayoff = expectedDefenderPayoff(attackedtarget, p, probdistribution, gamedata, map);
+		double defpayoff = expectedPayoffDef(attackedtarget, p, gamedata, probdistribution);
+
+
+
+
+		//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
+
+		double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime};
+		return res;
+	}	
+
+
+
 
 
 
