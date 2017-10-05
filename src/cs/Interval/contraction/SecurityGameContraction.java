@@ -5266,6 +5266,8 @@ public class SecurityGameContraction
 		else
 		{
 			//System.out.println("pathseq "+pathseq.size()+", iter"+ iter+", contrac "+ contractionsize);
+			
+			System.out.println("Building joint schedule...");
 			if(pathseq.size()<nRes)
 			{
 
@@ -5291,6 +5293,8 @@ public class SecurityGameContraction
 			//printJointSchedule(jset);
 
 			//printNodesAsNeighbors(dominatednodes);
+			
+			System.out.println("Making Pmat...");
 
 			p = makePmat(pathseq, jset, mapback, targets);
 
@@ -20392,6 +20396,9 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long sumslavetime = 0;
 		long totaltime = 0;
 
+		
+		HashMap<String, Integer> coocur = new HashMap<String, Integer>();
+		
 
 		for(int iter=0; iter<ITER; iter++)
 		{
@@ -20418,7 +20425,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			
 			
 			
-			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets);
+			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, coocur);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -20530,7 +20537,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long sumfinaltargetsize = 0;
 		long sumthreshold = 0;
 		long totaltime = 0;
-
+		HashMap<String, Integer> coocur = new HashMap<String, Integer>();
 
 		for(int iter=0; iter<ITER; iter++)
 		{
@@ -20540,7 +20547,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets);
+			double[] res = noContractionWithColumnGeneration(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, coocur);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -33494,7 +33501,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 	private static double[] noContractionWithColumnGeneration(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
-			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets) throws Exception {
+			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<String,Integer> coocur) throws Exception {
 
 
 
@@ -33811,6 +33818,8 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		//double defpayoff = expectedDefenderPayoff(attackedtarget, p, probdistribution, gamedata, map);
 		double defpayoff = expectedPayoffDef(attackedtarget, p, gamedata, probdistribution);
+		
+		computeCoocur(p, probdistribution, pathseq, jset, coocur);
 
 
 
@@ -33822,6 +33831,32 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	}	
 	
 	
+	private static void computeCoocur(int[][] p, double[] probdistribution, ArrayList<ArrayList<Integer>> pathseq, 
+			List<ArrayList<Integer>> jset, HashMap<String,Integer> coocur) {
+		
+		
+		System.out.println("\nJset size "+ jset.size());
+		System.out.println("nRes "+ jset.get(0).size());
+		System.out.println("Prob size "+ probdistribution.length);
+		System.out.println("P size "+ p.length + ","+p[0].length);
+		
+		// find the index of solution
+		// print the paths with prob
+		
+		for(int probindex=0; probindex<probdistribution.length; probindex++)
+		{
+			if(probdistribution[probindex]>0)
+			{
+				
+			}
+		}
+		
+		
+		
+		
+		
+	}
+
 	private static double[] noContractionWithColumnGenerationHeu(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
 			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets) throws Exception {
