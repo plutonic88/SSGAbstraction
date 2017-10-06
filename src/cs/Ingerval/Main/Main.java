@@ -79,7 +79,7 @@ public class Main {
 		
 		int nrow = 5;
 		int ncol = 5;
-		int dmax = 8;
+		int dmax = 15;
 		int k = 5;
 		int RADIUS = 1;
 		
@@ -200,7 +200,7 @@ public class Main {
 		SecurityGameContraction.targets.clear();
 		
 		// DO + Incremental clustering
-		//ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		
@@ -211,7 +211,7 @@ public class Main {
 		//SecurityGameContraction.noContractionNoColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps );
 		SecurityGameContraction.targets.clear();
 		
-		SecurityGameContraction.noContractionWithColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		//SecurityGameContraction.noContractionWithColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
 		
 		//SecurityGameContraction.noContractionWithColumnGenerationHeuTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps);

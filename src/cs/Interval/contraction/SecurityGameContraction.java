@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -20397,7 +20398,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long totaltime = 0;
 
 		
-		HashMap<String, Integer> coocur = new HashMap<String, Integer>();
+		HashMap<String, Double> coocur = new HashMap<String, Double>();
 		
 
 		for(int iter=0; iter<ITER; iter++)
@@ -20537,7 +20538,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long sumfinaltargetsize = 0;
 		long sumthreshold = 0;
 		long totaltime = 0;
-		HashMap<String, Integer> coocur = new HashMap<String, Integer>();
+		HashMap<String, Double> coocur = new HashMap<String, Double>();
 
 		for(int iter=0; iter<ITER; iter++)
 		{
@@ -33501,7 +33502,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 	private static double[] noContractionWithColumnGeneration(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
-			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<String,Integer> coocur) throws Exception {
+			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<String,Double> coocur) throws Exception {
 
 
 
@@ -33832,27 +33833,253 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 	private static void computeCoocur(int[][] p, double[] probdistribution, ArrayList<ArrayList<Integer>> pathseq, 
-			List<ArrayList<Integer>> jset, HashMap<String,Integer> coocur) {
+			List<ArrayList<Integer>> jset, HashMap<String,Double> coocur) {
 		
 		
 		System.out.println("\nJset size "+ jset.size());
 		System.out.println("nRes "+ jset.get(0).size());
 		System.out.println("Prob size "+ probdistribution.length);
-		System.out.println("P size "+ p.length + ","+p[0].length);
+		System.out.println("P size "+ p.length + ","+p[0].length+ "\n");
+		int nTargets = p.length;
+		int supportcount = computeSupport(jset,pathseq,probdistribution,p);
+		System.out.println("\n#Paths with prob >0 : "+ supportcount);
+		
+		
 		
 		// find the index of solution
 		// print the paths with prob
+		
+		
+		printPathProb(jset,pathseq,probdistribution, nTargets);
+		
+		
+		try
+		{
+			
+			File f = new File("coocur"+nTargets+".csv");
+			 
+			 if(f.exists())
+			 {
+				 f.delete();
+				 f.createNewFile();
+			 }
+			
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("coocur"+nTargets+".csv"),true));
+			
+			for(int t1=0; t1<=nTargets; t1++)
+			{
+				for(int t2=0; t2<=nTargets; t2++)
+				{
+					
+					if(t1==0)
+					{
+						System.out.print(new DecimalFormat("#00.000").format(t2) + "   ");
+						pw.append(new DecimalFormat("#00.000").format(t2) + ",");
+					}
+					else if(t2==0)
+					{
+						System.out.print(new DecimalFormat("#00.000").format(t1)+ "   ");
+						pw.append(new DecimalFormat("#00.000").format(t1) + ",");
+					}
+					
+					if(t1>0 && t2>0)
+					{
+
+						String key = (t1-1) + "," + (t2-1);
+
+						double value = computeFreq(t1-1,t2-1,jset,pathseq,probdistribution,p);
+
+						double cooc = value/supportcount;
+
+						System.out.print(new DecimalFormat("#00.000").format(cooc)+ "   ");
+						pw.append(new DecimalFormat("#00.000").format(cooc) + ",");
+
+						coocur.put(key, cooc);
+					}
+				}
+				System.out.println();
+				pw.append("\n");
+				
+			}
+			
+			
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+			pw.close();
+
+		}
+		catch(Exception e)
+		{
+
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//printCooc(coocur, nTargets);
+		
+		
+		
+		
+		
+	}
+
+	private static void printPathProb(List<ArrayList<Integer>> jset, ArrayList<ArrayList<Integer>> pathseq,
+			double[] probdistribution, int nTargets) {
+		
+		
+		//int nTargets = probdistribution.length;
+		
+		try
+		{
+			
+			File f = new File("pathprob"+nTargets+".csv");
+			 
+			 if(f.exists())
+			 {
+				 f.delete();
+				 f.createNewFile();
+			 }
+			
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("pathprob"+nTargets+".csv"),true));
+			
+			for(int probindex=0; probindex<probdistribution.length; probindex++)
+			{
+				if(probdistribution[probindex]>0)
+				{
+					for(int pathindex: jset.get(probindex))
+					{
+						
+						System.out.print("Path "+ pathindex + ", prob: "+ probdistribution[probindex] + " ");
+						pw.append("Path "+ pathindex + ", prob: "+ probdistribution[probindex] + ", ");
+						for(Integer pathnode: pathseq.get(pathindex))
+						{
+							System.out.print(pathnode+ "->");
+							pw.append(pathnode+ ",");
+						}
+						System.out.println();
+						pw.append("\n");
+					}
+				}
+			}
+			
+			
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+			pw.close();
+
+		}
+		catch(Exception e)
+		{
+
+		}
+		
+		
+		
+		
+		
+		
+	}
+
+	private static void printCooc(HashMap<String, Double> coocur, int nTargets) {
+		
+		
+		
+		
+		
+	}
+
+	private static int computeSupport(List<ArrayList<Integer>> jset, ArrayList<ArrayList<Integer>> pathseq,
+			double[] probdistribution, int[][] p) {
+		
+		int count=0;
+
+		for(int probindex=0; probindex<probdistribution.length; probindex++)
+		{
+			if(probdistribution[probindex]>0)
+			{
+				for(int pathindex: jset.get(probindex))
+				{
+					count++;
+					/*System.out.print("Path "+ pathindex + ", prob: "+ probdistribution[probindex] + " ");
+					for(Integer pathnode: pathseq.get(pathindex))
+					{
+						System.out.print(pathnode+ "->");
+					}
+					System.out.println();*/
+				}
+			}
+		}
+		return count;
+	}
+
+	private static double computeFreq(int t1, int t2, List<ArrayList<Integer>> jset,
+			ArrayList<ArrayList<Integer>> pathseq, double[] probdistribution, int[][] p) {
+		
+		
+		// t1 first then t2 second
+		
+		
+		if(t1==0 && t2==6)
+		{
+			//System.out.println("x");
+		}
+		
+		int count = 0;
 		
 		for(int probindex=0; probindex<probdistribution.length; probindex++)
 		{
 			if(probdistribution[probindex]>0)
 			{
-				
+				for(int pathindex: jset.get(probindex))
+				{
+					//System.out.print("Path "+ pathindex + ", prob: "+ probdistribution[probindex] + " ");
+					
+					ArrayList<Integer>path = pathseq.get(pathindex);
+					
+					
+					
+					int t1index = indexOF(t1, path);
+					int t2index = indexOF(t2, path);
+					
+				//	System.out.println("t1index "+ t1index + ", t2index "+ t2index);
+					
+					if((t1index>=0) && (t2index>=0) && (t1index<t2index))
+					{
+						count++;
+					}
+					
+					
+				}
 			}
 		}
 		
 		
+		return count;
+	}
+
+	private static int indexOF(int t1, ArrayList<Integer> path) {
 		
+		
+		int i=0;
+		for(Integer n: path)
+		{
+			if(n.equals(t1))
+			{
+				return i;
+			}
+			i++;
+		}
+		
+		return -1;
 		
 		
 	}
