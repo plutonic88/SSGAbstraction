@@ -77,10 +77,10 @@ public class Main {
 	
 		
 		
-		int nrow = 5;
-		int ncol = 5;
-		int dmax = 15;
-		int k = 5;
+		int nrow = 25;
+		int ncol = 25;
+		int dmax = 120;
+		int k = 20;
 		int RADIUS = 1;
 		
 		
@@ -193,11 +193,24 @@ public class Main {
 		}
 		
 		
+		for(int i=0; i<25; i++)
+		{
+			for(int j=0; j<25; j++)
+			{
+				System.out.print( ((i)*25)+j + " ");
+			}
+			System.out.println();
+		}
 		
-		//System.out.println(java.lang.System.getProperty("java.library.path"));
+		
+		
+		
 		//4 DO + GC multi + GP 3 + LP + GC multi 
 		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
+		
+		
+		//cluster path tries to cover all the targets rather than shortest path (224->272)
 		
 		// DO + Incremental clustering
 		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);

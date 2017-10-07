@@ -47,9 +47,16 @@ public class ClusterTargets {
 			Logger.logit("\n\n****** target node " + node.getTargetid()+", utility : "+node.getAnimaldensity() +"******\n");
 			//if(!domindatednodes.contains(node))
 			{
-
+				
+				
 				for(TargetNode neighbor: node.getNeighbors())
 				{
+					
+					if(node.getTargetid()==224 && neighbor.getTargetid()==272)
+					{
+						System.out.println();
+					}
+					
 					System.out.println("---Neighbor : "+ neighbor.getTargetid());
 					//Logger.logit("---Neighbor : "+ neighbor.getTargetid()+"\n");
 					/**
@@ -3964,6 +3971,13 @@ private static double[] DOWithClus(int[][] gamedata,
 	System.out.println("def exp : "+ defpayoff);
 	
 	
+	printST(sts, nTargets, iter);
+	
+	printClusteredNodes(sts,nTargets,iter);
+	
+	printClusterDists(sts,nTargets,iter);
+	
+	
 	for(SuperTarget st: sts.values())
 	{
 		int value = st.nodes.size();
@@ -3985,6 +3999,173 @@ private static double[] DOWithClus(int[][] gamedata,
 
 
 	
+	private static void printClusterDists(HashMap<Integer, SuperTarget> sts, int nTargets, int iter) {
+	
+		
+		
+			try
+			{
+				
+				File f = new File("clusdist"+nTargets+"-"+iter+".csv");
+				 
+				 if(f.exists())
+				 {
+					 f.delete();
+					 f.createNewFile();
+				 }
+				
+				
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusdist"+nTargets+"-"+iter+".csv"),true));
+				
+				for(SuperTarget st: sts.values())
+				{
+
+					
+
+					if(st.nodes.size()>1)
+					{
+						pw.append("Cluster "+st.stid+"\n");
+						for(TargetNode t: st.nodes.values())
+						{
+							for(TargetNode t2: st.nodes.values())
+							{
+								if(t.getNeighbors().contains(t2))
+								{
+									pw.append(t.getTargetid()+"->"+t2.getTargetid()+ "="+t.getDistance(t2)+"  Path : ");
+									
+									for(TargetNode pnode: t.getPath(t2))
+									{
+										pw.append(pnode.getTargetid()+"->");
+									}
+									pw.append(",");
+								}
+								
+								
+								//pw.append(t.getTargetid()+","+t.defenderreward+","+t.defenderpenalty+","+t.attackerreward+","+t.attackerpenalty+"\n");
+							}
+							pw.append("\n");
+
+						}
+						pw.append("\n");
+					}
+
+				}
+				
+				//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+				//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+				pw.close();
+
+			}
+			catch(Exception e)
+			{
+
+			}
+			
+		
+	
+	
+}
+
+
+	private static void printClusteredNodes(HashMap<Integer, SuperTarget> sts, int nTargets, int iter) {
+	
+		
+			try
+			{
+				
+				File f = new File("clusnodefeatures"+nTargets+"-"+iter+".csv");
+				 
+				 if(f.exists())
+				 {
+					 f.delete();
+					 f.createNewFile();
+				 }
+				
+				
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusnodefeatures"+nTargets+"-"+iter+".csv"),true));
+				
+				pw.append("ID,DR,DP,AR,AP"+"\n");
+				
+				for(SuperTarget st: sts.values())
+				{
+
+					if(st.nodes.size()>1)
+					{
+						for(TargetNode t: st.nodes.values())
+						{
+							pw.append(t.getTargetid()+","+t.defenderreward+","+t.defenderpenalty+","+t.attackerreward+","+t.attackerpenalty+"\n");
+
+						}
+						pw.append("\n");
+					}
+
+				}
+				
+				//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+				//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+				pw.close();
+
+			}
+			catch(Exception e)
+			{
+
+			}
+			
+		
+	
+}
+
+
+	private static void printST(HashMap<Integer, SuperTarget> sts, int nTargets, int iter) {
+	// TODO Auto-generated method stub
+		
+		
+		
+			try
+			{
+				
+				File f = new File("clusters"+nTargets+"-"+iter+".csv");
+				 
+				 if(f.exists())
+				 {
+					 f.delete();
+					 f.createNewFile();
+				 }
+				
+				
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusters"+nTargets+"-"+iter+".csv"),true));
+				
+				for(SuperTarget st: sts.values())
+				{
+					
+					pw.append("Cluster "+ st.stid + ": ,");
+					for(TargetNode t: st.nodes.values())
+					{
+						pw.append(t.getTargetid()+",");
+
+					}
+					pw.append("\n");
+				}
+				
+				
+				
+				
+				//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+				//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+				pw.close();
+
+			}
+			catch(Exception e)
+			{
+
+			}
+			
+		
+		
+	
+}
+
+
 	private static int findAttackedCluster(HashMap<Integer, SuperTarget> sts, int attackedtarget) {
 	
 		
@@ -4346,7 +4527,7 @@ private static double[] DOWithClus(int[][] gamedata,
 					if(assignedcluster != -1)
 					{
 						// append at to the assigned cluster
-						//System.out.println("at "+ at + " is assigned to cluster "+ assignedcluster);
+						System.out.println("attckedtarget "+ at + " is assigned to cluster "+ assignedcluster);
 						ArrayList<Integer> tmpclus = attackclustershisotry.get(assignedcluster);
 						//attackclustershisotry.remove(assignedcluster);
 						tmpclus.add(at);
@@ -4374,7 +4555,7 @@ private static double[] DOWithClus(int[][] gamedata,
 						clustercenters.put(clusid, at);
 						clusteredtargets.add(at);
 
-						//System.out.println("at "+ at + " is creating a new cluster with id "+ clusid);
+						System.out.println("attckedtarget "+ at + " is creating a new cluster with id "+ clusid);
 
 
 					}
@@ -4444,7 +4625,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			if( (nei.getTargetid() != 0) && (!clusteredtargets.contains(nei.getTargetid()))  && (centernode.getDistance(nei) <= RADIUS) && tmpgraph.contains(nei) )
 			{
 				
-				System.out.println("adding target "+ nei.getTargetid() + " to cluster "+ clusid);
+				System.out.println("adding target "+ nei.getTargetid() + " to cluster "+ clusid + " dist("+centernode.getTargetid()+","+nei.getTargetid()+ "="+centernode.getDistance(nei));
 				tmpclus.add(nei.getTargetid());
 				clusteredtargets.add(nei.getTargetid());
 			}
@@ -4503,7 +4684,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			 * for every pair of access points
 			 */
 			
-			System.out.println("Computing ap for ST "+ tempst.stid);
+			
 			
 			
 			double mindi = Double.MAX_VALUE;
@@ -4534,6 +4715,8 @@ private static double[] DOWithClus(int[][] gamedata,
 
 			if(tempst.nodes.size()>1)
 			{
+				
+				System.out.println("Computing ap for ST "+ tempst.stid);
 				
 				/*if(tempst.stid==14)
 				{
@@ -4575,6 +4758,12 @@ private static double[] DOWithClus(int[][] gamedata,
 							// should the ap be same for entry and exit ?
 							if((a1.getTargetid() != a2.getTargetid()) && (notDone(a1.getTargetid(), a2.getTargetid(), doneappair)))
 							{
+								
+								if(a1.getTargetid()==224 && a2.getTargetid()==272)
+								{
+									System.out.println("x");
+								}
+								
 								
 								int[] appair = {a1.getTargetid(), a2.getTargetid()};
 								doneappair.add(appair);
@@ -4729,6 +4918,12 @@ private static double[] DOWithClus(int[][] gamedata,
 							// should the ap be same for entry and exit ?
 							if((a1.getTargetid() != a2.getTargetid()) && (notDone(a1.getTargetid(), a2.getTargetid(), doneappair)))
 							{
+								
+								if(a1.getTargetid()==224 && a2.getTargetid()==272)
+								{
+									System.out.println("x");
+								}
+								
 								
 								int[] appair = {a1.getTargetid(), a2.getTargetid()};
 								doneappair.add(appair);
@@ -4892,6 +5087,11 @@ private static double[] DOWithClus(int[][] gamedata,
 							if((a1.getTargetid() != a2.getTargetid()) && (notd))
 							{
 								
+								if(a1.getTargetid()==224 && a2.getTargetid()==272)
+								{
+									System.out.println("x");
+								}
+								
 								int[] appair = {a1.getTargetid(), a2.getTargetid()};
 								doneappair.add(appair);
 								
@@ -4967,8 +5167,8 @@ private static double[] DOWithClus(int[][] gamedata,
 												//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
 
 												if(dista1a2 == 0)
-												{
 													//throw new Exception("No path found to compute AP for st "+ tempst.stid);
+												{
 													//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
 
 													dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, (int)dmax); 
@@ -5106,7 +5306,7 @@ private static double[] DOWithClus(int[][] gamedata,
 				//printNodesWithNeighborsAndPath(targetmaps);
 				
 				
-				//System.out.println("hi");
+				System.out.println("a1 "+ aid1 + " a2 "+ aid2 + " for cluster  "+ tempst.stid);
 				 
 			}
 			
