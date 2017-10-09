@@ -1,5 +1,6 @@
 package groupingtargets;
 
+import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Random;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
 
 import cs.Interval.ILP.MIPSolver4;
 import cs.Interval.contraction.Logger;
@@ -3988,6 +3992,11 @@ private static double[] DOWithClus(int[][] gamedata,
 		}
 		clusterhistogram.put(st.stid, value);
 	}
+	
+	
+	ButtonGrid grid = new ButtonGrid(targetmaps, sts);
+	grid.drawPayoffGrid(nrow, ncol);
+	grid.drawCluster(nrow, ncol);
 
 
 	//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
@@ -4771,6 +4780,7 @@ private static double[] DOWithClus(int[][] gamedata,
 								// next measure the intra cluster shortest traveling path using a1 and a2
 								ArrayList<Integer> tmpa1a2spath = new ArrayList<Integer>();
 								//double dista1a2 = shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+								// try compute travelling path for cluster
 								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
 								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
@@ -5803,3 +5813,6 @@ private static double[] DOWithClus(int[][] gamedata,
 	
 
 }
+
+
+

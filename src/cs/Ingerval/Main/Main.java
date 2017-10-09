@@ -3,6 +3,7 @@ package cs.Ingerval.Main;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,10 +78,10 @@ public class Main {
 	
 		
 		
-		int nrow = 25;
-		int ncol = 25;
-		int dmax = 120;
-		int k = 20;
+		int nrow = 14;
+		int ncol = 14;
+		int dmax = 50;
+		int k = 14;
 		int RADIUS = 1;
 		
 		
@@ -193,11 +194,11 @@ public class Main {
 		}
 		
 		
-		for(int i=0; i<25; i++)
+		for(int i=0; i<nrow; i++)
 		{
-			for(int j=0; j<25; j++)
+			for(int j=0; j<ncol; j++)
 			{
-				System.out.print( ((i)*25)+j + " ");
+				System.out.print(new DecimalFormat("#000").format(((i)*nrow)+j)   + " ");
 			}
 			System.out.println();
 		}
@@ -210,8 +211,7 @@ public class Main {
 		SecurityGameContraction.targets.clear();
 		
 		
-		//cluster path tries to cover all the targets rather than shortest path (224->272)
-		
+		//intra cluster path tries to cover all the targets rather than shortest path (224->272)
 		// DO + Incremental clustering
 		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();

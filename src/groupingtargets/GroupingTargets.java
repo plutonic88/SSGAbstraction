@@ -1670,8 +1670,34 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 		
 		int[] counter = new int[3];
 		
-		for(int clusid=0; clusid<k; clusid++)
+		
+		
+		int clusid = -1;
+		
+		ArrayList<Integer> notdoneclus = new ArrayList<Integer>();
+		
+		for(int i=0; i<k; i++)
 		{
+			notdoneclus.add(i);
+		}
+		
+		while(notdoneclus.size()>0)
+		{
+			
+			int index = -1;
+			if(notdoneclus.size()>1)
+			{
+				index = randInt(0, notdoneclus.size()-1);
+				clusid = notdoneclus.get(index);
+			}
+			else if(notdoneclus.size()==1)
+			{
+				index = 0;
+				clusid = notdoneclus.get(index);
+				//index = 0;
+			}
+			
+			System.out.println("cluster selected "+ clusid);
 			
 			/*if(clusid==0)
 			{
@@ -1746,6 +1772,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 					
 				}
 			}
+			notdoneclus.remove(index);
 		}
 
 		

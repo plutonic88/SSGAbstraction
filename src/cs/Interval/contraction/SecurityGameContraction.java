@@ -7202,6 +7202,8 @@ public class SecurityGameContraction
 			tmp.attackerreward = s.attackerreward;
 			tmp.defenderpenalty= s.defenderpenalty;
 			tmp.defenderreward = s.defenderreward;
+			tmp.row = s.row;
+			tmp.col = s.col;
 			tmp.setDistfrombase(s.getDistfrombase());
 			duplicategraph.add(tmp);
 		}
