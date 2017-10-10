@@ -57,7 +57,7 @@ class ButtonGrid {
 			for(int x=0; x<nrow; x++)
 			{
 				int au = (int)targetmaps.get(targetid).attackerreward;
-				grid[x][y]=new JButton(String.valueOf(targetid)+"->"+au); //creates new button 
+				grid[x][y]=new JButton(String.valueOf(targetid)+"("+au+")"); //creates new button 
 
 
 				
@@ -99,44 +99,61 @@ class ButtonGrid {
 				
 				int clusid = getClusId(targetid);
 				
-				
-				
-				clustergrid[x][y]=new JButton(String.valueOf(targetid+"->"+clusid)); //creates new button 
+
+				//if(clusid!=-1)
+				//{
+					int au = (int)targetmaps.get(targetid).attackerreward;
+
+					
+					clustergrid[x][y]=new JButton(String.valueOf(targetid+"("+au+")")); //creates new button 
+					
 
 
-				int au = (int)targetmaps.get(targetid).attackerreward;
-				
-				au *= 10;
-				
-				java.awt.Color clusc = Color.WHITE;
-				
-				
-				// if cluster has more than one node than assign color
-				if(sts.get(clusid).nodes.size()>1)
-				{
-					//check if it already has a color assignment
-					if(clustercolor.keySet().contains(clusid))
+					//int au = (int)targetmaps.get(targetid).attackerreward;
+
+					au *= 10;
+
+					java.awt.Color clusc = Color.WHITE;
+
+
+					// if cluster has more than one node than assign color
+					if(clusid>=0 && sts.get(clusid).nodes.size()>1)
 					{
-						clusc = clustercolor.get(clusid);
+						//check if it already has a color assignment
+						if(clustercolor.keySet().contains(clusid))
+						{
+							clusc = clustercolor.get(clusid);
+						}
+						else
+						{
+							// get a random color 
+							int r = SecurityGameContraction.randInt(0,255);
+							int g = SecurityGameContraction.randInt(0, 255);
+							int b = SecurityGameContraction.randInt(0, 255);
+
+							Color tmp = new java.awt.Color(r,g,b);
+							clustercolor.put(clusid, tmp);
+							clusc = tmp;
+						}
+						//clustergrid[x][y].setBackground(clusc);
+						clustergrid[x][y].setForeground(clusc);
+						clustergrid[x][y].setBackground(new java.awt.Color(155+au,155-au,155-au));
+					}
+					else if(clusid>=0 && (sts.get(clusid).nodes.size()==1))
+					{
+						clustergrid[x][y].setBackground(new java.awt.Color(155+au,155-au,155-au));
 					}
 					else
 					{
-						// get a random color 
-						int r = SecurityGameContraction.randInt(0,255);
-						int g = SecurityGameContraction.randInt(0, 255);
-						int b = SecurityGameContraction.randInt(0, 255);
-						
-						Color tmp = new java.awt.Color(r,g,b);
-						clustercolor.put(clusid, tmp);
-						clusc = tmp;
+						clustergrid[x][y].setBackground(Color.BLACK);
 					}
-				}
-				
-				// if not then assign white
-				
 
-				clustergrid[x][y].setBackground(clusc);
-				clusterframe.add(clustergrid[x][y]); //adds button to grid
+					// if not then assign white
+
+					//au*=10;
+					
+					clusterframe.add(clustergrid[x][y]); //adds button to grid
+				//}
 				
 				
 				targetid++;
@@ -166,7 +183,7 @@ class ButtonGrid {
 		}
 		
 		
-		return 0;
+		return -1;
 	}
 
 }

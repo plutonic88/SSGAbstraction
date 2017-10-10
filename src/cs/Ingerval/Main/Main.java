@@ -81,7 +81,7 @@ public class Main {
 		int nrow = 14;
 		int ncol = 14;
 		int dmax = 50;
-		int k = 14;
+		int k = 20;
 		int RADIUS = 1;
 		
 		
