@@ -3212,6 +3212,9 @@ private static double[] DOWithClus(int[][] gamedata,
 	HashMap<Integer,Integer> clustercenters = new HashMap<Integer,Integer>();
 	
 	
+	//cluster access points 
+	HashMap<Integer, int[]> clusterap = new HashMap<Integer, int[]>();
+	
 	
 	// current attacked Super targets in defender oracle
 	ArrayList<Integer> currentattackedsupertargets = new ArrayList<Integer>();
@@ -3281,7 +3284,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			dstravel.clear();
 			stpaths.clear();
 			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph);
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
 			
 
 			printSuperTargets(sts, stpaths, dstravel);
@@ -3994,9 +3997,9 @@ private static double[] DOWithClus(int[][] gamedata,
 	}
 	
 	
-	ButtonGrid grid = new ButtonGrid(targetmaps, sts);
-	grid.drawPayoffGrid(nrow, ncol);
-	grid.drawCluster(nrow, ncol);
+	//ButtonGrid grid = new ButtonGrid(targetmaps, sts);
+	//grid.drawPayoffGrid(nrow, ncol);
+	//grid.drawCluster(nrow, ncol);
 
 
 	//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
@@ -4319,7 +4322,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		System.out.println("\n \n \n After choosing AP \n \n \n");
 		
 		
-		chooseAP(sts, tmpgraphmaps, sts.get(1), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax);
+		chooseAP(sts, tmpgraphmaps, sts.get(1), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, null,null);
 		
 		
 		return sts;
@@ -4336,7 +4339,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> currentattackedtargets, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph) {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap) {
 		
 			
 			// for now build a cluster
@@ -4346,6 +4349,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			//ArrayList<Integer> attackcluster = new ArrayList<Integer>();//createAttackCluster(tmpgraphmaps, attackedtarget);
 			
 			// base target will alws be alone, so no clustering using base target
+		
 		
 		
 		
@@ -4373,7 +4377,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		
 		
 
-		updateAttackClusters(attackclustershisotry, clusteredtargets, clustercenters, currentattackedtargets, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
+		ArrayList<Integer> changedcluster = updateAttackClusters(attackclustershisotry, clusteredtargets, clustercenters, currentattackedtargets, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
 
 
 
@@ -4439,7 +4443,17 @@ private static double[] DOWithClus(int[][] gamedata,
 			
 			for(int i = 0; i<sts.size(); i++)
 			{
-				chooseAP(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax);
+				SuperTarget st = sts.get(i);
+				
+				
+				
+				
+				// if cluster is chnaged then compute AP
+				// if not changed then use the previous AP
+				
+				chooseAP(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+				
+				
 			}
 			
 			
@@ -4463,12 +4477,15 @@ private static double[] DOWithClus(int[][] gamedata,
 	}
 
 
-	private static boolean updateAttackClusters(HashMap<Integer, ArrayList<Integer>> attackclustershisotry,
+	private static ArrayList<Integer> updateAttackClusters(HashMap<Integer, ArrayList<Integer>> attackclustershisotry,
 			ArrayList<Integer> clusteredtargets, HashMap<Integer, Integer> clustercenters,
-			ArrayList<Integer> currentattackedtargets, HashMap<Integer,TargetNode> tmpgraphmaps, int RADIUS, ArrayList<TargetNode> domindatednodes, ArrayList<TargetNode> tmpgraph) {
+			ArrayList<Integer> currentattackedtargets, HashMap<Integer,TargetNode> tmpgraphmaps, 
+			int RADIUS, ArrayList<TargetNode> domindatednodes, ArrayList<TargetNode> tmpgraph) {
 		
 		
 		boolean clusterhappened = false;
+		
+		ArrayList<Integer> changedcluster = new ArrayList<Integer>();
 		
 		
 		//printNodesWithNeighborsAndPath(tmpgraphmaps);
@@ -4514,6 +4531,7 @@ private static double[] DOWithClus(int[][] gamedata,
 						clustercenters.put(clusid, tid);
 						clusteredtargets.add(tid);
 						clusterhappened = true;
+						changedcluster.add(clusid);
 						break;
 					}
 				}
@@ -4541,6 +4559,11 @@ private static double[] DOWithClus(int[][] gamedata,
 						//attackclustershisotry.remove(assignedcluster);
 						tmpclus.add(at);
 						attackclustershisotry.put(assignedcluster, tmpclus);
+						
+						if(!changedcluster.contains(assignedcluster))// if it already does not contain the chnaged cluster
+						{
+							changedcluster.add(assignedcluster);
+						}
 
 						// try to add more targets
 
@@ -4563,6 +4586,7 @@ private static double[] DOWithClus(int[][] gamedata,
 						attackclustershisotry.put(clusid, tmpclus);
 						clustercenters.put(clusid, at);
 						clusteredtargets.add(at);
+						changedcluster.add(clusid);
 
 						System.out.println("attckedtarget "+ at + " is creating a new cluster with id "+ clusid);
 
@@ -4588,20 +4612,29 @@ private static double[] DOWithClus(int[][] gamedata,
 			
 			ArrayList<Integer> tmpclus = attackclustershisotry.get(clusid);
 			
+			int prevclustersize = tmpclus.size();
+			
 			int centerid = clustercenters.get(clusid);
 
 			addMoreToCluster(tmpclus, centerid, clusteredtargets, tmpgraphmaps, clusid,RADIUS, tmpgraph);
 			
 			//attackclustershisotry.remove(clusid);
 			
+			int currentsize = tmpclus.size();
+			
 			attackclustershisotry.put(clusid, tmpclus);
+			
+			if(currentsize>prevclustersize && (!changedcluster.contains(clusid))) // if cluster size increases then add the cluster to changed list
+			{
+				changedcluster.add(clusid);
+			}
 			
 			
 			
 		}
 		
 		
-		return clusterhappened;
+		return changedcluster;
 		
 	}
 
@@ -4682,7 +4715,7 @@ private static double[] DOWithClus(int[][] gamedata,
 	private static void chooseAP(HashMap<Integer, SuperTarget> sts, HashMap<Integer, TargetNode> targetmaps, SuperTarget tempst,
 			 AllPairShortestPath apsp,
 				int[][] apspmat, HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback, 
-				HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax) {
+				HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax, HashMap<Integer,int[]> clusterap, ArrayList<Integer> changedcluster) {
 		
 		//for(SuperTarget tempst: sts.values())
 		{
@@ -5292,6 +5325,10 @@ private static double[] DOWithClus(int[][] gamedata,
 				//printSuperTargets(sts);
 				
 				updateAP(tempst, sts, aid1, aid2);
+				
+				
+				clusterap.put(tempst.stid, new int[] {aid1, aid2});
+				
 				//sts.put(newst.stid, newst);
 				//update the neighbors of ST
 				// System.out.println("\n\n After merging # supertargets : "+ sts.size());

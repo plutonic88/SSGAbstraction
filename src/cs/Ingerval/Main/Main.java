@@ -78,10 +78,10 @@ public class Main {
 	
 		
 		
-		int nrow = 14;
-		int ncol = 14;
-		int dmax = 50;
-		int k = 20;
+		int nrow = 8;
+		int ncol = 8;
+		int dmax = 30;
+		int k = 10;
 		int RADIUS = 1;
 		
 		
@@ -194,14 +194,14 @@ public class Main {
 		}
 		
 		
-		for(int i=0; i<nrow; i++)
+		/*for(int i=0; i<nrow; i++)
 		{
 			for(int j=0; j<ncol; j++)
 			{
 				System.out.print(new DecimalFormat("#000").format(((i)*nrow)+j)   + " ");
 			}
 			System.out.println();
-		}
+		}*/
 		
 		
 		
