@@ -11001,14 +11001,53 @@ public class SecurityGameContraction
 				{
 					//double distcovered1 = findShortestPathThrougGraphWDlimit(base, dest, targets, pathnodes, dmax/2);
 					//System.out.print("dist covered "+ distcovered1+"\n");
+					
+					
+					ArrayList<Integer>	tmppathnodes = allPairShortestPath.getPath(src, des, map, mapback);
+					
+					if(tmppathnodes.size()>1)
+					{
+						System.out.println("sss");
+					}
 
+    				for(int k=0; k<tmppathnodes.size(); k++)
+    				{
+    					pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
+    				}
+
+					
+					distcovered =0;
 
 					src = base.getTargetid();
 					des = dest.getTargetid();
+					
+					distcovered += apsp[map.get(src)][map.get(tmppathnodes.get(0))];
+    				
+    				int s = 0;
+					int d = tmppathnodes.get(0);
+    				
+    				for(int m=0; m<tmppathnodes.size()-1; m++)
+    				{
+    					
+    					s = tmppathnodes.get(m);
+    					d = tmppathnodes.get(m+1);
+    					
+    					
+    					
+    					distcovered += apsp[map.get(s)][map.get(d)] ;
+    				}
+    				
+    				distcovered += apsp[map.get(d)][map.get(des)] ;
+        			
+
+        			if(distcovered>dmax/2)
+        			{
+        				continue;
+        			}
 
 
 
-					distcovered = apsp[map.get(src)][map.get(des)];
+					/*distcovered = apsp[map.get(src)][map.get(des)];
 					//System.out.print("dist covered "+ distcovered+"\n");
 
 					if(distcovered<=dmax/2)
@@ -11021,7 +11060,7 @@ public class SecurityGameContraction
 						}
 					}
 					else
-						continue;
+						continue;*/
 
 
 				}
@@ -11061,8 +11100,8 @@ public class SecurityGameContraction
 	
 	
 	
-	public static ArrayList<Integer> pathForAT(double dmax, ArrayList<TargetNode> targets,
-			ArrayList<Integer> currenttargets, int nRes, int attackedtarget) throws Exception
+	public static void pathForAT(double dmax, ArrayList<TargetNode> targets,
+			ArrayList<Integer> currenttargets, int nRes, int attackedtarget, ArrayList<ArrayList<Integer>> newpathseq) throws Exception
 			{
 
 
@@ -11139,12 +11178,51 @@ public class SecurityGameContraction
 					//System.out.print("dist covered "+ distcovered1+"\n");
 
 
+					ArrayList<Integer>	tmppathnodes = allPairShortestPath.getPath(src, des, map, mapback);
+					
+					if(tmppathnodes.size()>1)
+					{
+						System.out.println("sss");
+					}
+
+    				for(int k=0; k<tmppathnodes.size(); k++)
+    				{
+    					pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
+    				}
+
+					
+					distcovered =0;
+
 					src = base.getTargetid();
 					des = dest.getTargetid();
+					
+					distcovered += apsp[map.get(src)][map.get(tmppathnodes.get(0))];
+    				
+    				int s = 0;
+					int d = tmppathnodes.get(0);
+    				
+    				for(int m=0; m<tmppathnodes.size()-1; m++)
+    				{
+    					
+    					s = tmppathnodes.get(m);
+    					d = tmppathnodes.get(m+1);
+    					
+    					
+    					
+    					distcovered += apsp[map.get(s)][map.get(d)] ;
+    				}
+    				
+    				distcovered += apsp[map.get(d)][map.get(des)] ;
+        			
+
+        			if(distcovered>dmax/2)
+        			{
+        				return ;
+        			}
 
 
 
-					distcovered = apsp[map.get(src)][map.get(des)];
+					/*distcovered = apsp[map.get(src)][map.get(des)];
 					//System.out.print("dist covered "+ distcovered+"\n");
 
 					if(distcovered<=dmax/2)
@@ -11155,7 +11233,7 @@ public class SecurityGameContraction
 						{
 							pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
 						}
-					}
+					}*/
 					
 
 
@@ -11195,15 +11273,15 @@ public class SecurityGameContraction
 		if(paths.size()>0)
 		{
 
-			return paths.get(0);
+			newpathseq.add(paths.get(0));
 		}
 		
 		
-		System.out.println("attack "+ attackedtarget);
+		/*System.out.println("attack "+ attackedtarget);
 		
-		ArrayList<Integer> p  = new ArrayList<Integer>();
+		ArrayList<Integer> p  = new ArrayList<Integer>();*/
 		
-		return p;
+		return;
 			}
 	
 	
@@ -11254,6 +11332,7 @@ public class SecurityGameContraction
 
         for(SuperTarget dest: sts.values())
         {
+        	//System.out.println("Src 0"+ ", dest "+ dest.stid);
         	if(dest.stid!=0)
         	{
 
@@ -11261,22 +11340,24 @@ public class SecurityGameContraction
         		ArrayList<Integer>  pathnodes = new ArrayList<Integer>();
         		ArrayList<SuperTarget>  pnodes = new ArrayList<SuperTarget>();
         		if(base.neighbors.containsKey(dest.stid))
-				{
-					//pnodes = base.getPath(dest);
+        		{
+        			//pnodes = base.getPath(dest);
         			int src = base.stid;
-            		int des = dest.stid;
+        			int des = dest.stid;
 
 
-            		//TODO consider distance, intra cluster
-            		
-            		
-            		
-            		double distcovered = apsp[map.get(src)][map.get(des)]+dstravel.get(dest.stid);
-            		//System.out.print("dist covered "+ distcovered+"\n");
-            		
-            		if(distcovered > dmax/2)
-            			continue;
-					/*for(int k=0; k<pnodes.size(); k++)
+        			//TODO consider distance, intra cluster
+
+
+
+        			double distcovered = apsp[map.get(src)][map.get(des)];
+        			
+        			distcovered += dstravel.get(dest.stid);
+        			//System.out.print("dist covered "+ distcovered+"\n");
+
+        			if(distcovered > dmax/2)
+        				continue;
+        			/*for(int k=0; k<pnodes.size(); k++)
 					{
 
 						//System.out.print(pnodes.get(pnodes.size()-k-1).getTargetid()+"->");
@@ -11284,56 +11365,93 @@ public class SecurityGameContraction
 
 					}*/
 
-				}
+        		}
         		else
         		{
 
-        			
-        		//double distcovered1 = findShortestPathThrougGraphWDlimit(base, dest, targets, pathnodes, dmax/2);
-        		//System.out.print("dist covered "+ distcovered1+"\n");
+
+        			//double distcovered1 = findShortestPathThrougGraphWDlimit(base, dest, targets, pathnodes, dmax/2);
+        			//System.out.print("dist covered "+ distcovered1+"\n");
 
 
-        		int src = base.stid;
-        		int des = dest.stid;
+        			int src = base.stid;
+        			int des = dest.stid;
 
 
-        		//TODO consider distance, intra cluster
-        		
-        		if(!dstravel.containsKey(dest.stid)) // no path exists
-        		{
-        			continue;
-        		}
-        		
-        		
-        		double distcovered = apsp[map.get(src)][map.get(des)]+dstravel.get(dest.stid);
-        		//System.out.print("dist covered "+ distcovered+"\n");
+        			//TODO consider distance, intra cluster
 
-        		if(distcovered<=dmax/2)
-        		{
-        			ArrayList<Integer>	tmppathnodes = allPairShortestPath.getPath(src, des, map, mapback);
-
-        			for(int k=0; k<tmppathnodes.size(); k++)
+        			if(!dstravel.containsKey(dest.stid)) // no path exists
         			{
-        				pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
+        				continue;
         			}
-        		}
-        		else
-        			continue;
-        		
-        		
-        		//throw new Exception("Base to not neighbor for initial set of paths **********8");
+
+
+        			double distcovered = 0;
+        			
+        			//apsp[map.get(src)][map.get(des)];
+        			
+        			//distcovered += dstravel.get(dest.stid);
+        			//System.out.print("dist covered "+ distcovered+"\n");
+        			
+        			
+        			ArrayList<Integer>	tmppathnodes = allPairShortestPath.getPath(src, des, map, mapback);
+        			
+        			
+        			
+        			
+
+    				for(int k=0; k<tmppathnodes.size(); k++)
+    				{
+    					pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
+    				}
+    				
+    				
+    				
+    				
+    				
+    				
+    				
+    				//int pnodedists = 0;
+    				
+    				distcovered += apsp[map.get(src)][map.get(tmppathnodes.get(0))] + dstravel.get(tmppathnodes.get(0));
+    				
+    				int s = 0;
+					int d = tmppathnodes.get(0);
+    				
+    				for(int m=0; m<tmppathnodes.size()-1; m++)
+    				{
+    					
+    					s = tmppathnodes.get(m);
+    					d = tmppathnodes.get(m+1);
+    					
+    					
+    					
+    					distcovered += apsp[map.get(s)][map.get(d)] + dstravel.get(d);
+    				}
+    				
+    				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des);
+        			
+
+        			if(distcovered>dmax/2)
+        			{
+        				continue;
+        			}
+        			
+
+
+        			//throw new Exception("Base to not neighbor for initial set of paths **********8");
 
         		}
 
         		ArrayList<Integer> tmppath = new ArrayList<Integer>();
-        		//System.out.print("\n0->");
+        	//	System.out.print("\n0->");
         		tmppath.add(base.stid);
         		for(int k=0; k<pathnodes.size(); k++)
         		{
         			tmppath.add(pathnodes.get(pathnodes.size()-k-1));
-        			//System.out.print(pathnodes.get(pathnodes.size()-k-1)+"->");
+        		//	System.out.print(pathnodes.get(pathnodes.size()-k-1)+"->");
         		}
-        		//	System.out.print(dest.getTargetid()+"\n");
+        		//System.out.print(dest.stid+"\n");
         		tmppath.add(dest.stid);
         		//System.out.print("\n");
         		/**
@@ -11464,7 +11582,59 @@ public class SecurityGameContraction
         		}
         		
         		
-        		double distcovered = apsp[map.get(src)][map.get(des)]+dstravel.get(dest.stid);
+        		double distcovered = 0;
+    			
+    			//apsp[map.get(src)][map.get(des)];
+    			
+    			//distcovered += dstravel.get(dest.stid);
+    			//System.out.print("dist covered "+ distcovered+"\n");
+    			
+    			
+    			ArrayList<Integer>	tmppathnodes = allPairShortestPath.getPath(src, des, map, mapback);
+    			
+    			
+    			
+    			
+
+				for(int k=0; k<tmppathnodes.size(); k++)
+				{
+					pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
+				}
+				
+				
+				
+				
+				
+				
+				
+				//int pnodedists = 0;
+				
+				distcovered += apsp[map.get(src)][map.get(tmppathnodes.get(0))] + dstravel.get(tmppathnodes.get(0));
+				
+				int s = 0;
+				int d = tmppathnodes.get(0);
+				
+				for(int m=0; m<tmppathnodes.size()-1; m++)
+				{
+					
+					s = tmppathnodes.get(m);
+					d = tmppathnodes.get(m+1);
+					
+					
+					
+					distcovered += apsp[map.get(s)][map.get(d)] + dstravel.get(d);
+				}
+				
+				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des);
+    			
+
+    			if(distcovered>dmax/2)
+    			{
+    				continue;
+    			}
+        		
+        		
+        		/*double distcovered = apsp[map.get(src)][map.get(des)]+dstravel.get(dest.stid);
         		//System.out.print("dist covered "+ distcovered+"\n");
 
         		if(distcovered<=dmax/2)
@@ -11477,7 +11647,7 @@ public class SecurityGameContraction
         			}
         		}
         		else
-        			continue;
+        			continue;*/
         		
         		
         		//throw new Exception("Base to not neighbor for initial set of paths **********8");
@@ -17884,16 +18054,58 @@ public class SecurityGameContraction
 						totaldisttemp +=  apspmat[s][d];
 						
 						
-						totaldisttemp +=  dstravel.get(greedypath.get(j-1)).intValue() ;
 						
-						totaldisttemp +=  dstravel.get(tmptsrt.get(i)).intValue();
+						
+						if(dstravel.keySet().contains(greedypath.get(j-1)))
+						{
+						
+							totaldisttemp +=  dstravel.get(greedypath.get(j-1)).intValue() ;
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)))
+						{
+						
+							totaldisttemp +=  dstravel.get(tmptsrt.get(i)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
+						
+						
 
 
 						s = map.get(tmptsrt.get(i));
 						d = map.get(greedypath.get(j));
 						//System.out.println(" s : "+ greedypath.get(i) + " , d : "+greedypath.get(j) + " i "+ i + " j "+ j +  " gs "+ greedypath.size());
-						totaldisttemp +=  apspmat[s][d] + dstravel.get(tmptsrt.get(i)).intValue() + dstravel.get(greedypath.get(j)).intValue();;
+						totaldisttemp +=  apspmat[s][d] ;
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)) && dstravel.keySet().contains(greedypath.get(j)))
+						{
+						
+							totaldisttemp += dstravel.get(tmptsrt.get(i)).intValue() + dstravel.get(greedypath.get(j)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
 
+						
+						
+						
+						
 						/*System.out.println("totaldisttemp = "+totaldisttemp);
 						System.out.println("bestj : "+bestj);*/
 
@@ -29247,7 +29459,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			}
 			System.out.println();
 
-			//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
+			
 
 
 			Date start = new Date();
@@ -29268,6 +29480,8 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			System.out.println("tmpgraph size "+ tmpgraph.size());
 			System.out.println("dom size "+ domindatednodes.size());
+			
+			//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
 			//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
 			p = new int[targets.size()][]; // p matrix
 
@@ -29289,7 +29503,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			}
 			//makePathSeq(pathseq, goals, goals.size(), tmpgraph.size(), map, mapback, tmpgraph);
-			//printPaths(pathseq);
+			printPaths(pathseq);
 			System.out.println("Total path with duplicates "+pathseq.size());
 			pathseq = removeDuplicatePathSimple(pathseq);
 			System.out.println("Total path without duplicates "+pathseq.size()+"\n");
@@ -29469,14 +29683,14 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyCoverMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes, attackerstrategy);
 					
 					
-					ArrayList<Integer> attackpath = pathForAT(dmax, tmpgraph, currenttargets, nRes, attackedtargetrestrgraph);
+					pathForAT(dmax, tmpgraph, currenttargets, nRes, attackedtargetrestrgraph, newpathseq);
 					
 					
-					if(attackpath.size()>0)
+					/*if(attackpath.size()>0)
 					{
 					
 						newpathseq.add(attackpath);
-					}
+					}*/
 					
 					
 					stop = new Date();
@@ -29530,10 +29744,10 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					}
 
 					System.out.println("new paths added by slave *************, attacked target "+ attackedtarget);
-
+					printPaths(pathseq);
 					/*pathseq = removeDuplicatePathSimple(pathseq);
 					System.out.println("New path seq size "+ pathseq.size());
-					//printPaths(pathseq);
+					printPaths(pathseq);
 					int newsize = pathseq.size();
 					System.out.println("haa ");
 
