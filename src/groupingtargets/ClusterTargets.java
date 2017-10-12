@@ -363,6 +363,7 @@ public class ClusterTargets {
 		long clusteringtime = 0;
 		long slavetime = 0;
 		int finalsize = 0;
+		int totalslaveiter = 0;
 
 		for(int iter=0; iter<LIMIT; iter++)
 		{
@@ -405,11 +406,12 @@ public class ClusterTargets {
 		finalsize /= LIMIT;
 		clusteringtime /= LIMIT;
 		slavetime /= LIMIT;
+		totalslaveiter /= LIMIT;
 		
 		//System.out.println("Defender exp "+ (double)sumdefexp/LIMIT + ", time : "+ (long)totaltime/LIMIT);
 		//writeInFileST("DOWithWeka",finalsize,sumdefexp, solvingtime, revmaptime, clusteringtime ,totaltime, nTargets);
 		
-		SecurityGameContraction.writeInFile("DOWithWeka",(int)finalsize, sumdefexp, clusteringtime,solvingtime, slavetime,totaltime, nTargets);
+		SecurityGameContraction.writeInFile("DOWithWeka",(int)finalsize, sumdefexp, clusteringtime,solvingtime, slavetime,totaltime, nTargets, totalslaveiter,0);
 		
 		
 
@@ -3183,6 +3185,8 @@ private static double[] DOWithClus(int[][] gamedata,
 	int targetsize=0;
 	double slavetime = 0;
 	int [][] origpmat = new int[nTargets][];
+	int totalslaveiter = 0;
+	long clusteringtime = 0;
 
 
 
@@ -3283,11 +3287,29 @@ private static double[] DOWithClus(int[][] gamedata,
 			//sts.clear();
 			dstravel.clear();
 			stpaths.clear();
+			
+			
+			
+			start = new Date();
+			l1 = start.getTime();
+
+			
+
+
+			
 			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
 					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
 			
+			
 
-			printSuperTargets(sts, stpaths, dstravel);
+			stop = new Date();
+			l2 = stop.getTime();
+			diff = l2 - l1;
+
+			clusteringtime += diff;
+			
+
+			//printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -3329,6 +3351,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ ", slaveitr "+itr+", Entered inner loop...slave");
 			
 			itr++;
+			totalslaveiter++;
 
 			
 
@@ -3789,7 +3812,7 @@ private static double[] DOWithClus(int[][] gamedata,
 					start = new Date();
 					l1 = start.getTime();
 					
-					printSuperTargets(sts);
+					//printSuperTargets(sts);
 					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSuperGreedyCoverMultRes2(tmpgraphmaps, 
 							dmax, sts.size(), 0, nRes, attackerstrategy, sts, dstravel);
 					
@@ -3812,12 +3835,12 @@ private static double[] DOWithClus(int[][] gamedata,
 					slavetime += diff;
 					
 					
-					/*System.out.println("newpathseq size before purify : "+newpathseq.size());
-					    //newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, p, probdistribution);
-						System.out.println("newpathseq size after purify : "+newpathseq.size());*/
+					System.out.println("newpathseq size before purify : "+newpathseq.size());
+					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, origpmat, probdistribution);
+					System.out.println("newpathseq size after purify : "+newpathseq.size());
 						
 						
-						/*if((newpathseq.size()==0) || (itr>=10))
+						if((newpathseq.size()==0) || (itr>=10))
 						{
 							canaddpath = false;
 							System.out.println("Slave can't add any new path ###############");
@@ -3825,25 +3848,25 @@ private static double[] DOWithClus(int[][] gamedata,
 						}
 						System.out.println("New whole path seq ");
 						
-						*/
+						
 						
 
 						//makeSlavePathSeq(newpathseq, goal);
 						//removeDuplicatePathSimple(newpathseq);
-						if(newpathseq.size()==0)
+						/*if(newpathseq.size()==0)
 						{
 							canaddpath = false;
 							System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" Slave can't add any new path ###############");
 							break;
-						}
+						}*/
 						//System.out.println("tcur: ");
 						//printGreedyPath(currenttargets);
-						System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" newpathseq: ");
+						//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" newpathseq: ");
 						//SecurityGameContraction.printPaths(newpathseq);
 
 						System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" Old path seq size "+ pathseq.size());
 
-						int oldsize = pathseq.size();
+						//int oldsize = pathseq.size();
 						for(ArrayList<Integer> q: newpathseq)
 						{
 							pathseq.add(q);
@@ -3851,21 +3874,21 @@ private static double[] DOWithClus(int[][] gamedata,
 
 						//System.out.println("\n masteritr "+masteritr+" slaveitr "+itr +" new paths added by slave *************, attacked target "+ attackedtarget);
 
-						pathseq = SecurityGameContraction.removeDuplicatePathSimple(pathseq);
+						//pathseq = SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 						System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" New path seq size "+ pathseq.size());
 						//printPaths(pathseq);
-						int newsize = pathseq.size();
+						//int newsize = pathseq.size();
 						//System.out.println("haa ");
 
 
-						if((oldsize==newsize) || (itr>=10))
+						/*if((oldsize==newsize) || (itr>=10))
 						{
 							canaddpath = false;
 							System.out.println("\n clusteringactivated "+clusteringactivated +" Slave can't add any new path ############### or iteration>10");
 							//printSuperTargets(sts);
 						//	SecurityGameContraction.printPaths(pathseq);
 							break;
-						}
+						}*/
 
 						//SecurityGameContraction.printPaths(pathseq);
 
@@ -3978,11 +4001,11 @@ private static double[] DOWithClus(int[][] gamedata,
 	System.out.println("def exp : "+ defpayoff);
 	
 	
-	printST(sts, nTargets, iter);
+	//printST(sts, nTargets, iter);
 	
-	printClusteredNodes(sts,nTargets,iter);
+	//printClusteredNodes(sts,nTargets,iter);
 	
-	printClusterDists(sts,nTargets,iter);
+	//printClusterDists(sts,nTargets,iter);
 	
 	
 	for(SuperTarget st: sts.values())
@@ -4004,7 +4027,7 @@ private static double[] DOWithClus(int[][] gamedata,
 
 	//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
 
-	double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime};
+	double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime, totalslaveiter, clusteringtime};
 	return res;
 }
 
@@ -5739,6 +5762,8 @@ private static double[] DOWithClus(int[][] gamedata,
 		long sumthreshold = 0;
 		long sumslavetime = 0;
 		long totaltime = 0;
+		int totalslaveiter = 0;
+		long sumclustertime = 0;
 		
 		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
 
@@ -5785,6 +5810,8 @@ private static double[] DOWithClus(int[][] gamedata,
 			sumfinaltargetsize += res[3];
 			sumthreshold += res[4];
 			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			sumclustertime += res[7];
 			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
 
 			//SecurityGameContraction.writeRes("DOClus", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
@@ -5793,9 +5820,9 @@ private static double[] DOWithClus(int[][] gamedata,
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 		
-		writeClusterHist(clusterhistogram, ITER, nTargets);
+		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("DOWithClusteing",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		SecurityGameContraction.writeInFile("DOWithClusteing",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 

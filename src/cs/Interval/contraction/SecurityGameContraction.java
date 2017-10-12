@@ -16270,7 +16270,7 @@ public class SecurityGameContraction
 				String x = df.format(revtime);
 				//writeInFile("baseline",(int)targetsize/ITER, avgsol, contractiontime/ITER, solvingtime/ITER, sumtime/ITER);
 				
-				SecurityGameContraction.writeInFile("baseline",(int)targetsize/ITER, avgsol, 0,solvingtime/ITER, 0, sumtime/ITER, nTargets);
+				//SecurityGameContraction.writeInFile("baseline",(int)targetsize/ITER, avgsol, 0,solvingtime/ITER, 0, sumtime/ITER, nTargets);
 				
 				
 			}
@@ -19594,7 +19594,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("4",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		//writeInFile("4",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
@@ -19652,7 +19652,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("4",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		//writeInFile("4",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
@@ -19673,6 +19673,8 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		long sumthreshold = 0;
 		long sumslavetime = 0;
 		long totaltime = 0;
+		int totalslaveiter = 0;
+		
 
 
 		for(int iter=0; iter<ITER; iter++)
@@ -19711,6 +19713,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			sumfinaltargetsize += res[3];
 			sumthreshold += res[4];
 			sumslavetime += res[5];
+			totalslaveiter += res[6];
 			
 			//SecurityGameContraction.writeRes("DO", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
 
@@ -19722,7 +19725,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets, totalslaveiter/ITER,0);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
@@ -19779,7 +19782,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		//writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
@@ -19834,7 +19837,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("Exact",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets );
+		//writeInFile("Exact",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets );
 		//writeInFile("Exact",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10 );
 
 
@@ -19891,7 +19894,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("OP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets);
+		//writeInFile("OP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets);
 
 
 
@@ -19945,7 +19948,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("lexicoOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
+		//writeInFile("lexicoOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
 
 
 
@@ -19999,7 +20002,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("modifiedOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
+		//writeInFile("modifiedOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
 
 
 
@@ -20054,7 +20057,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
+		//writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER,sumslavetime/ITER,  totaltime/ITER, nTargets);
 
 
 
@@ -20109,7 +20112,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("TOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,  totaltime/ITER, nTargets);
+		//writeInFile("TOP",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,  totaltime/ITER, nTargets);
 
 
 
@@ -20452,7 +20455,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		//writeInFile("15", (int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
 
-		writeInFile("ColumnGeneration",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
+		//writeInFile("ColumnGeneration",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
 
 	}
 	
@@ -20522,7 +20525,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		//writeInFile("15", (int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
 
-		writeInFile("ColumnGenerationHeu",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
+		//writeInFile("ColumnGenerationHeu",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER ,totaltime/ITER, nTargets);
 
 	}
 	
@@ -20680,7 +20683,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 	public static void writeInFile(String expno, int finalsize, double avgsol, long contracttime,
-			long solvingtime, long slavetime, long totaltime, int nTargets ) 
+			long solvingtime, long slavetime, long totaltime, int nTargets, int slaveiter, long clustertime ) 
 	{
 
 		
@@ -20692,19 +20695,19 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		try
 		{
 			
-			File f = new File("grp-result.csv");
+			/*File f = new File("grp-result.csv");
 			 
 			 if(f.exists())
 			 {
 				 f.delete();
 				 f.createNewFile();
-			 }
+			 }*/
 			
 			
 			
 			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("grp-result.csv"),true));
 			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
-			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
 			pw.close();
 
 		}
@@ -29200,6 +29203,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		int targetsize=0;
 		double slavetime = 0;
 		int [][] origpmat = new int[nTargets][];
+		int totalslaveiter = 0;
 
 
 
@@ -29318,6 +29322,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 				System.out.println("Entered inner loop...slave");
 				
 				itr++;
+				totalslaveiter++;
 
 				
 
@@ -29510,12 +29515,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 					//makeSlavePathSeq(newpathseq, goal);
 					//removeDuplicatePathSimple(newpathseq);
-					if(newpathseq.size()==0)
-					{
-						canaddpath = false;
-						System.out.println("Slave can't add any new path ###############");
-						break;
-					}
+					
 					//System.out.println("tcur: ");
 					//printGreedyPath(currenttargets);
 					//System.out.println("newpathseq: ");
@@ -29658,7 +29658,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
 
-		double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime};
+		double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime, totalslaveiter};
 		return res;
 	}
 	

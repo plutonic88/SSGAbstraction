@@ -105,7 +105,8 @@ class ButtonGrid {
 					int au = (int)targetmaps.get(targetid).attackerreward;
 
 					
-					clustergrid[x][y]=new JButton(String.valueOf(targetid+"("+au+")")); //creates new button 
+					clustergrid[x][y]=new JButton(String.valueOf(targetid+"("+clusid+")")); //creates new button 
+					//clustergrid[x][y].
 					
 
 
