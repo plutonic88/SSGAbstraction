@@ -80,11 +80,11 @@ public class Main {
 		
 		int nrow = 8;
 		int ncol = 8;
-		int dmax = 40;
+		int dmax = 30;
 		int k = 10;
 		int RADIUS = 1;
 		
-		int ITER = 1;
+		int ITER = 5;
 
 		
 		
@@ -209,13 +209,13 @@ public class Main {
 		
 		
 		//4 DO + GC multi + GP 3 + LP + GC multi 
-		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
 		
 		
 		//intra cluster path tries to cover all the targets rather than shortest path (224->272)
 		// DO + Incremental clustering
-		//ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+	//	ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);

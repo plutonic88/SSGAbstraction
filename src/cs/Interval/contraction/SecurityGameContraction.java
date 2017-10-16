@@ -11101,7 +11101,7 @@ public class SecurityGameContraction
 	
 	
 	public static void pathForAT(double dmax, ArrayList<TargetNode> targets,
-			ArrayList<Integer> currenttargets, int nRes, int attackedtarget, ArrayList<ArrayList<Integer>> newpathseq) throws Exception
+			ArrayList<Integer> currenttargets, int nRes, ArrayList<Integer> attackedtarget, ArrayList<ArrayList<Integer>> newpathseq) throws Exception
 			{
 
 
@@ -11138,11 +11138,13 @@ public class SecurityGameContraction
      //   System.out.println("FInding  "+ apsp[map.get(82)][map.get(11)]);
 		
 		
-		TargetNode dest = getTargetNode(attackedtarget, targets);
+		
 
 
-		//for(TargetNode dest: targets)
+		for(Integer destid: attackedtarget)
 		{
+			TargetNode dest = getTargetNode(destid, targets);
+			
 			if(dest.getTargetid()!=0)
 			{
 
@@ -11272,14 +11274,14 @@ public class SecurityGameContraction
 		
 		if(paths.size()>0)
 		{
-
-			newpathseq.add(paths.get(0));
+			for(ArrayList<Integer> p: paths)
+			{
+				newpathseq.add(p);
+			}
 		}
 		
 		
-		/*System.out.println("attack "+ attackedtarget);
 		
-		ArrayList<Integer> p  = new ArrayList<Integer>();*/
 		
 		return;
 			}
@@ -20917,7 +20919,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			
 			
 			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("grp-result.csv"),true));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\grp-result.csv"),true));
 			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
 			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
 			pw.close();
@@ -29530,6 +29532,9 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 
 			int itr=0;
+			
+			ArrayList<Integer> curattackset = new ArrayList<Integer>();
+			
 			while(true)
 			{
 				
@@ -29626,6 +29631,12 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					
 					attackedtarget = mapback.get(attackedtarget);
 					int attackedtargetrestrgraph = attackedtarget;
+					
+					if(!curattackset.contains(attackedtargetrestrgraph))
+					{
+						curattackset.add(attackedtargetrestrgraph);
+					}
+					
 					System.out.println("attack target before rev map "+ attackedtarget);
 					//int u = getTargetNode(MIPSolver4.attackedtarget, tmpgraph).getTargetid();
 					attackeru = expectedAttackerPayoff(attackedtarget, p, probdistribution, gamedata, map);
@@ -29683,7 +29694,10 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyCoverMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes, attackerstrategy);
 					
 					
-					pathForAT(dmax, tmpgraph, currenttargets, nRes, attackedtargetrestrgraph, newpathseq);
+										
+					pathForAT(dmax, tmpgraph, currenttargets, nRes, curattackset, newpathseq);
+					
+					//removeDuplicatePathSimple(newpathseq);
 					
 					
 					/*if(attackpath.size()>0)
@@ -29700,15 +29714,17 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					slavetime += diff;
 					
 					
-					/**test
-					 * 
-					 */
 					System.out.println("newpathseq size before purify : "+newpathseq.size());
 				    newpathseq = determineNewPaths(newpathseq, origpmat, probdistribution);
 					System.out.println("newpathseq size after purify : "+newpathseq.size());
+
 					
 					
-					if((newpathseq.size()==0) || (itr>=10))
+		
+					
+					
+					
+					if((newpathseq.size()==0) || (itr>=20))
 					{
 						canaddpath = false;
 						System.out.println("Slave can't add any new path ###############");
@@ -31831,9 +31847,6 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		for(ArrayList<Integer> p: newpathseq)
 		{
 			boolean f=false;
-			
-			
-			
 			
 			for(int j=0; j<origpmat[0].length; j++)
 			{

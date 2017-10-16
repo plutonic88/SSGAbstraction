@@ -281,8 +281,9 @@ public class ClusterTargets {
 		
 		try {
 			
+			new File("result").mkdirs();
 			
-			 File f = new File("realdata"+iter+".csv");
+			 File f = new File("result\\realdata"+iter+".csv");
 			 
 			 if(f.exists())
 			 {
@@ -291,7 +292,7 @@ public class ClusterTargets {
 			 }
 			
 			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("realdata"+iter+".csv"),true));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\realdata"+iter+".csv"),true));
 			
 			pw.append("Id,U,X,Y"+"\n");
 			pw.close();
@@ -329,7 +330,7 @@ public class ClusterTargets {
 				tmp.setAnimaldensity(u[iter][targetid]);
 				
 				try {
-					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("realdata"+iter+".csv"),true));
+					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\realdata"+iter+".csv"),true));
 					
 					pw.append(tmp.getTargetid()+","+u[iter][targetid]+ ","+(row*1) + ","+(col*1)+ "\n");
 					pw.close();
@@ -613,7 +614,7 @@ public class ClusterTargets {
 					System.out.print( n.getTargetid()+ " ");
 
 				}
-				if(node.nodes.size()>1 && stpaths.keySet().contains(node.stid))
+				if(node.nodes.size()>1 /*&& stpaths.keySet().contains(node.stid)*/)
 				{
 					System.out.print("\n---Travelpath : ");
 					for(Integer n: stpaths.get(node.stid))
@@ -2196,14 +2197,14 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 
 		 CSVLoader csvload = new CSVLoader();
-		 csvload.setSource(new File("realdata"+iter+".csv"));
+		 csvload.setSource(new File("result\\realdata"+iter+".csv"));
 		 Instances data = csvload.getDataSet();
 		 
 		 
 		 ArffSaver arf = new ArffSaver();
 		 arf.setInstances(data);
 		 
-		 File f = new File("newdata"+iter+".arff");
+		 File f = new File("result\\newdata"+iter+".arff");
 		 
 		 if(f.exists())
 		 {
@@ -2220,7 +2221,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 		
 		
-		FileInputStream fstream = new FileInputStream("newdata"+iter+".arff");
+		FileInputStream fstream = new FileInputStream("result\\newdata"+iter+".arff");
 		DataInputStream in = new DataInputStream(fstream);
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		// Read all the instances in the file (ARFF, CSV, XRFF, ...)
@@ -3390,7 +3391,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			{
 				if(pathseq.size()==0)
 				{
-					//System.out.println("pathseq 0, iter"+ iter);
+					System.out.println("pathseq 0, iter"+ iter);
 					//choose the worst payoff for defender
 
 					Double mAxpayoff = Double.MIN_VALUE;
@@ -3736,12 +3737,12 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 	System.out.println("def exp : "+ defpayoff);
 	
 	
-	//printST(sts, nTargets, iter);
+	/*printST(sts, nTargets, iter);
 	
-	//printClusteredNodes(sts,nTargets,iter);
+	printClusteredNodes(sts,nTargets,iter);
 	
-	//printClusterDists(sts,nTargets,iter);
-	
+	printClusterDists(sts,nTargets,iter);
+	*/
 	
 	for(SuperTarget st: sts.values())
 	{
@@ -4710,7 +4711,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			try
 			{
 				
-				File f = new File("clusdist"+nTargets+"-"+iter+".csv");
+				File f = new File("result\\clusdist"+nTargets+"-"+iter+".csv");
 				 
 				 if(f.exists())
 				 {
@@ -4719,7 +4720,7 @@ private static double[] DOWithClus(int[][] gamedata,
 				 }
 				
 				
-				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusdist"+nTargets+"-"+iter+".csv"),true));
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\clusdist"+nTargets+"-"+iter+".csv"),true));
 				
 				for(SuperTarget st: sts.values())
 				{
@@ -4777,7 +4778,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			try
 			{
 				
-				File f = new File("clusnodefeatures"+nTargets+"-"+iter+".csv");
+				File f = new File("result\\clusnodefeatures"+nTargets+"-"+iter+".csv");
 				 
 				 if(f.exists())
 				 {
@@ -4786,7 +4787,7 @@ private static double[] DOWithClus(int[][] gamedata,
 				 }
 				
 				
-				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusnodefeatures"+nTargets+"-"+iter+".csv"),true));
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\clusnodefeatures"+nTargets+"-"+iter+".csv"),true));
 				
 				pw.append("ID,DR,DP,AR,AP"+"\n");
 				
@@ -4828,7 +4829,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			try
 			{
 				
-				File f = new File("clusters"+nTargets+"-"+iter+".csv");
+				File f = new File("result\\clusters"+nTargets+"-"+iter+".csv");
 				 
 				 if(f.exists())
 				 {
@@ -4837,7 +4838,7 @@ private static double[] DOWithClus(int[][] gamedata,
 				 }
 				
 				
-				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("clusters"+nTargets+"-"+iter+".csv"),true));
+				PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\clusters"+nTargets+"-"+iter+".csv"),true));
 				
 				for(SuperTarget st: sts.values())
 				{
@@ -5127,7 +5128,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			
 			HashMap<Integer, SuperTarget> sts = SuperTarget.buildSuperTargets(clusters,tmpgraphmaps);
 			
-			printSuperTargets(sts);
+		//	printSuperTargets(sts);
 			
 			
 			System.out.println("\n \n \n After choosing AP \n \n \n");
@@ -5143,12 +5144,17 @@ private static double[] DOWithClus(int[][] gamedata,
 				// if cluster is chnaged then compute AP
 				// if not changed then use the previous AP
 				
-				chooseAP(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+				try {
+					chooseDegreeBasedAP(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				
 			}
 			
-			//printSuperTargets(sts);
+		//	printSuperTargets(sts);
 			
 			
 			return sts;
@@ -5631,7 +5637,7 @@ private static double[] DOWithClus(int[][] gamedata,
 
 
 				}
-				if(tempst.neighbors.containsKey(0) && sts.size()==2)
+				else if(tempst.neighbors.containsKey(0) && sts.size()==2)
 				{
 					//compute every parameter
 
@@ -6068,6 +6074,617 @@ private static double[] DOWithClus(int[][] gamedata,
 	}
 	
 	
+	
+	private static void chooseDegreeBasedAP(HashMap<Integer, SuperTarget> sts, HashMap<Integer, TargetNode> targetmaps, SuperTarget tempst,
+			 AllPairShortestPath apsp,
+				int[][] apspmat, HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback, 
+				HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax, HashMap<Integer,int[]> clusterap, ArrayList<Integer> changedcluster) throws Exception {
+		
+		//for(SuperTarget tempst: sts.values())
+		{
+			//SuperTarget tempst = SuperTarget.mergeSuperTargets(st1,st2);
+			//tempst.stid = 200 + st1.stid + st2.stid;
+			// printSuperTarget(tempst);
+			/**
+			 * for every pair of access points
+			 */
+			
+			
+			
+			
+			double mindi = Double.MAX_VALUE;
+			int stid1 = -1;
+			//int stid2 = -1;
+			int aid1 = -1;
+			int aid2 = -1;
+			int s1id = -1;
+			int s2id = -2;
+			int s1ap = -1;
+			int s2ap = -1;
+			double sda1a2 = -1;
+			double sd1 = -1;
+			double sd2 = -1;
+			ArrayList<Integer> a1a2path = new ArrayList<Integer>();
+			ArrayList<Integer> a2path = new ArrayList<Integer>();
+			ArrayList<Integer> a1path = new ArrayList<Integer>();
+			SuperTarget dminst = new SuperTarget();
+			
+			double mindist = 500000;
+			
+			ArrayList<int[]> doneappair = new ArrayList<int[]>();
+			ArrayList<int[]> donestpair = new ArrayList<int[]>();
+			
+			int category = -1;
+			
+			
+			
+			
+
+			if(tempst.nodes.size()>1)
+			{
+				
+				System.out.println("Computing ap for ST "+ tempst.stid);
+				
+				if(tempst.stid==5)
+				{
+					System.out.println("shortestdist(a1,s1) ");
+				}
+
+
+
+				//check if 0 is its neighbor if so just keep the ap that connects to base
+
+				if(tempst.neighbors.containsKey(0) && sts.size()>2)
+				{
+					//compute every parameter
+					
+					category = 1;
+					System.out.println("category "+ category);
+
+					/*int aid1 = -1;
+					int aid2 = -1;
+					int s1id = -1;
+					int s2id = -2;
+					int s1ap = -1;
+					int s2ap = -1;
+					double sda1a2 = -1;
+					double sd1 = -1;
+					double sd2 = -1;
+					ArrayList<Integer> a1a2path = new ArrayList<Integer>();
+					ArrayList<Integer> a2path = new ArrayList<Integer>();
+					ArrayList<Integer> a1path = new ArrayList<Integer>();
+					 */
+
+					for(TargetNode a1: tempst.ap.values())
+					{
+						/**
+						 * 	for every pair of other supertargets which are not st1 and st2
+						 * */
+						for(TargetNode a2: tempst.ap.values())
+						{
+							/**
+							 * 		find the min d = d1 + dist(a1,a2) + d2
+							 */
+							// should the ap be same for entry and exit ?
+							if((a1.getTargetid() != a2.getTargetid()) && (notDone(a1.getTargetid(), a2.getTargetid(), doneappair)))
+							{
+								
+								if(a1.getTargetid()==224 && a2.getTargetid()==272)
+								{
+									System.out.println("x");
+								}
+								
+								
+								int[] appair = {a1.getTargetid(), a2.getTargetid()};
+								doneappair.add(appair);
+								
+								// next measure the intra cluster shortest traveling path using a1 and a2
+								ArrayList<Integer> tmpa1a2spath = new ArrayList<Integer>();
+								//double dista1a2 = shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+								// try compute travelling path for cluster
+								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
+								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
+								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+								if(dista1a2 == 0)
+								{
+									//throw new Exception("No path found to compute AP for st "+ tempst.stid);
+									//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
+
+									dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+								}
+								
+								
+								// for every pair of supertargets which are not st1 or st2
+								
+								SuperTarget s1 = sts.get(0); // get base, s1 always will be base
+
+								for(SuperTarget s2: tempst.neighbors.values()) // need neighbor cluster  of a2?
+								{
+
+									if((s1.stid != s2.stid) && (notDone(s1.stid, s2.stid, donestpair)))
+									{
+										
+										int[] stpair = {s1.stid, s2.stid};
+										donestpair.add(stpair);
+
+
+										boolean arebothnei = areBothNei(s1,s2,tempst);
+
+										if(s1.stid != tempst.stid && 
+												s2.stid != tempst.stid  && arebothnei)
+										{
+											// measure the distance between a1->s1 and a2->s2
+
+											//a1->s1 distance between a target and a supertarget
+											/*System.out.println("\n\n a1 "+ a1.getTargetid() + " , a2 "+ a2.getTargetid() +
+													"\n s1 "+ s1.stid + ", s2 "+ s2.stid + 
+													"\n tempst "+ tempst.stid);*/
+
+
+											
+											ArrayList<Integer> tmpa1path = new ArrayList<Integer>();
+											ArrayList<Integer> tmpa2path = new ArrayList<Integer>();
+
+
+											double[] d1 = shortestdist(a1,s1, apspmap, apspmat, tmpa1path, apsp, apspmapback); // should i use bfs for longer path other than near neighbor?
+											//TODO
+											//System.out.println("shortestdist(a1,s1) "+ d1);
+
+											double[] d2 = shortestdist(a2,s2, apspmap, apspmat, tmpa2path, apsp, apspmapback);
+											//shortestdist(a2,s2); // should i use bfs for longer path other than near neighbor?
+											//TODO
+											//System.out.println("shortestdist(a2,s2) "+ d2);
+
+											
+
+											//System.out.println("shortestdist(a1,a2, tempst, dmax) "+ dista1a2);
+
+											// if any of the dist is <0 we know that it's not possible to have a path
+
+											if(d1[0] > 0 && d2[0] > 0 && dista1a2 > 0)
+											{
+												double totaldi = d1[0] + dista1a2 + d2[0];
+												if(totaldi < mindi)
+												{
+													//stid1 = .stid;
+													//stid2 = st2.stid;
+													dminst = tempst;
+													aid1 = a1.getTargetid();
+													aid2 = a2.getTargetid();
+													mindi = totaldi;
+													sda1a2 = dista1a2;
+													s1id = s1.stid;
+													s2id = s2.stid;
+													sd1 = d1[0];
+													sd2= d2[0];
+													s1ap = (int)d1[1];
+													s2ap = (int)d2[1];
+													//spath.add(tmpspath.get(0));
+													a1a2path.clear();
+													for(Integer in: tmpa1a2spath)
+													{
+														a1a2path.add(in);
+													}
+
+
+													a1path.clear();
+													for(Integer in: tmpa1path)
+													{
+														a1path.add(in);
+													}
+
+
+													a2path.clear();
+													for(Integer in: tmpa2path)
+													{
+														a2path.add(in);
+													}
+
+													/*System.out.println("Current mindi "+ mindi +  
+															"\n a1 "+ aid1 + ", a2 "+ aid2);*/
+
+
+												}
+											}
+
+										}
+									}
+								}
+
+							}
+						}
+					}
+
+
+
+				}
+				else if(tempst.neighbors.containsKey(0) && sts.size()==2)
+				{
+					//compute every parameter
+					
+					
+					category = 2;
+					System.out.println("category "+ category);
+
+					/*int aid1 = -1;
+					int aid2 = -1;
+					int s1id = -1;
+					int s2id = -2;
+					int s1ap = -1;
+					int s2ap = -1;
+					double sda1a2 = -1;
+					double sd1 = -1;
+					double sd2 = -1;
+					ArrayList<Integer> a1a2path = new ArrayList<Integer>();
+					ArrayList<Integer> a2path = new ArrayList<Integer>();
+					ArrayList<Integer> a1path = new ArrayList<Integer>();
+					 */
+
+					for(TargetNode a1: tempst.ap.values())
+					{
+						/**
+						 * 	for every pair of other supertargets which are not st1 and st2
+						 * */
+						for(TargetNode a2: tempst.ap.values())
+						{
+							/**
+							 * 		find the min d = d1 + dist(a1,a2) + d2
+							 */
+							// should the ap be same for entry and exit ?
+							if((a1.getTargetid() != a2.getTargetid()) && (notDone(a1.getTargetid(), a2.getTargetid(), doneappair)))
+							{
+								
+								if(a1.getTargetid()==224 && a2.getTargetid()==272)
+								{
+									System.out.println("x");
+								}
+								
+								
+								int[] appair = {a1.getTargetid(), a2.getTargetid()};
+								doneappair.add(appair);
+								
+								// next measure the intra cluster shortest traveling path using a1 and a2
+								ArrayList<Integer> tmpa1a2spath = new ArrayList<Integer>();
+								//double dista1a2 = shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
+								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
+								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+								if(dista1a2 == 0)
+								{
+									//throw new Exception("No path found to compute AP for st "+ tempst.stid);
+									//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
+
+									dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+								}
+								
+								
+								
+								// for every pair of supertargets which are not st1 or st2
+								SuperTarget s1 = sts.get(0); // get base, s1 always will be base
+
+								for(SuperTarget s2: tempst.neighbors.values()) // need neighbor cluster  of a2?
+								{
+
+									if(/*(s1.stid != s2.stid) && */(notDone(s1.stid, s2.stid, donestpair)))
+									{
+										
+										int[] stpair = {s1.stid, s2.stid};
+										donestpair.add(stpair);
+									
+
+
+										boolean arebothnei = areBothNei(s1,s2,tempst);
+
+										if(s1.stid != tempst.stid && 
+												s2.stid != tempst.stid  && arebothnei)
+										{
+											// measure the distance between a1->s1 and a2->s2
+
+											//a1->s1 distance between a target and a supertarget
+											/*System.out.println("\n\n a1 "+ a1.getTargetid() + " , a2 "+ a2.getTargetid() +
+													"\n s1 "+ s1.stid + ", s2 "+ s2.stid + 
+													"\n tempst "+ tempst.stid);*/
+
+
+											//ArrayList<Integer> tmpa1a2spath = new ArrayList<Integer>();
+											ArrayList<Integer> tmpa1path = new ArrayList<Integer>();
+											ArrayList<Integer> tmpa2path = new ArrayList<Integer>();
+
+
+											double[] d1 = shortestdist(a1,s1, apspmap, apspmat, tmpa1path, apsp, apspmapback); // should i use bfs for longer path other than near neighbor?
+											//TODO
+											//System.out.println("shortestdist(a1,s1) "+ d1);
+
+											double[] d2 = shortestdist(a2,s2, apspmap, apspmat, tmpa2path, apsp, apspmapback);
+											//shortestdist(a2,s2); // should i use bfs for longer path other than near neighbor?
+											//TODO
+											//System.out.println("shortestdist(a2,s2) "+ d2);
+
+											// next measure the intra cluster shortest traveling path using a1 and a2
+
+
+											//double dista1a2 = shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+											//double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
+											
+
+											//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
+
+
+
+											//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+
+											/*if(dista1a2 == 0)
+											{
+												//throw new Exception("No path found to compute AP for st "+ tempst.stid);
+												//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
+
+												dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, (int)dmax); 
+											}*/
+
+											//System.out.println("shortestdist(a1,a2, tempst, dmax) "+ dista1a2);
+
+											// if any of the dist is <0 we know that it's not possible to have a path
+
+											if(d1[0] > 0 && d2[0] > 0 && dista1a2 > 0)
+											{
+												double totaldi = d1[0] + dista1a2 + d2[0];
+												if(totaldi < mindi)
+												{
+													//stid1 = .stid;
+													//stid2 = st2.stid;
+													dminst = tempst;
+													aid1 = a1.getTargetid();
+													aid2 = a2.getTargetid();
+													mindi = totaldi;
+													sda1a2 = dista1a2;
+													s1id = s1.stid;
+													s2id = s2.stid;
+													sd1 = d1[0];
+													sd2= d2[0];
+													s1ap = (int)d1[1];
+													s2ap = (int)d2[1];
+													//spath.add(tmpspath.get(0));
+													a1a2path.clear();
+													for(Integer in: tmpa1a2spath)
+													{
+														a1a2path.add(in);
+													}
+
+
+													a1path.clear();
+													for(Integer in: tmpa1path)
+													{
+														a1path.add(in);
+													}
+
+
+													a2path.clear();
+													for(Integer in: tmpa2path)
+													{
+														a2path.add(in);
+													}
+
+													/*System.out.println("Current mindi "+ mindi +  
+															"\n a1 "+ aid1 + ", a2 "+ aid2);*/
+
+
+												}
+											}
+
+										}
+									}
+								}
+
+							}
+						}
+					}
+
+
+
+				}
+				else
+				{
+
+					System.out.println("Here for ST" + tempst.stid);
+
+					category = 3;
+					System.out.println("category "+ category);
+
+					// rank the APs based on their degree
+
+					int [][] rankedap = rankAPBasedOnDegree(tempst);
+
+					int a1 = rankedap[0][0];
+					int a2 = rankedap[1][0];
+
+
+
+
+					// next measure the intra cluster shortest traveling path using a1 and a2
+					ArrayList<Integer> tmpa1a2spath = new ArrayList<Integer>();
+					//double dista1a2 = shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+					double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1, a2, tmpa1a2spath);
+					//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
+					//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
+					if(dista1a2 == 0)
+					{
+						throw new Exception("No path found to compute AP for st "+ tempst.stid);
+						//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
+
+						//dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+					}
+
+
+
+					if(/*d1[0] > 0 && d2[0] > 0 &&*/ dista1a2 > 0)
+					{
+						double totaldi =  dista1a2;
+						if(totaldi < mindi)
+						{
+							//stid1 = .stid;
+							//stid2 = st2.stid;
+							dminst = tempst;
+							aid1 = a1;
+							aid2 = a2;
+							mindi = totaldi;
+							sda1a2 = dista1a2;
+							a1a2path.clear();
+							for(Integer in: tmpa1a2spath)
+							{
+								a1a2path.add(in);
+							}
+
+
+
+						}
+					}
+
+				}
+			}
+
+			
+			// System.out.println("Current mindi "+ mindi + " \n ST1 "+ stid1 + " ST2 "+ stid2 + 
+			//	 "\n a1 "+ aid1 + ", a2 "+ aid2);
+			/**
+			 * Merge two cluster which have min d
+			 * For the new id of supertargets concat the strings with comma
+			 * remove the old two clusters
+			 * add the new one. 
+			 */
+			
+			
+			//TODO what to do when there is no path from a1 to a2?????
+			
+			
+			
+			if(sda1a2==-1 && tempst.nodes.size()>1)
+			{
+				System.out.println("shortestdist(a1,s1) ");
+				//printSuperTarget(tempst);
+			}
+
+			if((mindi < Double.MAX_VALUE) && (mindi > 0))
+			{
+
+				
+				// Issue: How to fix the issue : connection to base node might be cut
+				// Fix: Always keep the ap which connects to base node
+				
+				
+					System.out.println("AP done for st "+ tempst.stid);
+					
+					dstravel.put(tempst.stid, sda1a2);
+					stpaths.put(tempst.stid, a1a2path);
+					//SuperTarget newst = SuperTarget.mergeSuperTargets(sts.get(stid1), sts.get(stid2), aid1, aid2, targetmaps);
+					// printSuperTarget(newst);
+					/*sts.remove(stid1);
+					sts.remove(stid2);*/
+					//printSuperTargets(sts);
+					
+					updateAP(tempst, sts, aid1, aid2);
+					
+					
+					clusterap.put(tempst.stid, new int[] {aid1, aid2});
+					
+					//sts.put(newst.stid, newst);
+					//update the neighbors of ST
+					// System.out.println("\n\n After merging # supertargets : "+ sts.size());
+					// System.out.println("\n After merging new supertargets : ");
+					
+					/**
+					 * add s1 and s2 as neighbor of st if they are not already
+					 */
+					
+					if(category != 3)
+					{
+					
+						addNei(tempst.stid, aid1, s1id, sd1, a1path, sts, targetmaps, s1ap);
+						addNei(tempst.stid, aid2, s2id, sd2, a2path, sts, targetmaps, s2ap);
+					}
+					//System.out.println("stid "+ tempst.stid);
+					addNei(aid1,aid2,sda1a2, a1a2path, tempst, targetmaps);
+					
+					
+					/**
+					 * add a1 a2 as neighbor if they are not already
+					 */
+					
+					
+					//printSuperTargets(sts);
+					//printNodesWithNeighborsAndPath(targetmaps);
+					
+					
+					System.out.println("a1 "+ aid1 + " a2 "+ aid2 + " for cluster  "+ tempst.stid);
+				
+				
+				
+					 
+			}
+			
+		}
+
+		
+		
+	}
+	
+	
+	private static int [][] rankAPBasedOnDegree(SuperTarget tempst) {
+		
+		
+		//ArrayList<Integer> rank = new ArrayList<Integer>();
+		
+		
+		int [][] ranks = new int[tempst.ap.size()][2];
+		
+		int index=0;
+		
+		for(TargetNode ap: tempst.ap.values())
+		{
+			int degree = degreeAP(ap, tempst);
+			ranks[index][0] = ap.getTargetid();
+			ranks[index][1] = degree;
+			index++;
+		}
+		
+		int[] swap = {0,0};
+
+		for (int k = 0; k < ranks.length; k++) 
+		{
+			for (int d = 1; d < ranks.length-k; d++) 
+			{
+				if (ranks[d-1][1] < ranks[d][1])    // ascending order
+				{
+					swap = ranks[d];
+					ranks[d]  = ranks[d-1];
+					ranks[d-1] = swap;
+				}
+			}
+		}
+		
+		
+		return ranks;
+	}
+
+
+	private static int degreeAP(TargetNode ap, SuperTarget tempst) {
+		
+		
+		
+		int count = 0;
+		
+		for(TargetNode nei: ap.getNeighbors())
+		{
+			if(!tempst.nodes.keySet().contains(nei.getTargetid()))
+			{
+				count++;
+			}
+		}
+		
+		
+		return count;
+	}
+
+
 	private static boolean notDone(int targetid, int targetid2, ArrayList<int[]> doneappair) {
 		
 		
@@ -6600,7 +7217,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		try
 		{
 			
-			File f = new File("cluster-hist"+nTargets+".csv");
+			File f = new File("result\\cluster-hist"+nTargets+".csv");
 			 
 			 if(f.exists())
 			 {
@@ -6609,7 +7226,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			 }
 			
 			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("cluster-hist"+nTargets+".csv"),true));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\cluster-hist"+nTargets+".csv"),true));
 			
 			for(Integer stid: clusterhistogram.keySet())
 			{
