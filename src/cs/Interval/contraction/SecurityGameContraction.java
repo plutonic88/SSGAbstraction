@@ -11352,12 +11352,12 @@ public class SecurityGameContraction
 
 
 
-        			double distcovered = apsp[map.get(src)][map.get(des)];
+        			double distcovered = 2*apsp[map.get(src)][map.get(des)];
         			
         			distcovered += dstravel.get(dest.stid);
         			//System.out.print("dist covered "+ distcovered+"\n");
 
-        			if(distcovered > dmax/2)
+        			if(distcovered > dmax)
         				continue;
         			/*for(int k=0; k<pnodes.size(); k++)
 					{
@@ -11431,7 +11431,7 @@ public class SecurityGameContraction
     					distcovered += apsp[map.get(s)][map.get(d)] + dstravel.get(d);
     				}
     				
-    				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des);
+    				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des)/2;
         			
 
         			if(distcovered>dmax/2)
@@ -11550,10 +11550,10 @@ public class SecurityGameContraction
             		
             		
             		
-            		double distcovered = apsp[map.get(src)][map.get(des)]+dstravel.get(dest.stid);
+            		double distcovered = (2*apsp[map.get(src)][map.get(des)])+dstravel.get(dest.stid);
             		//System.out.print("dist covered "+ distcovered+"\n");
             		
-            		if(distcovered > dmax/2)
+            		if(distcovered > dmax)
             			continue;
 					/*for(int k=0; k<pnodes.size(); k++)
 					{
@@ -11627,7 +11627,7 @@ public class SecurityGameContraction
 					distcovered += apsp[map.get(s)][map.get(d)] + dstravel.get(d);
 				}
 				
-				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des);
+				distcovered += apsp[map.get(d)][map.get(des)] + dstravel.get(des)/2;
     			
 
     			if(distcovered>dmax/2)
@@ -18111,7 +18111,7 @@ public class SecurityGameContraction
 						/*System.out.println("totaldisttemp = "+totaldisttemp);
 						System.out.println("bestj : "+bestj);*/
 
-						if ((totaldisttemp<dmax) && 
+						if ((totaldisttemp<=dmax) && 
 								((besttotaldisttemp==-1) || (totaldisttemp<besttotaldisttemp)) && totaldisttemp>0)
 						{
 							bestj = j; // trying to inseert as much target as possible by taking target which will result in minimum distance 
@@ -29883,7 +29883,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		//double defpayoff = expectedDefenderPayoff(attackedtarget, p, probdistribution, gamedata, map);
 		double defpayoff = expectedPayoffDef(attackedtarget, origpmat, gamedata, probdistribution);
 
-
+		verifySolution(jset,pathseq,probdistribution, nTargets, dmax, tmpgraph);
 
 
 		//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
@@ -34217,6 +34217,100 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		
 		
 	}
+	
+	
+	public static void verifySolution(List<ArrayList<Integer>> jset, ArrayList<ArrayList<Integer>> pathseq,
+			double[] probdistribution, int nTargets, double dmax, ArrayList<TargetNode> targets)
+	{
+		
+		
+		
+
+
+		ArrayList<Integer> donepaths = new ArrayList<Integer>();
+
+
+
+		for(int probindex=0; probindex<probdistribution.length; probindex++)
+		{
+			if(probdistribution[probindex]>0)
+			{
+				for(int pathindex: jset.get(probindex))
+				{
+
+
+					if(!donepaths.contains(pathindex))
+					{	
+
+						donepaths.add(pathindex);
+
+						System.out.print("\nPath "+ pathindex + ", prob: "+ probdistribution[probindex] + " ");
+
+
+
+
+						ArrayList<Integer> path = pathseq.get(pathindex);
+
+						double dist = 0;
+
+						for(int index=0; index<path.size()-1; index++)
+						{
+
+							int pathnode1 = path.get(index);
+							int pathnode2 = path.get(index+1);
+
+
+
+							TargetNode p1 =  getTargetNode(pathnode1, targets);
+							TargetNode p2 = getTargetNode(pathnode2, targets);
+
+							ArrayList<TargetNode> pnodes =  p1.getPath(p2);
+
+							/*if(pnodes!=null && pnodes.size()>0)
+							{
+
+								dist += p1.getDistance(pnodes.get(0));
+
+
+								for(int i=0; i<pnodes.size()-1; i++)
+								{
+									TargetNode s = getTargetNode(pnodes.get(i).getTargetid(), targets);
+									TargetNode d = getTargetNode(pnodes.get(i+1).getTargetid(), targets);
+
+
+									dist += s.getDistance(d);
+
+								}
+
+								dist += getTargetNode(pnodes.size()-1, targets).getDistance(p2);
+							}
+							else*/
+							{
+								dist += p1.getDistance(p2);
+							}
+
+
+							System.out.print(pathnode1+ "->");
+
+						}
+
+
+						System.out.println(" dist "+dist);
+					}
+
+				}
+			}
+		}
+
+			
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+			//pw.close();
+
+		
+		
+	}
+
 
 	private static void printCooc(HashMap<String, Double> coocur, int nTargets) {
 		

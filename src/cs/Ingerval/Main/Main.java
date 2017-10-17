@@ -78,13 +78,13 @@ public class Main {
 	
 		
 		
-		int nrow = 8;
-		int ncol = 8;
+		int nrow = 10;
+		int ncol = 10;
 		int dmax = 30;
-		int k = 10;
+		int k = 20;
 		int RADIUS = 1;
 		
-		int ITER = 5;
+		int ITER = 10;
 
 		
 		
@@ -203,7 +203,7 @@ public class Main {
 				System.out.print(new DecimalFormat("#000").format(((i)*nrow)+j)   + " ");
 			}
 			System.out.println();
-		}*/
+		}*/ 
 		
 		
 		
@@ -215,7 +215,7 @@ public class Main {
 		
 		//intra cluster path tries to cover all the targets rather than shortest path (224->272)
 		// DO + Incremental clustering
-	//	ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);

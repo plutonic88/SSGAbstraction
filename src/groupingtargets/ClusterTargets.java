@@ -3321,6 +3321,12 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			
 			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
+			
+			if(pathseq.size()==0)
+			{
+				System.out.println("no path seq");
+			}
+			
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths before removing duplicate : ");
 			SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
@@ -3601,7 +3607,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 
 
 					System.out.println("newpathseq size before purify : "+newpathseq.size());
-					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, origpmat, probdistribution);
+					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, p, probdistribution);
 					System.out.println("newpathseq size after purify : "+newpathseq.size());
 
 
@@ -3642,7 +3648,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 					System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" New path seq size "+ pathseq.size());
 
 
-					//SecurityGameContraction.printPaths(pathseq);
+					SecurityGameContraction.printPaths(pathseq);
 
 				} // end if else
 			}
@@ -3756,6 +3762,11 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 	}
 	
 	
+	
+//	verifySolution(jset,pathseq,probdistribution, nTargets, dmax, sts, dstravel, tmpgraph);
+
+	
+	
 	//ButtonGrid grid = new ButtonGrid(targetmaps, sts);
 	//grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
@@ -3765,6 +3776,124 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 
 	double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime, totalslaveiter, clusteringtime};
 	return res;
+}
+
+public static void verifySolution(List<ArrayList<Integer>> jset, ArrayList<ArrayList<Integer>> pathseq,
+		double[] probdistribution, int nTargets, double dmax, HashMap<Integer,SuperTarget> sts, HashMap<Integer,Double> dstravel, ArrayList<TargetNode> tmpgraph)
+{
+	
+	
+	
+
+
+	ArrayList<Integer> donepaths = new ArrayList<Integer>();
+
+
+
+	for(int probindex=0; probindex<probdistribution.length; probindex++)
+	{
+		if(probdistribution[probindex]>0)
+		{
+			for(int pathindex: jset.get(probindex))
+			{
+
+
+				if(!donepaths.contains(pathindex))
+				{	
+
+					donepaths.add(pathindex);
+
+					System.out.print("\n\nPath "+ pathindex + ", prob: "+ probdistribution[probindex] + " ");
+
+
+
+
+					ArrayList<Integer> path = pathseq.get(pathindex);
+
+					double dist = 0;
+					
+					
+
+					for(int index=0; index<path.size()-1; index++)
+					{
+
+						int pathnode1 = path.get(index);
+						int pathnode2 = path.get(index+1);
+
+
+
+						SuperTarget p1 =  sts.get(pathnode1);
+						SuperTarget p2 =  sts.get(pathnode2);
+						
+						
+						/*for(SuperTarget n: p1.distances.keySet())
+						{
+							System.out.println(n.stid+ " -> "+ p1.distances.get(n));
+						}*/
+
+						
+						if(!p1.distances.keySet().contains(p2))
+						{
+							dist += getDist(p1,p2, tmpgraph);
+						}
+						else
+						{
+							dist +=  p1.distances.get(p2);
+						}
+						
+						
+						
+						
+						
+						if(p2.nodes.size()>1)
+						{
+							dist += dstravel.get(p2.stid);
+						}
+						
+						System.out.print(pathnode1+ "->");
+
+					}
+
+
+					System.out.println(" dist "+dist);
+				}
+
+			}
+		}
+	}
+
+		
+		//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+		//pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+","+ totaltime+"\n");
+		//pw.close();
+
+	
+	
+}
+
+
+private static double getDist(SuperTarget p1, SuperTarget p2, ArrayList<TargetNode> tmpgraph) {
+	
+	
+	Double min = Double.MAX_VALUE;
+	
+	for(TargetNode t1: p1.ap.values())
+	{
+		for(TargetNode t2: p2.ap.values())
+		{
+			
+			TargetNode n1 =  SecurityGameContraction.getTargetNode(t1.getTargetid(), tmpgraph);
+			TargetNode n2 = SecurityGameContraction.getTargetNode(t2.getTargetid(), tmpgraph);
+			
+			if(n1.getNeighbors().contains(n2) && (min>n1.getDistance(n2)))
+			{
+				min = t1.getDistance(t2);
+			}
+		}
+	}
+	
+	
+	return min;
 }
 
 
@@ -3964,7 +4093,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			//printSuperTargets(sts, stpaths, dstravel);
+			printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -4505,7 +4634,7 @@ private static double[] DOWithClus(int[][] gamedata,
 					
 					
 					System.out.println("newpathseq size before purify : "+newpathseq.size());
-					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, origpmat, probdistribution);
+					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, p, probdistribution);
 					System.out.println("newpathseq size after purify : "+newpathseq.size());
 						
 						
