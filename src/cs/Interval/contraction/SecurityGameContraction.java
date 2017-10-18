@@ -657,7 +657,7 @@ public class SecurityGameContraction
 
 
 
-				adjacencymatrix[map.get(n.stid)][map.get(nei.stid)]= (int)GroupingTargets.minimumDist(n, nei);
+				adjacencymatrix[map.get(n.stid)][map.get(nei.stid)]= n.distances.get(nei).intValue(); //(int)GroupingTargets.minimumDist(n, nei);
 			}
 			i++;
 		}
@@ -2200,6 +2200,11 @@ public class SecurityGameContraction
 			{
 				TargetNode nodei = neighbornodes.get(i);
 				TargetNode nodej = neighbornodes.get(j);
+				
+				if(nodei.getTargetid()==0 && nodej.getTargetid()==24)
+				{
+					System.out.println("X");
+				}
 
 
 				if(!nodei.getNeighbors().contains(nodej)) // i j not adjacent
@@ -2230,7 +2235,7 @@ public class SecurityGameContraction
 
 						for(int k=0; k<pathnodes.size(); k++)
 						{
-							path.add(getTargetNode(pathnodes.get(pathnodes.size()-k-1),targets));
+							path.add(getTargetNode(pathnodes.get(k),targets));
 							//System.out.print(pathnodes.get(pathnodes.size()-k-1)+"->");
 						}
 						//System.out.println(neighbornodes.get(j).getTargetid());

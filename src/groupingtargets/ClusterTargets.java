@@ -627,7 +627,7 @@ public class ClusterTargets {
 				System.out.print("\n---Neighbors : ");
 				for(SuperTarget neighbor: node.neighbors.values())
 				{
-					System.out.print(neighbor.stid+ " ");
+					System.out.print(neighbor.stid+ "("+node.distances.get(neighbor)+"), ");
 
 				}
 				ArrayList<TargetNode> already = new ArrayList<TargetNode>();
@@ -2859,6 +2859,44 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 		
 	}
+	
+	
+public static ArrayList<TargetNode> inBetweenNodes(SuperTarget t1, SuperTarget t2) {
+		
+		
+		ArrayList<TargetNode> nodes = new ArrayList<TargetNode>();
+		
+		
+		
+		
+		int t1ap = -1;
+		int t2ap= -1;
+		double mindist = Double.MAX_VALUE;
+		
+		for(TargetNode n1: t1.ap.values())
+		{
+			for(TargetNode n2: t2.ap.values())
+			{
+				
+				if(n1.getNeighbors().contains(n2))
+				{
+					double dist = n1.getDistance(n2);
+					
+					if(dist<mindist)
+					{
+						mindist = dist;
+						nodes = n1.getPath(n2);
+					}
+				}
+			}
+		}
+		
+		
+		return nodes;
+		
+		
+		
+	}
 
 
 	private static boolean isDone(ArrayList<int[]> done, TargetNode n, TargetNode n2) {
@@ -2965,6 +3003,7 @@ public static void generateGraph(ArrayList<TargetNode> tmpgraph, int currentPlac
 	System.out.println("Contracting graph...");
 
 	SecurityGameContraction.instantContractionWithAPSP(domindatednodes, graph, dmax);
+	
 	//sgc.contractGraph(domindatednodes, tmpgraph, dmax);
 
 	SecurityGameContraction.removePathsToDominatedNodes(domindatednodes, graph);
@@ -2977,7 +3016,7 @@ public static void generateGraph(ArrayList<TargetNode> tmpgraph, int currentPlac
 	
 	
 	
-	
+	//SecurityGameContraction.printNodesWithNeighborsAndPath(domindatednodes, tmpgraph);
 	
 
 	System.out.println("tmpgraph size "+ tmpgraph.size());
@@ -3020,7 +3059,7 @@ public static ArrayList<ArrayList<Integer>>  generatePaths(ArrayList<TargetNode>
 	System.out.println("Total path with duplicates "+pathseq.size());
 	pathseq =SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 	System.out.println("Total path without duplicates "+pathseq.size()+"\n");
-	//SecurityGameContraction.printPaths(pathseq);
+	SecurityGameContraction.printPaths(pathseq);
 	
 	
 
@@ -3611,7 +3650,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 					System.out.println("newpathseq size after purify : "+newpathseq.size());
 
 
-					if((newpathseq.size()==0) || (itr>=10))
+					if((newpathseq.size()==0) || (itr>=20))
 					{
 						canaddpath = false;
 						System.out.println("Slave can't add any new path ###############");
@@ -4043,7 +4082,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		
 		generateGraph(tmpgraph, currentPlace, domindatednodes, targetssorted, dmax, targets, tmpgraphmaps);
 		
-		//printNodesWithNeighborsAndPath(tmpgraphmaps);
+		printNodesWithNeighborsAndPath(tmpgraphmaps);
 		
 		
 		Date stop = new Date();
@@ -4093,7 +4132,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			//printSuperTargets(sts, stpaths, dstravel);
+			printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -4109,7 +4148,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			//SecurityGameContraction.printPaths(pathseq);
+			SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;

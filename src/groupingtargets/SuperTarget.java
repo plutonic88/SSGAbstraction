@@ -176,7 +176,39 @@ public class SuperTarget {
 					//System.out.println("Super target "+ stdids[i] + " is neighbor of super target "+ stdids[j]);
 					// now add the connections
 					sti.neighbors.put(stj.stid, stj);
+					
+					ArrayList<TargetNode> pnode = ClusterTargets.inBetweenNodes(sti, stj);
+					
+					ArrayList<Integer> path = new ArrayList<Integer>();
+					
+					for(TargetNode t: pnode)
+					{
+						path.add(t.getTargetid());
+					}
+					
+					
+					sti.path.put(stj, path);
+					
+					
+					ArrayList<Integer> revpath = new ArrayList<Integer>();
+					
+					for(int k=0; k<path.size(); k++)
+					{
+						revpath.add(path.get(path.size()-k-1));
+					}
+					
+					stj.path.put(sti, revpath);
+					
+					
 					stj.neighbors.put(sti.stid, sti);
+					
+					// add distance
+					
+					double dist = computeDist(sti, stj);
+					
+					
+					sti.distances.put(stj, dist);
+					stj.distances.put(sti, dist);
 					//break;
 				}
 
@@ -186,6 +218,28 @@ public class SuperTarget {
 
 		return sts;
 
+	}
+
+
+	private static double computeDist(SuperTarget sti, SuperTarget stj) {
+		
+		
+		double min = Double.MAX_VALUE;
+		
+		
+		for(TargetNode t1: sti.ap.values())
+		{
+			for(TargetNode t2: stj.ap.values())
+			{
+				if(t1.getNeighbors().contains(t2) && (t1.getDistance(t2)<min))
+				{
+					min = t1.getDistance(t2);
+				}
+			}
+		}
+		
+		
+		return min;
 	}
 
 

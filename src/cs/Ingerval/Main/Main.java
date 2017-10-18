@@ -78,13 +78,13 @@ public class Main {
 	
 		
 		
-		int nrow = 14;
-		int ncol = 14;
-		int dmax = 40;
-		int k = 20;
+		int nrow = 8;
+		int ncol = 8;
+		int dmax = 20;
+		int k = 10;
 		int RADIUS = 1;
 		
-		int ITER = 10;
+		int ITER = 1;
 
 		
 		
@@ -209,7 +209,7 @@ public class Main {
 		
 		
 		//4 DO + GC multi + GP 3 + LP + GC multi 
-		SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
+		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps);
 		SecurityGameContraction.targets.clear();
 		
 		
