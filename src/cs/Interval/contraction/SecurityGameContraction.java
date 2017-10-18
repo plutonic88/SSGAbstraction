@@ -29505,7 +29505,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			}
 			//makePathSeq(pathseq, goals, goals.size(), tmpgraph.size(), map, mapback, tmpgraph);
-			printPaths(pathseq);
+			//printPaths(pathseq);
 			System.out.println("Total path with duplicates "+pathseq.size());
 			pathseq = removeDuplicatePathSimple(pathseq);
 			System.out.println("Total path without duplicates "+pathseq.size()+"\n");
@@ -29715,7 +29715,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					
 					
 					System.out.println("newpathseq size before purify : "+newpathseq.size());
-				    newpathseq = determineNewPaths(newpathseq, origpmat, probdistribution);
+				    newpathseq = determineNewPathsDO(newpathseq, p, probdistribution, map);
 					System.out.println("newpathseq size after purify : "+newpathseq.size());
 
 					
@@ -29760,7 +29760,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					}
 
 					System.out.println("new paths added by slave *************, attacked target "+ attackedtarget);
-					printPaths(pathseq);
+				//	printPaths(pathseq);
 					/*pathseq = removeDuplicatePathSimple(pathseq);
 					System.out.println("New path seq size "+ pathseq.size());
 					printPaths(pathseq);
@@ -29883,7 +29883,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		//double defpayoff = expectedDefenderPayoff(attackedtarget, p, probdistribution, gamedata, map);
 		double defpayoff = expectedPayoffDef(attackedtarget, origpmat, gamedata, probdistribution);
 
-		verifySolution(jset,pathseq,probdistribution, nTargets, dmax, tmpgraph);
+		//verifySolution(jset,pathseq,probdistribution, nTargets, dmax, tmpgraph);
 
 
 		//int[][] origpmat = makeOrigPMatWOMap(p, pathseq, jset, nTargets, domindatednodes, map, mapback, targets);
@@ -31876,6 +31876,58 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		
 		return purifiedpaths;
 	}
+	
+	
+	public static ArrayList<ArrayList<Integer>> determineNewPathsDO(ArrayList<ArrayList<Integer>> newpathseq, int[][] origpmat,
+			double[] probdistribution, HashMap<Integer,Integer> map) {
+		
+		ArrayList<ArrayList<Integer>> purifiedpaths = new ArrayList<ArrayList<Integer>>();
+		
+		
+		/*for(int i=0; i<origpmat.length; i++)
+		{
+			for(int j=0; j<origpmat[i].length; j++)
+			{
+				System.out.print(origpmat[i][j]+"  ");
+			}
+			System.out.print("\n");
+		}*/
+		
+		//compare path not joint schedule
+		
+		for(ArrayList<Integer> p: newpathseq)
+		{
+			boolean f=false;
+			
+			for(int j=0; j<origpmat[0].length; j++)
+			{
+				f=false;
+				for(Integer t: p)
+				{
+					if(origpmat[map.get(t)][j]!=1)
+					{
+						f=true;
+						break;
+					}
+				}
+				if(!f)
+				{
+					break;
+				}
+				
+				
+			}
+			
+			if(f)
+			{
+				purifiedpaths.add(newpathseq.get(newpathseq.indexOf(p)));
+			}
+		}
+		
+		
+		return purifiedpaths;
+	}
+
 
 	private static boolean isCovered(Integer t, int[][] origpmat, double[] probdistribution) {
 		

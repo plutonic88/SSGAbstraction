@@ -78,9 +78,9 @@ public class Main {
 	
 		
 		
-		int nrow = 10;
-		int ncol = 10;
-		int dmax = 30;
+		int nrow = 14;
+		int ncol = 14;
+		int dmax = 40;
 		int k = 20;
 		int RADIUS = 1;
 		

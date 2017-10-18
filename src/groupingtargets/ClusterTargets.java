@@ -3315,7 +3315,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			printSuperTargets(sts, stpaths, dstravel);
+			//printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -3328,10 +3328,10 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			}
 			
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths before removing duplicate : ");
-			SecurityGameContraction.printPaths(pathseq);
+			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			SecurityGameContraction.printPaths(pathseq);
+			//SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -4093,7 +4093,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			printSuperTargets(sts, stpaths, dstravel);
+			//printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -4106,7 +4106,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			}
 			
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths before removing duplicate : ");
-			SecurityGameContraction.printPaths(pathseq);
+			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
 			//SecurityGameContraction.printPaths(pathseq);
@@ -4312,7 +4312,7 @@ private static double[] DOWithClus(int[][] gamedata,
 					 * 
 					 */
 					System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ ", slaveitr "+itr+" newpathseq size before purify : "+newpathseq.size());
-					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, origpmat, probdistribution);
+					newpathseq = SecurityGameContraction.determineNewPathsDO(newpathseq, p, probdistribution, map);
 					System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ ", slaveitr "+itr+" newpathseq size after purify : "+newpathseq.size());
 
 					
@@ -4410,7 +4410,7 @@ private static double[] DOWithClus(int[][] gamedata,
 
 					System.out.println("\n clusteringactivated "+clusteringactivated +"  masteritr "+masteritr+ ", slaveitr "+itr+" New full path seq after adding new paths");
 
-					SecurityGameContraction.printPaths(pathseq);
+					//SecurityGameContraction.printPaths(pathseq);
 
 
 				} // end if else
@@ -4688,7 +4688,7 @@ private static double[] DOWithClus(int[][] gamedata,
 							break;
 						}*/
 
-						SecurityGameContraction.printPaths(pathseq);
+						//SecurityGameContraction.printPaths(pathseq);
 
 				} // end if else
 			}
@@ -5176,7 +5176,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		
 		
 
-		System.out.println("Current attack clusters ");
+		/*System.out.println("Current attack clusters ");
 
 
 		printClusters(attackclustershisotry);
@@ -5189,7 +5189,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		System.out.println("Clustered targets ");
 
 		printTargets(clusteredtargets);
-
+*/
 
 
 
@@ -5248,7 +5248,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			
 			
 			
-			printClusters(clusters);
+		//	printClusters(clusters);
 			
 			
 			
