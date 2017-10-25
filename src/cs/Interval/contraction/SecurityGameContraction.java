@@ -26,6 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import com.cs.kruskal.KruskalAlgorithm;
 
+import cs.Ingerval.Main.Main;
 import cs.Interval.Abstraction.SecurityGameAbstraction;
 import cs.Interval.ILP.MIPSolver3;
 import cs.Interval.ILP.MIPSolver4;
@@ -20924,8 +20925,15 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			
 			
 			
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result\\grp-result.csv"),true));
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/grp-result.csv"),true));
 			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			
+			if(!Main.headerprinted)
+			{
+				Main.headerprinted = true;
+				pw.append("Algorithm"+","+"#Targets"+","+"Final#targets"+ ","+ "EU"+ ","+"CT"+"," + "ST"+"," +"SLVT"+"," +"SLVITR"+","+ "CLUST"+","+ "TT"+"\n");
+			}
 			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
 			pw.close();
 
