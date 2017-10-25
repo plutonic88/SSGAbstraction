@@ -20,7 +20,6 @@
 *.arff
 *.xlsx
 *.tar.gz
-*.jar
 *out*
 
 
