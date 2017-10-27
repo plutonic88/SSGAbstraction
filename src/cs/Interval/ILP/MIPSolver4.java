@@ -4144,40 +4144,8 @@ public class MIPSolver4 {
 			IloLinearNumExpr obj = cplex.linearNumExpr();
 			obj.addTerm(1,  kk);
 			cplex.addMinimize(obj);
-			/**
-			 * constraint 4
-			 */
-			/*for(int target=0; target<nTargets; target++)
-			{
-				IloLinearNumExpr expr3 = cplex.linearNumExpr();
-				expr3.addTerm(1, dd);
-
-				for(int jointpath=0; jointpath<nJointSchedule; jointpath++)
-				{
-					expr3.addTerm(-1.0*D[target][target]*p[target][jointpath], x[jointpath]);
-
-
-				}
-				expr3.addTerm(M, a[target]);
-				cplex.addLe(expr3, M+Ud[target]);
-			}*/
-			/**
-			 * constraint 5
-			 */
-
-			/*for(int target=0; target<nTargets; target++)
-			{
-				IloLinearNumExpr expr4 = cplex.linearNumExpr();
-				expr4.addTerm(1, kk);
-				for(int jointpath=0; jointpath<nJointSchedule; jointpath++)
-				{
-					expr4.addTerm(-1.0*A[target][target]*p[target][jointpath], x[jointpath]);
-				}
-				//expr4.addTerm(-1.0, Ud[target]);
-				expr4.addTerm(M, a[target]);
-				cplex.addLe(expr4, M+Ua[target]);
-			}*/
-
+			
+			
 			/**
 			 * constraint 6
 			 */

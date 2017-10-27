@@ -9,7 +9,7 @@
 	<classpathentry kind="lib" path="/Users/anjonsunny/eclipse-workspace/SSGAbstraction/lib/commons-csv-1.5.jar"/>
 	<classpathentry kind="lib" path="/Users/anjonsunny/eclipse-workspace/SSGAbstraction/lib/cplex.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Users/anjonsunny/eclipse-workspace/SSGAbstraction/lib/cplex.jar"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Users/anjonsunny/eclipse-workspace/SSGAbstraction/lib"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/Users/anjonsunny/eclipse-workspace/SSGAbstraction/lib/weka.jar"/>

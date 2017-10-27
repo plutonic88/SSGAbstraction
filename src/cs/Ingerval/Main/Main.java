@@ -78,13 +78,22 @@ public class Main {
 	
 		
 		
-		int nrow = 8;
-		int ncol = 8;
-		int dmax = 30;
-		int k = 12;
+		int nrow = 20;
+		int ncol = 20;
+		int blockdim = 5; // block = blockdim x blockdim 
+		
+		int dmax = 70;
+		
+		int graphk = 40;
+		
+		int solverk = 400;
+		
+		// nrow has to be divisible by block
+		int naivencluster = (nrow*ncol)/(blockdim*blockdim);
+		
 		int RADIUS = 1;
 		
-		int ITER = 10;
+		int ITER = 1;
 
 		
 		
@@ -187,7 +196,7 @@ public class Main {
 				
 			}
 			alltargetmaps.put(iter, targetmaps);
-			ArrayList<Integer>[] clus = GroupingTargets.makeClusterWithRange(k , nTargets, utiliy_l, utility_h, 
+			ArrayList<Integer>[] clus = GroupingTargets.makeClusterWithRange(graphk , nTargets, utiliy_l, utility_h, 
 					targets, targetmaps, density, iter, ranges, percforranges);
 			ClusterTargets.buildFile(nrow,ncol,density,targets, iter );
 			//allclus.put(iter, clus);
@@ -218,16 +227,25 @@ public class Main {
 		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
-		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
+		
+		
+		//ClusterTargets.naiveClusetringTest();
 		
 		
 		// DO + weka
 		//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
 		
 		
-		// DO + weka
-		ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, k, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
+		// SO + weka
+		//ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
+		
+		
+		
+		//SO + naiveClustering
+		//ClusterTargets.naiveClusteringWithSOExp(nrow,ncol,base, dest, naivencluster, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, blockdim);
+		
 		
 		//14 baseline
 		//SecurityGameContraction.noContractionNoColumnGenerationTest(density, ITER, nrow, ncol, dmax, nRes, alltargets, alltargetmaps );

@@ -20932,7 +20932,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			if(!Main.headerprinted)
 			{
 				Main.headerprinted = true;
-				pw.append("Algorithm"+","+"#Targets"+","+"Final#targets"+ ","+ "EU"+ ","+"CT"+"," + "ST"+"," +"SLVT"+"," +"SLVITR"+","+ "CLUST"+","+ "TT"+"\n");
+				pw.append("Algorithm"+","+"#Targets"+","+"Final#targets"+ ","+ "EU"+ ","+"ContractionTime"+"," + "SolvingTime"+"," +"SlaveTime"+"," +"#SlaveIter"+","+ "ClusterTime"+","+ "TotalTime"+"\n");
 			}
 			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
 			pw.close();
