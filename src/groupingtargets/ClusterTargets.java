@@ -9565,7 +9565,7 @@ private static double[] DOWithClus(int[][] gamedata,
 		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
 
 
-		for(int iter=0; iter<ITER; iter++)
+		for(int iter=2; iter<ITER; iter++)
 		{
 
 			
@@ -9611,7 +9611,7 @@ private static double[] DOWithClus(int[][] gamedata,
 			sumclustertime += res[7];
 			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
 
-			//SecurityGameContraction.writeRes("DOClus", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+			SecurityGameContraction.writeRes("DOWithPACMANClusteing", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
 
 		}
 

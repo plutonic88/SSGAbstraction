@@ -20888,7 +20888,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		try
 		{
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("itr-result.csv"),true));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/itr-result.csv"),true));
 			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
 			pw.append(expno+","+itr+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," + totaltime+"\n");
 			pw.close();
