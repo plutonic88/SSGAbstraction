@@ -78,22 +78,24 @@ public class Main {
 	
 		
 		
-		int nrow = 20;
-		int ncol = 20;
-		int blockdim = 5; // block = blockdim x blockdim 
+		int nrow = 16;
 		
-		int dmax = 70;
+		int ncol = 16;
 		
-		int graphk = 40;
+		int dmax = 60;
 		
-		int solverk = 400;
+		int graphk = 32; // number of cluster when I built an example
+		
+		int solverk = 32; // number of cluster for solver
+		
+		int blockdim = 2; // block = blockdim x blockdim
 		
 		// nrow has to be divisible by block
 		int naivencluster = (nrow*ncol)/(blockdim*blockdim);
 		
 		int RADIUS = 1;
 		
-		int ITER = 1;
+		int ITER = 5;
 
 		
 		
@@ -227,11 +229,11 @@ public class Main {
 		ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
-		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		
-		//ClusterTargets.naiveClusetringTest();
+		
 		
 		
 		// DO + weka
@@ -239,7 +241,7 @@ public class Main {
 		
 		
 		// SO + weka
-		//ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
+		ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps);
 		
 		
 		
@@ -260,7 +262,7 @@ public class Main {
 		
 		
 		
-		
+		//ClusterTargets.naiveClusetringTest();
 		
 		
 		//

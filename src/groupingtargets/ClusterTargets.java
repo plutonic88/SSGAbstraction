@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -452,7 +453,7 @@ public class ClusterTargets {
 			long l1 = start.getTime();
 
 			//ArrayList<Integer>[] clus = makeGraph(k, radius, dlim , nTargets, 2, 10, ap, targets, targetmaps);
-			double res[] = wekaClusteringWithSO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter);
+			double res[] = wekaClusteringWithSO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter, nrow, ncol);
 			//double[] res1 = {defpayoff, clusteringtime, solvingtime, targetstocluster.size(), attackeru, slavetime, revmaptime};
 			
 			
@@ -523,7 +524,7 @@ public class ClusterTargets {
 			long l1 = start.getTime();
 
 			//ArrayList<Integer>[] clus = makeGraph(k, radius, dlim , nTargets, 2, 10, ap, targets, targetmaps);
-			double res[] = naiveClusteringWithSO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter, nrow, blocksize);
+			double res[] = naiveClusteringWithSO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter, nrow, ncol, blocksize);
 			//double[] res1 = {defpayoff, clusteringtime, solvingtime, targetstocluster.size(), attackeru, slavetime, revmaptime};
 			
 			
@@ -3160,7 +3161,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 	
 	
 	public static double[] wekaClusteringWithSO(int base, int dest, int ncluster, int radius, int dmax, 
-			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter) throws Exception
+			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter, int nrow, int ncol) throws Exception
 	{
 		
 		
@@ -3292,7 +3293,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		 }
 		*/
 		
-
+		 HashMap<Integer, SuperTarget> currentst = new HashMap<Integer, SuperTarget>();
 		
 		while(true)
 		{
@@ -3344,7 +3345,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 
 			
 			
-			HashMap<Integer, SuperTarget> currentst = clusterTargetsWeka(targetstocluster, tmpgraph, 
+			currentst = clusterTargetsWeka(targetstocluster, tmpgraph, 
 					tmptargetmaps, dmax, ncluster, radius, dstravel, stpaths, dc, instances, apspmap, apspmat, apsp, apspmapback );
 			
 			targetsize= currentst.size();
@@ -3822,7 +3823,9 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		double defpayoff = SecurityGameContraction.expectedPayoffDef(attackedtarget, origpmat, tmptargetmaps, probdistribution);
 
 
-
+		//ButtonGrid grid = new ButtonGrid(targetmaps, currentst, "WekaWithSO");
+		//grid.drawPayoffGrid(nrow, ncol);
+		//grid.drawCluster(nrow, ncol);
 
 		
 
@@ -3832,7 +3835,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 	
 	
 	public static double[] naiveClusteringWithSO(int base, int dest, int ncluster, int radius, int dmax, 
-			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter, int nrow, int blocksize) throws Exception
+			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter, int nrow, int ncol, int blocksize) throws Exception
 	{
 		
 		
@@ -3898,7 +3901,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 		int totalslaveiter = 0;
 		
-		
+		HashMap<Integer, SuperTarget> currentst = new HashMap<Integer, SuperTarget>();
 
 		
 		while(true)
@@ -3951,7 +3954,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 
 			
 			
-			HashMap<Integer, SuperTarget> currentst = clusterTargetsNaive(targetstocluster, tmpgraph, 
+			currentst = clusterTargetsNaive(targetstocluster, tmpgraph, 
 					tmptargetmaps, dmax, ncluster, radius, dstravel, stpaths, apspmap, apspmat, apsp, apspmapback, nrow, blocksize );
 			
 			targetsize= currentst.size();
@@ -4429,7 +4432,9 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		double defpayoff = SecurityGameContraction.expectedPayoffDef(attackedtarget, origpmat, tmptargetmaps, probdistribution);
 
 
-
+		ButtonGrid grid = new ButtonGrid(targetmaps, currentst, "NaiveWithSO");
+		//grid.drawPayoffGrid(nrow, ncol);
+		grid.drawCluster(nrow, ncol);
 
 		
 
@@ -5497,7 +5502,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 
 	
 	
-	//ButtonGrid grid = new ButtonGrid(targetmaps, sts);
+	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithPACMAN");
 	//grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
 
@@ -6548,7 +6553,7 @@ private static double[] DOWithClus(int[][] gamedata,
 	}
 	
 	
-	//ButtonGrid grid = new ButtonGrid(targetmaps, sts);
+	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
 	//grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
 
@@ -9734,8 +9739,12 @@ private static double[] DOWithClus(int[][] gamedata,
 		
 		
 	}
-	
 
+
+	public static String format(double avgsol) {
+		// TODO Auto-generated method stub
+		return new DecimalFormat("#00.000").format(avgsol);
+	}
 
 	
 	

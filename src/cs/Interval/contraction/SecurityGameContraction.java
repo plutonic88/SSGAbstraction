@@ -32,6 +32,7 @@ import cs.Interval.ILP.MIPSolver3;
 import cs.Interval.ILP.MIPSolver4;
 import cs.com.allpair.AllPairShortestPath;
 import cs.com.realworld.ReadData;
+import groupingtargets.ClusterTargets;
 import groupingtargets.GroupingTargets;
 import groupingtargets.SuperTarget;
 
@@ -20934,7 +20935,10 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 				Main.headerprinted = true;
 				pw.append("Algorithm"+","+"#Targets"+","+"Final#targets"+ ","+ "EU"+ ","+"ContractionTime"+"," + "SolvingTime"+"," +"SlaveTime"+"," +"#SlaveIter"+","+ "ClusterTime"+","+ "TotalTime"+"\n");
 			}
-			pw.append(expno+","+nTargets+","+finalsize+ ","+ avgsol+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
+			
+			
+			
+			pw.append(expno+","+nTargets+","+finalsize+ ","+ ClusterTargets.format(avgsol)+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
 			pw.close();
 
 		}
@@ -29737,7 +29741,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					
 					
 					
-					if((newpathseq.size()==0) || (itr>=20))
+					if((newpathseq.size()==0) || (itr>=10))
 					{
 						canaddpath = false;
 						System.out.println("Slave can't add any new path ###############");

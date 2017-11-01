@@ -29,13 +29,14 @@ class ButtonGrid {
 	HashMap<Integer, TargetNode> targetmaps;
 	ArrayList<Color> colors = new ArrayList<Color>();
 
-	public ButtonGrid( HashMap<Integer, TargetNode> targetmaps, HashMap<Integer, SuperTarget> sts)
+	public ButtonGrid( HashMap<Integer, TargetNode> targetmaps, HashMap<Integer, SuperTarget> sts, String title)
 	{ //constructor
 
 
 		this.sts = sts;
 		this.targetmaps = targetmaps;
 		
+		this.clusterframe.setTitle(title);
 		
 		
 		
@@ -106,6 +107,8 @@ class ButtonGrid {
 
 					
 					clustergrid[x][y]=new JButton(String.valueOf(targetid+"("+clusid+")")); //creates new button 
+					clustergrid[x][y].setOpaque(true);
+					clustergrid[x][y].setBorderPainted(false);
 					//clustergrid[x][y].
 					
 
@@ -137,6 +140,8 @@ class ButtonGrid {
 							clusc = tmp;
 						}
 						//clustergrid[x][y].setBackground(clusc);
+						
+						
 						clustergrid[x][y].setForeground(clusc);
 						clustergrid[x][y].setBackground(new java.awt.Color(155+au,155-au,155-au));
 					}
@@ -147,13 +152,15 @@ class ButtonGrid {
 					else
 					{
 						clustergrid[x][y].setBackground(Color.BLACK);
+						clustergrid[x][y].setForeground(Color.WHITE);
 					}
 
 					// if not then assign white
 
 					//au*=10;
-					
+					clustergrid[x][y].setOpaque(true);
 					clusterframe.add(clustergrid[x][y]); //adds button to grid
+					clusterframe.setOpacity(1);
 				//}
 				
 				
