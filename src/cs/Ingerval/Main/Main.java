@@ -78,13 +78,13 @@ public class Main {
 	
 		
 		
-		int nrow = 16;
+		int nrow = 12;
 		
-		int ncol = 16;
+		int ncol = 12;
 		
-		int dmax = 60;
+		int dmax = 45;
 		
-		int graphk = 32; // number of cluster when I built an example
+		int graphk = 24; // number of cluster when I built an example
 		
 		int solverk = 32; // number of cluster for solver
 		
@@ -95,7 +95,7 @@ public class Main {
 		
 		int RADIUS = 1;
 		
-		int ITER = 3;
+		int ITER = 10;
 
 		
 		
@@ -229,7 +229,11 @@ public class Main {
 		//ClusterTargets.DOWithClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
-		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
+		SecurityGameContraction.targets.clear();
+		
+		
+		ClusterTargets.DOWithSplitPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS);
 		SecurityGameContraction.targets.clear();
 		
 		

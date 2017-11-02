@@ -84,7 +84,7 @@ public class AllPairShortestPath
 		{
 			origpath.add(mapback.get(x));
 		}
-		if(origpath.size()>2)
+		//if(origpath.size()>2)
 		{
 			origpath.remove(0);
 			origpath.remove(origpath.size()-1);
