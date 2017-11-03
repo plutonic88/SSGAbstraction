@@ -17073,6 +17073,99 @@ public class SecurityGameContraction
 	}
 	
 	
+	public static ArrayList<ArrayList<Integer>> buildSTSlavePaths(
+			HashMap<Integer, TargetNode> targetmaps, double dmax, int nTargets, int base, 
+			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, 
+			HashMap<Integer,Double> dstravel, int pathlimit) {
+
+
+
+		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
+		
+		
+		
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> mapback = new HashMap<Integer, Integer>();
+		//ArrayList<Integer> graphint = new ArrayList<Integer>();
+		
+		
+		int i = 1;
+		for(Integer stid: sts.keySet())
+		{
+			map.put(stid, i);
+			mapback.put(i, stid);
+			//graphint.add(map.get(targets.get(i-1).getTargetid()));
+			i++;
+		}
+		
+		
+		
+		int[][] adjacencymatrix = new int[sts.size()+1][sts.size()+1];
+		makeAdjacencyMatrixST(adjacencymatrix , sts, sts.size(), map, mapback);
+		
+		AllPairShortestPath allPairShortestPath= new AllPairShortestPath(sts.size());
+		int[][] apsp = allPairShortestPath.allPairShortestPath(adjacencymatrix);
+        //ArrayList<Integer> path = AllPairShortestPath.getPath(1, 2, allPairShortestPath.next);
+
+		purifyAPSPSuperMatrixWithNeighborAndZero(apsp, targetmaps, sts.size(), map, mapback, sts);
+		
+		ArrayList<Integer> tcur = new ArrayList<Integer>(); //greedyFirstRoute(dmax,gamedata, targets);
+
+		int[][] targetssorted = sortSuperTargets(sts);
+
+
+
+		return greedySTSlavePaths(base, targetmaps, dmax, targetssorted, apsp, map,mapback, nRes, attackerstrategy, sts, dstravel, pathlimit);
+	}
+	
+	
+	public static ArrayList<ArrayList<Integer>> buildSuperGreedyCoverMultRes3(
+			HashMap<Integer, TargetNode> targetmaps, double dmax, int nTargets, int base, 
+			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, 
+			HashMap<Integer,Double> dstravel) {
+
+
+
+		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
+		
+		
+		
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> mapback = new HashMap<Integer, Integer>();
+		//ArrayList<Integer> graphint = new ArrayList<Integer>();
+		
+		
+		int i = 1;
+		for(Integer stid: sts.keySet())
+		{
+			map.put(stid, i);
+			mapback.put(i, stid);
+			//graphint.add(map.get(targets.get(i-1).getTargetid()));
+			i++;
+		}
+		
+		
+		
+		int[][] adjacencymatrix = new int[sts.size()+1][sts.size()+1];
+		makeAdjacencyMatrixST(adjacencymatrix , sts, sts.size(), map, mapback);
+		
+		AllPairShortestPath allPairShortestPath= new AllPairShortestPath(sts.size());
+		int[][] apsp = allPairShortestPath.allPairShortestPath(adjacencymatrix);
+        //ArrayList<Integer> path = AllPairShortestPath.getPath(1, 2, allPairShortestPath.next);
+
+		purifyAPSPSuperMatrixWithNeighborAndZero(apsp, targetmaps, sts.size(), map, mapback, sts);
+		
+		ArrayList<Integer> tcur = new ArrayList<Integer>(); //greedyFirstRoute(dmax,gamedata, targets);
+
+		int[][] targetssorted = sortSuperTargets(sts);
+
+
+
+		return greedySuperCoverMultRes3(base, targetmaps, dmax, targetssorted, apsp, map,mapback, nRes, attackerstrategy, sts, dstravel);
+	}
+	
+	
+	
 	public static ArrayList<ArrayList<Integer>> buildGreedyCoverMultRes2(
 			ArrayList<TargetNode> targets, double dmax, int nTargets, int base, 
 			int nRes, HashMap<Integer,Double> attackerstrategy) {
@@ -17116,6 +17209,52 @@ public class SecurityGameContraction
 
 
 		return greedyCoverMultRes2(base, targets, dmax, targetssorted, apspmat, map,mapback, nRes, attackerstrategy);
+	}
+	
+	
+	public static ArrayList<ArrayList<Integer>> buildGreedyPath(
+			ArrayList<TargetNode> targets, double dmax, int nTargets, int base, 
+			int nRes, HashMap<Integer,Double> attackerstrategy, int slavelimit, int pathlimit) {
+
+
+
+		int[][] adjacencymatrix = new int[nTargets+1][nTargets+1];
+
+		/**
+		 * make mapping
+		 */
+
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+		HashMap<Integer, Integer> mapback = new HashMap<Integer, Integer>();
+		int icount =1;
+		for(int i=0; i<targets.size(); i++)
+		{
+			map.put(targets.get(i).getTargetid(), icount);
+			//System.out.println("Target "+ targets.get(i).getTargetid() +" --> "+icount);
+			mapback.put(icount, targets.get(i).getTargetid());
+			icount++;
+		}
+		//makeAdjacencyMatrix(adjacencymatrix,targets,nTargets,map, mapback);
+
+		makeAdjacencyMatrix(adjacencymatrix, targets, nTargets, map, mapback);
+
+
+		AllPairShortestPath apsp = new AllPairShortestPath(nTargets);
+		int[][] apspmat =  apsp.allPairShortestPath(adjacencymatrix);
+
+		purifyAPSPMatrixWithNeighborAndZero(apspmat, targets, nTargets, map, mapback);
+
+
+
+
+
+		ArrayList<Integer> tcur = new ArrayList<Integer>(); //greedyFirstRoute(dmax,gamedata, targets);
+
+		int[][] targetssorted = sortTargets(targets);
+
+
+
+		return greedyPaths(base, targets, dmax, targetssorted, apspmat, map,mapback, nRes, attackerstrategy, pathlimit);
 	}
 
 
@@ -17989,6 +18128,152 @@ public class SecurityGameContraction
 			}
 	
 	
+	private static ArrayList<ArrayList<Integer>> greedyPaths(int base, ArrayList<TargetNode> targets,
+			double dmax, int[][] targetssorted, int[][] apspmat,
+			HashMap<Integer, Integer> map, HashMap<Integer, Integer> mapback,
+			int nRes, HashMap<Integer,Double> attackerstrategy, int pathlimit) 
+			{
+
+
+		ArrayList<Integer> tsrt = new ArrayList<Integer>();
+		ArrayList<ArrayList<Integer>> bestjointgr = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> jointgr = new ArrayList<ArrayList<Integer>>();
+		double besttotalcoin = -1;
+		//int[] coin = new int[targetssorted.length];
+
+		HashMap<Integer, Double> coin = new HashMap<Integer, Double>();
+
+		for(int k=0; k<targetssorted.length; k++)
+		{
+			//coin[targetssorted[k][0]]=;
+			coin.put(targetssorted[k][0], targetssorted[k][1]*attackerstrategy.get(targetssorted[k][0]));
+		}
+		for(int k=1; k<targetssorted.length; k++)
+		{
+			tsrt.add(targetssorted[k][0]);
+		}
+		/*System.out.println("Tsrt : ");
+		printGreedyPath(tsrt);*/
+
+		for(int iter = 0; iter<pathlimit; iter++)
+		{
+			ArrayList<Integer> tmptsrt = new ArrayList<Integer>();
+			if(iter==0)
+			{
+				tmptsrt=tsrt;
+			}
+			else
+			{
+				//shuffleArray(tmptsrt);
+				tmptsrt = new ArrayList<Integer>(tsrt);
+				Collections.shuffle(tmptsrt, new Random());
+			}
+			int i=0; 
+
+
+			double totalcoin = 0;
+			HashMap<Integer, Double> remaincoin = coin;
+			ArrayList<Integer> greedypath = new ArrayList<Integer>();
+			for(int res = 0; res<nRes; res++)
+			{
+				//System.out.println("res = "+res);
+				//System.out.println("Adding base to greedy path : ");
+				greedypath.clear();
+				greedypath.add(base);
+				greedypath.add(base);
+				//printGreedyPath(greedypath);
+				int totaldist = 0;
+				totalcoin = totalcoin + remaincoin.get(base);
+				remaincoin.remove(base);
+				remaincoin.put(base, 0.0);
+				while(i<tsrt.size())
+				{
+					int besttotaldisttemp = -1;
+					int bestj = -1;
+					for(int j=1; j<greedypath.size(); j++)
+					{
+						int s = map.get(greedypath.get(j-1));
+						int d = map.get(greedypath.get(j));
+						int totaldisttemp = totaldist - apspmat[s][d];
+
+						s = map.get(greedypath.get(j-1));
+						//d = map.get(targetssorted[i][0]);
+						d = map.get(tmptsrt.get(i));
+						totaldisttemp +=  apspmat[s][d];
+
+
+						s = map.get(tmptsrt.get(i));
+						d = map.get(greedypath.get(j));
+						totaldisttemp +=  apspmat[s][d];
+
+						/*System.out.println("totaldisttemp = "+totaldisttemp);
+						System.out.println("bestj : "+bestj);*/
+
+						if ((totaldisttemp<dmax) && 
+								((besttotaldisttemp==-1) || (totaldisttemp<besttotaldisttemp)) && totaldisttemp>0)
+						{
+							bestj = j; // trying to inseert as much target as possible by taking target which will result in minimum distance 
+							/**
+							 * a b c d ....we will try to insert x between ab or bc or cd
+							 * we will choose which will result in the minimum total distance
+							 */
+							besttotaldisttemp = totaldisttemp;
+							/*System.out.println("updating besttotaldisttemp = "+besttotaldisttemp);
+							System.out.println("updating bestj : "+bestj);*/
+						}
+
+
+
+					}
+					if(bestj>-1)
+					{
+						greedypath = insertTsrt(greedypath, 0, bestj-1, tmptsrt.get(i) , bestj, greedypath.size()-1);
+						if(greedypath.size()>dmax)
+						{
+							printGreedyPath(greedypath);
+						}
+						//printGreedyPath(greedypath);
+						totaldist = besttotaldisttemp;
+
+						totalcoin += remaincoin.get(tmptsrt.get(i));
+						//remaincoin[tmptsrt.get(i)] = 0;
+						remaincoin.remove(tmptsrt.get(i));
+						remaincoin.put(tmptsrt.get(i), 0.0);
+					}
+					i++;
+				} // while loop
+				if(greedypath.size()==2 && greedypath.get(0)==base && greedypath.get(0)==base)
+				{
+					greedypath.clear();
+					greedypath.add(base);
+				}
+				if(greedypath.size()>=3)
+				{
+					ArrayList<Integer> tmp = new ArrayList<Integer>(greedypath);
+					if(greedypath.size()>dmax)
+					{
+						printGreedyPath(greedypath);
+					}
+					jointgr.add(tmp);
+					//printPaths(jointgr);
+				}
+			}
+			if(totalcoin>besttotalcoin)
+			{
+				bestjointgr = jointgr;
+				besttotalcoin = totalcoin;
+			}
+			//printPaths(jointgr);
+
+		}
+		return bestjointgr;
+
+
+			}
+	
+	
+	
+	
 	private static ArrayList<ArrayList<Integer>> greedySuperCoverMultRes2(int base, HashMap<Integer, TargetNode> targets,
 			double dmax, int[][] targetssorted, int[][] apspmat,
 			HashMap<Integer, Integer> map, HashMap<Integer, Integer> mapback,
@@ -18017,6 +18302,401 @@ public class SecurityGameContraction
 		printGreedyPath(tsrt);*/
 
 		for(int iter = 0; iter<10; iter++)
+		{
+			ArrayList<Integer> tmptsrt = new ArrayList<Integer>();
+			if(iter==0)
+			{
+				tmptsrt=tsrt;
+			}
+			else
+			{
+				//shuffleArray(tmptsrt);
+				tmptsrt = new ArrayList<Integer>(tsrt);
+				Collections.shuffle(tmptsrt, new Random());
+			}
+			int i=0; 
+
+
+			double totalcoin = 0;
+			HashMap<Integer, Double> remaincoin = coin;
+			ArrayList<Integer> greedypath = new ArrayList<Integer>();
+			for(int res = 0; res<nRes; res++)
+			{
+				//System.out.println("res = "+res);
+				//System.out.println("Adding base to greedy path : ");
+				greedypath.clear();
+				greedypath.add(base);
+				greedypath.add(base);
+				//printGreedyPath(greedypath);
+				int totaldist = 0;
+				totalcoin = totalcoin + remaincoin.get(base);
+				remaincoin.remove(base);
+				remaincoin.put(base, 0.0);
+				while(i<tsrt.size())
+				{
+					int besttotaldisttemp = -1;
+					int bestj = -1;
+					for(int j=1; j<greedypath.size(); j++)
+					{
+						
+						
+						//TODO consider distance, intra cluster
+						int s = map.get(greedypath.get(j-1));
+						int d = map.get(greedypath.get(j));
+						//System.out.println(" s : "+ greedypath.get(j-1) + " , d : "+greedypath.get(j) + " j-1 "+ (j-1) + " j "+ j +  " gs "+ greedypath.size());
+						int totaldisttemp = totaldist - apspmat[s][d] - dstravel.get(greedypath.get(j-1)).intValue() - dstravel.get(greedypath.get(j)).intValue();
+
+						s = map.get(greedypath.get(j-1));
+						//d = map.get(targetssorted[i][0]);
+						d = map.get(tmptsrt.get(i));
+						//System.out.println(" s : "+ greedypath.get(j-1) + " , d : "+tmptsrt.get(i) + " j-1 "+ (j-1) + " i "+ i +  " gs "+ greedypath.size());
+						totaldisttemp +=  apspmat[s][d];
+						
+						
+						
+						
+						if(dstravel.keySet().contains(greedypath.get(j-1)))
+						{
+						
+							totaldisttemp +=  dstravel.get(greedypath.get(j-1)).intValue() ;
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)))
+						{
+						
+							totaldisttemp +=  dstravel.get(tmptsrt.get(i)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
+						
+						
+
+
+						s = map.get(tmptsrt.get(i));
+						d = map.get(greedypath.get(j));
+						//System.out.println(" s : "+ greedypath.get(i) + " , d : "+greedypath.get(j) + " i "+ i + " j "+ j +  " gs "+ greedypath.size());
+						totaldisttemp +=  apspmat[s][d] ;
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)) && dstravel.keySet().contains(greedypath.get(j)))
+						{
+						
+							totaldisttemp += dstravel.get(tmptsrt.get(i)).intValue() + dstravel.get(greedypath.get(j)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
+
+						
+						
+						
+						
+						/*System.out.println("totaldisttemp = "+totaldisttemp);
+						System.out.println("bestj : "+bestj);*/
+
+						if ((totaldisttemp<=dmax) && 
+								((besttotaldisttemp==-1) || (totaldisttemp<besttotaldisttemp)) && totaldisttemp>0)
+						{
+							bestj = j; // trying to inseert as much target as possible by taking target which will result in minimum distance 
+							/**
+							 * a b c d ....we will try to insert x between ab or bc or cd
+							 * we will choose which will result in the minimum total distance
+							 */
+							besttotaldisttemp = totaldisttemp;
+							/*System.out.println("updating besttotaldisttemp = "+besttotaldisttemp);
+							System.out.println("updating bestj : "+bestj);*/
+						}
+
+
+
+					}
+					if(bestj>-1)
+					{
+						greedypath = insertTsrt(greedypath, 0, bestj-1, tmptsrt.get(i) , bestj, greedypath.size()-1);
+						if(greedypath.size()>dmax)
+						{
+							//printGreedyPath(greedypath);
+						}
+						//printGreedyPath(greedypath);
+						totaldist = besttotaldisttemp;
+
+						totalcoin += remaincoin.get(tmptsrt.get(i));
+						//remaincoin[tmptsrt.get(i)] = 0;
+						remaincoin.remove(tmptsrt.get(i));
+						remaincoin.put(tmptsrt.get(i), 0.0);
+					}
+					i++;
+				} // while loop
+				if(greedypath.size()==2 && greedypath.get(0)==base && greedypath.get(0)==base)
+				{
+					greedypath.clear();
+					greedypath.add(base);
+				}
+				if(greedypath.size()>=3)
+				{
+					ArrayList<Integer> tmp = new ArrayList<Integer>(greedypath);
+					if(greedypath.size()>dmax)
+					{
+						printGreedyPath(greedypath);
+					}
+					jointgr.add(tmp);
+					//printPaths(jointgr);
+				}
+			}
+			if(totalcoin>besttotalcoin)
+			{
+				bestjointgr = jointgr;
+				besttotalcoin = totalcoin;
+			}
+			//printPaths(jointgr);
+
+		}
+		return bestjointgr;
+
+
+			}
+	
+	
+	
+	private static ArrayList<ArrayList<Integer>> greedySTSlavePaths(int base, HashMap<Integer, TargetNode> targets,
+			double dmax, int[][] targetssorted, int[][] apspmat,
+			HashMap<Integer, Integer> map, HashMap<Integer, Integer> mapback,
+			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, HashMap<Integer,Double> dstravel, int pathlimit) 
+			{
+
+
+		ArrayList<Integer> tsrt = new ArrayList<Integer>();
+		ArrayList<ArrayList<Integer>> bestjointgr = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> jointgr = new ArrayList<ArrayList<Integer>>();
+		double besttotalcoin = -1;
+		//int[] coin = new int[targetssorted.length];
+
+		HashMap<Integer, Double> coin = new HashMap<Integer, Double>();
+
+		for(int k=0; k<targetssorted.length; k++)
+		{
+			//coin[targetssorted[k][0]]=;
+			coin.put(targetssorted[k][0], targetssorted[k][1]*attackerstrategy.get(targetssorted[k][0]));
+		}
+		for(int k=1; k<targetssorted.length; k++)
+		{
+			tsrt.add(targetssorted[k][0]);
+		}
+		/*System.out.println("Tsrt : ");
+		printGreedyPath(tsrt);*/
+
+		for(int iter = 0; iter<pathlimit; iter++)
+		{
+			ArrayList<Integer> tmptsrt = new ArrayList<Integer>();
+			if(iter==0)
+			{
+				tmptsrt=tsrt;
+			}
+			else
+			{
+				//shuffleArray(tmptsrt);
+				tmptsrt = new ArrayList<Integer>(tsrt);
+				Collections.shuffle(tmptsrt, new Random());
+			}
+			int i=0; 
+
+
+			double totalcoin = 0;
+			HashMap<Integer, Double> remaincoin = coin;
+			ArrayList<Integer> greedypath = new ArrayList<Integer>();
+			for(int res = 0; res<nRes; res++)
+			{
+				//System.out.println("res = "+res);
+				//System.out.println("Adding base to greedy path : ");
+				greedypath.clear();
+				greedypath.add(base);
+				greedypath.add(base);
+				//printGreedyPath(greedypath);
+				int totaldist = 0;
+				totalcoin = totalcoin + remaincoin.get(base);
+				remaincoin.remove(base);
+				remaincoin.put(base, 0.0);
+				while(i<tsrt.size())
+				{
+					int besttotaldisttemp = -1;
+					int bestj = -1;
+					for(int j=1; j<greedypath.size(); j++)
+					{
+						
+						
+						//TODO consider distance, intra cluster
+						int s = map.get(greedypath.get(j-1));
+						int d = map.get(greedypath.get(j));
+						//System.out.println(" s : "+ greedypath.get(j-1) + " , d : "+greedypath.get(j) + " j-1 "+ (j-1) + " j "+ j +  " gs "+ greedypath.size());
+						int totaldisttemp = totaldist - apspmat[s][d] - dstravel.get(greedypath.get(j-1)).intValue() - dstravel.get(greedypath.get(j)).intValue();
+
+						s = map.get(greedypath.get(j-1));
+						//d = map.get(targetssorted[i][0]);
+						d = map.get(tmptsrt.get(i));
+						//System.out.println(" s : "+ greedypath.get(j-1) + " , d : "+tmptsrt.get(i) + " j-1 "+ (j-1) + " i "+ i +  " gs "+ greedypath.size());
+						totaldisttemp +=  apspmat[s][d];
+						
+						
+						
+						
+						if(dstravel.keySet().contains(greedypath.get(j-1)))
+						{
+						
+							totaldisttemp +=  dstravel.get(greedypath.get(j-1)).intValue() ;
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)))
+						{
+						
+							totaldisttemp +=  dstravel.get(tmptsrt.get(i)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
+						
+						
+
+
+						s = map.get(tmptsrt.get(i));
+						d = map.get(greedypath.get(j));
+						//System.out.println(" s : "+ greedypath.get(i) + " , d : "+greedypath.get(j) + " i "+ i + " j "+ j +  " gs "+ greedypath.size());
+						totaldisttemp +=  apspmat[s][d] ;
+						
+						
+						if(dstravel.keySet().contains(tmptsrt.get(i)) && dstravel.keySet().contains(greedypath.get(j)))
+						{
+						
+							totaldisttemp += dstravel.get(tmptsrt.get(i)).intValue() + dstravel.get(greedypath.get(j)).intValue();
+						}
+						else
+						{
+							totaldisttemp += 1000000;
+						}
+						
+						
+						
+
+						
+						
+						
+						
+						/*System.out.println("totaldisttemp = "+totaldisttemp);
+						System.out.println("bestj : "+bestj);*/
+
+						if ((totaldisttemp<=dmax) && 
+								((besttotaldisttemp==-1) || (totaldisttemp<besttotaldisttemp)) && totaldisttemp>0)
+						{
+							bestj = j; // trying to inseert as much target as possible by taking target which will result in minimum distance 
+							/**
+							 * a b c d ....we will try to insert x between ab or bc or cd
+							 * we will choose which will result in the minimum total distance
+							 */
+							besttotaldisttemp = totaldisttemp;
+							/*System.out.println("updating besttotaldisttemp = "+besttotaldisttemp);
+							System.out.println("updating bestj : "+bestj);*/
+						}
+
+
+
+					}
+					if(bestj>-1)
+					{
+						greedypath = insertTsrt(greedypath, 0, bestj-1, tmptsrt.get(i) , bestj, greedypath.size()-1);
+						if(greedypath.size()>dmax)
+						{
+							//printGreedyPath(greedypath);
+						}
+						//printGreedyPath(greedypath);
+						totaldist = besttotaldisttemp;
+
+						totalcoin += remaincoin.get(tmptsrt.get(i));
+						//remaincoin[tmptsrt.get(i)] = 0;
+						remaincoin.remove(tmptsrt.get(i));
+						remaincoin.put(tmptsrt.get(i), 0.0);
+					}
+					i++;
+				} // while loop
+				if(greedypath.size()==2 && greedypath.get(0)==base && greedypath.get(0)==base)
+				{
+					greedypath.clear();
+					greedypath.add(base);
+				}
+				if(greedypath.size()>=3)
+				{
+					ArrayList<Integer> tmp = new ArrayList<Integer>(greedypath);
+					if(greedypath.size()>dmax)
+					{
+						printGreedyPath(greedypath);
+					}
+					jointgr.add(tmp);
+					//printPaths(jointgr);
+				}
+			}
+			if(totalcoin>besttotalcoin)
+			{
+				bestjointgr = jointgr;
+				besttotalcoin = totalcoin;
+			}
+			//printPaths(jointgr);
+
+		}
+		return bestjointgr;
+
+
+			}
+	
+	
+	private static ArrayList<ArrayList<Integer>> greedySuperCoverMultRes3(int base, HashMap<Integer, TargetNode> targets,
+			double dmax, int[][] targetssorted, int[][] apspmat,
+			HashMap<Integer, Integer> map, HashMap<Integer, Integer> mapback,
+			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, HashMap<Integer,Double> dstravel) 
+			{
+
+
+		ArrayList<Integer> tsrt = new ArrayList<Integer>();
+		ArrayList<ArrayList<Integer>> bestjointgr = new ArrayList<ArrayList<Integer>>();
+		ArrayList<ArrayList<Integer>> jointgr = new ArrayList<ArrayList<Integer>>();
+		double besttotalcoin = -1;
+		//int[] coin = new int[targetssorted.length];
+
+		HashMap<Integer, Double> coin = new HashMap<Integer, Double>();
+
+		for(int k=0; k<targetssorted.length; k++)
+		{
+			//coin[targetssorted[k][0]]=;
+			coin.put(targetssorted[k][0], targetssorted[k][1]*attackerstrategy.get(targetssorted[k][0]));
+		}
+		for(int k=1; k<targetssorted.length; k++)
+		{
+			tsrt.add(targetssorted[k][0]);
+		}
+		/*System.out.println("Tsrt : ");
+		printGreedyPath(tsrt);*/
+
+		for(int iter = 0; iter<5; iter++)
 		{
 			ArrayList<Integer> tmptsrt = new ArrayList<Integer>();
 			if(iter==0)
@@ -19888,7 +20568,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	public static void DOTest(double[][] density,
 			int ITER, int nrow, int ncol,
-			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps) throws Exception {
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -19922,7 +20602,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = DO(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps);
+			double[] res = DO(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -19951,7 +20631,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
-		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets, totalslaveiter/ITER,0);
+		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets, totalslaveiter/ITER,0, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
@@ -20957,6 +21637,58 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 
 	}
+	
+	
+	public static void writeInFile(String expno, int finalsize, double avgsol, long contracttime,
+			long solvingtime, long slavetime, long totaltime, int nTargets, int slaveiter, long clustertime, int slavelimit, int pathlimit ) 
+	{
+
+		
+		
+		
+		
+		
+
+		try
+		{
+			
+			/*File f = new File("grp-result.csv");
+			 
+			 if(f.exists())
+			 {
+				 f.delete();
+				 f.createNewFile();
+			 }*/
+			
+			
+			
+			
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/grp-result.csv"),true));
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			
+			if(!Main.headerprinted)
+			{
+				Main.headerprinted = true;
+				pw.append("Algorithm"+","+"#Targets"+","+"Final#targets"+ ","+ "slavelimit"+","+ "pathlimit"+","+ "EU"+ ","+"ContractionTime"+"," + "SolvingTime"+"," +"SlaveTime"+"," +"#SlaveIter"+","+ "ClusterTime"+","+ "TotalTime"+"\n");
+			}
+			
+			
+			
+			pw.append(expno+","+nTargets+","+finalsize+","+ slavelimit+","+ pathlimit+","+ClusterTargets.format(avgsol)+ ","+contracttime+"," + solvingtime+"," +slavetime+"," +slaveiter+","+ clustertime+","+ totaltime+"\n");
+			pw.close();
+
+		}
+		catch(Exception e)
+		{
+
+		}
+
+
+
+
+
+	}
+	
 	
 	
 
@@ -29385,7 +30117,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	private static double[] DO(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
-			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps) throws Exception {
+			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int slavelimit, int pathlimit) throws Exception {
 
 
 		
@@ -29713,7 +30445,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					l1 = start.getTime();
 
 
-					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyCoverMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes, attackerstrategy);
+					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyPath(tmpgraph, dmax, tmpgraph.size(), 0, nRes, attackerstrategy, slavelimit, pathlimit);
 					
 					
 										
@@ -29782,7 +30514,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					}
 
 					System.out.println("new paths added by slave *************, attacked target "+ attackedtarget);
-				//	printPaths(pathseq);
+					//printPaths(pathseq);
 					/*pathseq = removeDuplicatePathSimple(pathseq);
 					System.out.println("New path seq size "+ pathseq.size());
 					printPaths(pathseq);

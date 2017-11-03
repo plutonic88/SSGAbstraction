@@ -4435,7 +4435,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 
 		for(int iter=0; iter<LIMIT; iter++)
 		{
-			ArrayList<Integer>[] clus = allclus.get(iter);
+			//ArrayList<Integer>[] clus = allclus.get(iter);
 			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
 			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
 			
@@ -4458,7 +4458,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 			long l1 = start.getTime();
 
 			//ArrayList<Integer>[] clus = makeGraph(k, radius, dlim , nTargets, 2, 10, ap, targets, targetmaps);
-			double res[] = groupingWithDO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, clus);
+			double res[] = groupingWithDO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, null);
 			//double[] res1 = {defpayoff, clusteringtime, solvingtime, targetstocluster.size(), attackeru, slavetime, revmaptime};
 			
 			
@@ -4848,7 +4848,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 
 		try
 		{
-			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/anjonsunny/Documents/workspace/IntervalSGAbstraction/"+"grp-result.csv"),true));
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/grp-result.csv"),true));
 			pw.append(algo+ ","+finalsize+","+defexp+"," + clusteringtime+ ","+solvingtime+ ","+revmaptime+","+totaltime+"\n");
 			pw.close();
 
