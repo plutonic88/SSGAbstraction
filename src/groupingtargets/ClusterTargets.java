@@ -1157,7 +1157,7 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 		//chooseAP(sts, apsp, apspmat, apspmap, apspmapback, dstravel, targetmaps, dmax, stpaths);
 		
 		
-		
+		//printNodesWithNeighborsAndPath(targetmaps);
 		
 		for(int i = 0; i<sts.size(); i++)
 		{
@@ -3387,7 +3387,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			targetsize= currentst.size();
 			
 			
-			//printSuperTargets(currentst);
+			
 
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -3430,6 +3430,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			
 			
 			//HashMap<Integer, Double> stvalue
+			printSuperTargets(currentst, stpaths, dstravel);
 			assignSTValues(currentst, tmptargetmaps);
 			
 			//System.out.println("olaa ");
@@ -4724,7 +4725,7 @@ public static void generateGraph(ArrayList<TargetNode> tmpgraph, int currentPlac
 	System.out.print("\nDom targets : ");
 	for(TargetNode s: dom)
 	{
-		System.out.print(s.getTargetid()+" ");
+		//System.out.print(s.getTargetid()+" ");
 		domindatednodes.add(s);
 	}
 	System.out.println();
@@ -8295,14 +8296,14 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 		pathseq = new ArrayList<ArrayList<Integer>>();
 
-		System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Current place : "+ currentPlace);
+		//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Current place : "+ currentPlace);
 
-		System.out.print("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Current target list : ");
+		//System.out.print("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Current target list : ");
 
-		for(int i=0; i<currenttargets.size(); i++)
+		/*for(int i=0; i<currenttargets.size(); i++)
 		{
 			System.out.print(currenttargets.get(i)+",");
-		}
+		}*/
 		
 		p = new int[targets.size()][]; // p matrix
 
@@ -8372,7 +8373,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 				//throw new Exception("No path seq");
 			}
 			
-			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths before removing duplicate : ");
+			//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths before removing duplicate : ");
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
@@ -8528,7 +8529,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					
 					
 					
-					System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" attack ST before rev map "+ attackedtarget);
+					//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" attack ST before rev map "+ attackedtarget);
 					
 					
 					//int u = getTargetNode(MIPSolver4.attackedtarget, tmpgraph).getTargetid();
@@ -8549,7 +8550,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					//System.out.println("attacker v= "+attackerv);
 					
 					System.out.println("\n clusteringactivated "+clusteringactivated +" master "+masteritr+", slave "+itr+", u= "+attackeru+", v= "+attackerv);
-					System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" attack target after rev map"+ attackedtarget);
+					//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" attack target after rev map"+ attackedtarget);
 					
 					
 					if(!currentattackedtargets.contains(attackedtarget))
@@ -8569,7 +8570,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					if(hiddenattackedclsuter != -1)
 					{
 						hiddenattackedclsuter = mapback.get(hiddenattackedclsuter);
-						System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" hidden attack ST "+ hiddenattackedclsuter);
+						//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" hidden attack ST "+ hiddenattackedclsuter);
 						if(!currentattackedsupertargets.contains(hiddenattackedclsuter))
 						{
 							currentattackedsupertargets.add(hiddenattackedclsuter);
@@ -8589,11 +8590,11 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 					
 
-					if(probdistribution.equals(null))
+					/*if(probdistribution.equals(null))
 					{
 						throw new Exception("Prob null...");
 					}
-
+*/
 					/*if(attackeru>=targetssorted[currentPlace+1][1] || currentPlace==targetssorted.length)
 					{
 						System.out.println("attacker u "+ attackeru +" is greater than u("+targetssorted[currentPlace+1][0]+")="+targetssorted[currentPlace+1][1]);
@@ -8647,9 +8648,9 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					slavetime += diff;
 					
 					
-					System.out.println("newpathseq size before purify : "+newpathseq.size());
+					//System.out.println("newpathseq size before purify : "+newpathseq.size());
 					newpathseq = SecurityGameContraction.determineNewPaths(newpathseq, p, probdistribution);
-					System.out.println("newpathseq size after purify : "+newpathseq.size());
+					//System.out.println("newpathseq size after purify : "+newpathseq.size());
 						
 						
 						if((newpathseq.size()==0) || (itr>=slavelimit))
@@ -8658,7 +8659,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 							System.out.println("Slave can't add any new path ###############");
 							break;
 						}
-						System.out.println("New whole path seq ");
+						//System.out.println("New whole path seq ");
 						
 						
 						
@@ -8687,7 +8688,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 						//System.out.println("\n masteritr "+masteritr+" slaveitr "+itr +" new paths added by slave *************, attacked target "+ attackedtarget);
 
 						//pathseq = SecurityGameContraction.removeDuplicatePathSimple(pathseq);
-						System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" New path seq size "+ pathseq.size());
+						//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" New path seq size "+ pathseq.size());
 						//printPaths(pathseq);
 						//int newsize = pathseq.size();
 						//System.out.println("haa ");
@@ -8727,7 +8728,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 		double ulimit = SecurityGameContraction.getTargetNode(attackedtarget, targets).attackerreward;
 
-		System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " attacked target "+ attackedtarget+", adding all target w u >= "+ ulimit);
+		//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " attacked target "+ attackedtarget+", adding all target w u >= "+ ulimit);
 
 
 		int addcount=0;
@@ -8739,7 +8740,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 				addcount++;
 				
 				currenttargets.add(targetssorted[k][0]);
-				System.out.println("adding target "+targetssorted[k][0] +", u = "+ targetssorted[k][1]);
+				//System.out.println("adding target "+targetssorted[k][0] +", u = "+ targetssorted[k][1]);
 				if(addcount>=5)
 				{
 					break;
@@ -8747,15 +8748,15 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			}
 		}
 
-		System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " addcount : "+ addcount);
+		//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " addcount : "+ addcount);
 
 		currentPlace = currenttargets.size()-1;
 
-		System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " currentplace  : "+ currentPlace);
+		//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " currentplace  : "+ currentPlace);
 
 		if(addcount<5 || addcount==0)
 		{
-			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " adding more ");
+			//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " adding more ");
 
 			int prevcur = currentPlace;
 			currentPlace += 5-addcount;
@@ -8770,7 +8771,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			for(int k= prevcur+1; k<=currentPlace; k++ )
 			{
 
-				System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " adding target  "+ targetssorted[k][0]);
+				//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+ " adding target  "+ targetssorted[k][0]);
 				currenttargets.add(targetssorted[k][0]);
 			}
 		}
@@ -8802,10 +8803,10 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 	System.out.println("Final target list size : "+ currenttargets.size());
 
-	for(int i=0; i<currenttargets.size(); i++)
+	/*for(int i=0; i<currenttargets.size(); i++)
 	{
 		System.out.print(currenttargets.get(i)+",");
-	}
+	}*/
 
 	//double defpayoff = expectedDefenderPayoff(attackedtarget, p, probdistribution, gamedata, map);
 	double defpayoff = SecurityGameContraction.expectedPayoffDef(attackedtarget, origpmat, gamedata, probdistribution);
@@ -10555,7 +10556,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 				
 				System.out.println("Computing ap for ST "+ tempst.stid);
 				
-				if(tempst.stid==5)
+				if(tempst.stid==15)
 				{
 					System.out.println("shortestdist(a1,s1) ");
 				}
@@ -10615,7 +10616,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
 								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-								if(dista1a2 == 0)
+								if(dista1a2 == 0 || dista1a2>dmax)
 								{
 									//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 									//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
@@ -10779,7 +10780,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
 								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-								if(dista1a2 == 0)
+								if(dista1a2 == 0 || dista1a2>dmax)
 								{
 									//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 									//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
@@ -10936,12 +10937,13 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1, a2, tmpa1a2spath);
 					//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 					//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-					if(dista1a2 == 0)
+					if(dista1a2 == 0 || dista1a2 > dmax)
 					{
-						throw new Exception("No path found to compute AP for st "+ tempst.stid);
+						//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 						//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
-
-						//dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+						TargetNode a1node = tempst.nodes.get(a1);
+						TargetNode a2node = tempst.nodes.get(a2);
+						dista1a2 = shortestdist(a1node,a2node, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
 					}
 
 
@@ -11704,12 +11706,15 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1, a2, tmpa1a2spath);
 					//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 					//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-					if(dista1a2 == 0)
+					if(dista1a2 == 0 || dista1a2>dmax)
 					{
-						throw new Exception("No path found to compute AP for st "+ tempst.stid);
+						//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 						//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
 
-						//dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+						TargetNode a1node = tempst.nodes.get(a1);
+						TargetNode a2node = tempst.nodes.get(a2);
+						
+						dista1a2 = shortestdist(a1node,a2node, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
 					}
 
 
@@ -11780,7 +11785,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 								double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), tmpa1a2spath);
 								//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 								//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-								if(dista1a2 == 0)
+								if(dista1a2 == 0 || dista1a2>dmax)
 								{
 									//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 									//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
@@ -11937,12 +11942,13 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1, a2, tmpa1a2spath);
 					//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 					//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-					if(dista1a2 == 0)
+					if(dista1a2 == 0 || dista1a2>dmax)
 					{
-						throw new Exception("No path found to compute AP for st "+ tempst.stid);
+						//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 						//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
-
-						//dista1a2 = shortestdist(a1,a2, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
+						TargetNode a1node = tempst.nodes.get(a1);
+						TargetNode a2node = tempst.nodes.get(a2);
+						dista1a2 = shortestdist(a1node,a2node, apspmap, apspmat, tmpa1a2spath, apsp, apspmapback, tempst, dmax); 
 					}
 
 
@@ -12015,7 +12021,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					updateAP(tempst, sts, aid1, aid2);
 					
 					
-					clusterap.put(tempst.stid, new int[] {aid1, aid2});
+					//clusterap.put(tempst.stid, new int[] {aid1, aid2});
 					
 					//sts.put(newst.stid, newst);
 					//update the neighbors of ST

@@ -11443,6 +11443,7 @@ public class SecurityGameContraction
 
         			if(distcovered>dmax/2)
         			{
+        				System.out.println("dist "+ distcovered*2);
         				continue;
         			}
         			
