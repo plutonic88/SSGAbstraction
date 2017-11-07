@@ -1,6 +1,5 @@
 package groupingtargets;
 
-import java.awt.GridLayout;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -16,14 +15,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
 import java.util.Random;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
 
 import cs.Interval.ILP.MIPSolver4;
 import cs.Interval.contraction.Logger;
@@ -1130,7 +1124,7 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 		
 		
 		
-		printClusters(realclusters);
+		//printClusters(realclusters);
 		
 
 
@@ -8286,6 +8280,10 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 	clusteringactivated = true;
 	
 	
+	ArrayList<Double[]> masterslaveres = new ArrayList<Double[]>();
+	
+	
+	
 	while(true)
 	{
 		
@@ -8361,7 +8359,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			//printSuperTargets(sts, stpaths, dstravel);
+			printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
@@ -8709,6 +8707,9 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			}
 			System.out.println("iter"+ itr);
 			
+			Double[] key = {(double)masteritr ,(double)itr-1, attackerv};
+			masterslaveres.add(key);
+			
 		} // inner while loop 
 
 
@@ -8844,6 +8845,8 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 	
 	//verifySolution(jset, pathseq, probdistribution, nTargets, dmax, sts, dstravel, tmpgraph);
 	
+	//writeMasterSlaveRes(masterslaveres);
+	
 
 	double[] res = {defpayoff, contractiontime, solvingtime, currenttargets.size(), attackeru, slavetime, totalslaveiter, clusteringtime};
 	return res;
@@ -8851,9 +8854,31 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 
 
+private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
+	
+	
+	
+	try
+	{
+		PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/master-slave-result.csv"),true));
+		//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+		
+		for(Double[] key: masterslaveres)
+		{
+			//String k[] = key.split(",");
+			//double value = masterslaveres.get(key);
+		
+			pw.append(key[0]+","+ key[1]+","+key[2]+"\n");
+		}
+		pw.close();
 
+	}
+	catch(Exception e)
+	{
 
-
+	}
+	
+}
 	
 	private static void printClusterDists(HashMap<Integer, SuperTarget> sts, int nTargets, int iter) {
 	
@@ -9270,7 +9295,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			
 			
 			
-		//	printClusters(clusters);
+			printClusters(clusters);
 			
 			
 			

@@ -30184,6 +30184,9 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		int masteritr=0;
 
 		
+		
+		ArrayList<Double[]> masterslaveres = new ArrayList<Double[]>();
+		
 		while(true)
 		{
 			
@@ -30479,7 +30482,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					
 					
 					
-					if((newpathseq.size()==0) || (itr>=10))
+					if((newpathseq.size()==0) || (itr>=slavelimit))
 					{
 						canaddpath = false;
 						System.out.println("Slave can't add any new path ###############");
@@ -30535,6 +30538,12 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 				} // end if else
 				System.out.println("iter"+ itr);
+				
+				
+				Double[] key = {(double)masteritr ,(double)itr-1, attackerv};
+				masterslaveres.add(key);
+				
+				
 				
 			} // inner while loop 
 
@@ -30627,6 +30636,12 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 
 		} // outer while loop
+		
+		
+		//writeMasterSlaveRes(masterslaveres);
+		
+		
+		
 
 		System.out.println("Final target list size : "+ currenttargets.size());
 
@@ -30655,6 +30670,32 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 	
 	
+	private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
+		
+		
+		
+		try
+		{
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/master-slave-result.csv"),true));
+			//PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/fake/Documents/workspace/IntervalSGAbstraction/"+"result.csv"),true));
+			
+			for(Double[] key: masterslaveres)
+			{
+				//String k[] = key.split(",");
+				//double value = masterslaveres.get(key);
+			
+				pw.append(key[0]+","+ key[1]+","+key[2]+"\n");
+			}
+			pw.close();
+
+		}
+		catch(Exception e)
+		{
+
+		}
+		
+	}
+
 	private static double[] GroupingWithDO(int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
 			dmax, int iter, int nrow, int ncol, int srcid, int destid) throws Exception {
