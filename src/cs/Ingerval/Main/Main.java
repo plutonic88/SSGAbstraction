@@ -78,15 +78,15 @@ public class Main {
 	
 		
 		
-		int nrow = 16;
+		int nrow = 12;
 		
-		int ncol = 16;
+		int ncol = 12;
 		
-		int dmax = 60;
+		int dmax = 40;
 		
-		int graphk = 32; // number of cluster when I built an example
+		int graphk = 24; // number of cluster when I built an example
 		
-		int solverk = 32; // number of cluster for solver
+		int solverk = 10; // number of cluster for solver
 		
 		int blockdim = 2; // block = blockdim x blockdim
 		
@@ -95,7 +95,7 @@ public class Main {
 		
 		int RADIUS = 1;
 		
-		int ITER = 10;
+		int ITER = 1;
 
 		
 		
@@ -215,7 +215,7 @@ public class Main {
 
 		
 		//4 DO + GC multi + GP 3 + LP + GC multi 
-		SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
 		SecurityGameContraction.targets.clear();
 
 		
@@ -229,34 +229,42 @@ public class Main {
 	
 		
 		//activate when iter>limit but still adding path by slave, slave limit 10, path 10
-		ClusterTargets.dOWithAttackClusterTest2(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		//ClusterTargets.dOWithAttackClusterTest2(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 		
 		
 		
 		
 		//  activate clustering from the beginning, slave limit 10, path 10
-		ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+			//ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 		
 		
+		
+		
+			//  activate clustering from the beginning, slave limit 10, path 10
+		// problem of targets not having any neighbor due to dominated targets
+		// considering dominated targets as single ST has huge runtime
+		// for later improvement...
+			//ClusterTargets.dOWithAttackClusterTest4(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+			
 		
 		
 		// SO + weka
-		ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+	//	ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
 		
 		
 		
 		
 
 		// DO + weka
-		ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+		//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
 		
 		
 		// try without contraction
-		ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 		SecurityGameContraction.targets.clear();
 	
 		
-		ClusterTargets.DOWithSplitPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		//ClusterTargets.DOWithSplitPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 		
 		
 		

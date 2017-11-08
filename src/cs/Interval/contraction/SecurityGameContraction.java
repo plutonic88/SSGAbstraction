@@ -18650,8 +18650,9 @@ public class SecurityGameContraction
 					ArrayList<Integer> tmp = new ArrayList<Integer>(greedypath);
 					if(greedypath.size()>dmax)
 					{
-						printGreedyPath(greedypath);
+						//sprintGreedyPath(greedypath);
 					}
+					
 					jointgr.add(tmp);
 					//printPaths(jointgr);
 				}
