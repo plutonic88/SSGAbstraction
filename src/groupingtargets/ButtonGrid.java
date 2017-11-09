@@ -48,6 +48,7 @@ class ButtonGrid {
 	{
 		frame.setLayout(new GridLayout(nrow,ncol)); //set layout
 		grid=new JButton[nrow][ncol]; //allocate the size of grid
+		
 
 		//int c = 255;
 		
@@ -59,6 +60,8 @@ class ButtonGrid {
 			{
 				int au = (int)targetmaps.get(targetid).attackerreward;
 				grid[x][y]=new JButton(String.valueOf(targetid)+"("+au+")"); //creates new button 
+				grid[x][y].setOpaque(true);
+				grid[x][y].setBorderPainted(false);
 
 
 				

@@ -78,15 +78,15 @@ public class Main {
 	
 		
 		
-		int nrow = 12;
+		int nrow = 14;
 		
-		int ncol = 12;
+		int ncol = 14;
 		
-		int dmax = 40;
+		int dmax = 50;
 		
-		int graphk = 24; // number of cluster when I built an example
+		int graphk = 28; // number of cluster when I built an example
 		
-		int solverk = 10; // number of cluster for solver
+		int solverk = 20; // number of cluster for solver
 		
 		int blockdim = 2; // block = blockdim x blockdim
 		
@@ -95,7 +95,7 @@ public class Main {
 		
 		int RADIUS = 1;
 		
-		int ITER = 1;
+		int ITER = 5;
 
 		
 		
@@ -234,8 +234,8 @@ public class Main {
 		
 		
 		
-		//  activate clustering from the beginning, slave limit 10, path 10
-			//ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		////  activate clustering from the beginning, slave limit 10, path 10
+		ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 		
 		
 		
@@ -247,16 +247,26 @@ public class Main {
 			//ClusterTargets.dOWithAttackClusterTest4(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 			
 		
+		/*int[] sks = {nTargets, nTargets/2, nTargets/5, nTargets/10};
+		
+		for(int sk: sks)
+		{
+		
 		
 		// SO + weka
-	//	ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+			ClusterTargets.wekaClusteringWithSOExp(nrow,ncol,base, dest, sk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+		}
 		
 		
 		
+		int[] abs = {1,2,5,10};
 		
+		for(int alevel: abs)
+		{
 
-		// DO + weka
-		//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+		 //DO + weka
+		 ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10, alevel);
+		}*/
 		
 		
 		// try without contraction
@@ -312,7 +322,7 @@ public class Main {
 		
 		/////exp 8 increasing distance results in worse solution quality
 		
-		/*int dm[] = {30, 35, 40, 45, 50,60};
+		/*int dm[] = {35, 40, 45, 50,55,60};
 		
 		for(int dx: dm)
 		{
@@ -340,7 +350,7 @@ public class Main {
 		
 		for(int dx: dm)
 		{
-			ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dx, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10);
+			ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dx, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10, 5);
 			
 		
 			SecurityGameContraction.targets.clear();
@@ -362,8 +372,8 @@ public class Main {
 			ClusterTargets.DOWithSplitPACMANClusteringTest(density,ITER,nrow, ncol, dx, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 			SecurityGameContraction.targets.clear();
 		}
-		
 		*/
+		
 		
 		
 		

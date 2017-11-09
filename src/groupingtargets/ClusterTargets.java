@@ -346,7 +346,7 @@ public class ClusterTargets {
 	
 	public static void wekaClusteringWithDOExp(int nrow, int ncol, int base, int dest, int k, int radius, int dmax, int nRes, int nTargets,
 			int LIMIT,int ap, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit ) throws Exception
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit, int abslevel ) throws Exception
 	{
 
 
@@ -377,7 +377,7 @@ public class ClusterTargets {
 			long l1 = start.getTime();
 
 			//ArrayList<Integer>[] clus = makeGraph(k, radius, dlim , nTargets, 2, 10, ap, targets, targetmaps);
-			double res[] = wekaClusteringWithDO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter, slavelimit, pathlimit);
+			double res[] = wekaClusteringWithDO(base, dest, k, radius, dmax, nRes, nTargets, targets, targetmaps, iter, slavelimit, pathlimit, abslevel);
 			//double[] res1 = {defpayoff, clusteringtime, solvingtime, targetstocluster.size(), attackeru, slavetime, revmaptime};
 			
 			
@@ -408,7 +408,7 @@ public class ClusterTargets {
 		//System.out.println("Defender exp "+ (double)sumdefexp/LIMIT + ", time : "+ (long)totaltime/LIMIT);
 		//writeInFileST("DOWithWeka",finalsize,sumdefexp, solvingtime, revmaptime, clusteringtime ,totaltime, nTargets);
 		
-		SecurityGameContraction.writeInFile("DOWithWeka",(int)finalsize, sumdefexp, 0,solvingtime, slavetime,totaltime, nTargets, totalslaveiter,clusteringtime, slavelimit, pathlimit);
+		SecurityGameContraction.writeInFile("DOWithWeka-"+abslevel,(int)finalsize, sumdefexp, 0,solvingtime, slavetime,totaltime, nTargets, totalslaveiter,clusteringtime, slavelimit, pathlimit);
 		
 		
 
@@ -479,7 +479,7 @@ public class ClusterTargets {
 		//System.out.println("Defender exp "+ (double)sumdefexp/LIMIT + ", time : "+ (long)totaltime/LIMIT);
 		//writeInFileST("DOWithWeka",finalsize,sumdefexp, solvingtime, revmaptime, clusteringtime ,totaltime, nTargets);
 		
-		SecurityGameContraction.writeInFile("SOWithWeka",(int)finalsize, sumdefexp, 0,solvingtime, slavetime,totaltime, nTargets, totalslaveiter,clusteringtime, slavelimit, pathlimit);
+		SecurityGameContraction.writeInFile("SOWithWeka-"+k,(int)finalsize, sumdefexp, 0,solvingtime, slavetime,totaltime, nTargets, totalslaveiter,clusteringtime, slavelimit, pathlimit);
 		
 		
 
@@ -1051,6 +1051,11 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 		 * cluster
 		 */
 		
+		if(k<=2)
+		{
+			k = 3;
+		}
+		
 		int totalcluster = k + (instances.size()-newinstance.size());
 		
 		if(!targetstocluster.contains(0))
@@ -1162,7 +1167,7 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 			// if cluster is chnaged then compute AP
 			// if not changed then use the previous AP
 			
-			chooseDegreeBasedAP(sts, targetmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, (int)dmax);
+			chooseDegreeBasedAPV2(sts, targetmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, (int)dmax, null, null);
 			
 			
 		}
@@ -2408,6 +2413,9 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 		
 		
+		
+		 
+		
 		ArrayList<Integer>[] clusters = (ArrayList<Integer>[])new ArrayList[totalcluster];
 		
 		for(int i=0; i<totalcluster; i++)
@@ -2448,6 +2456,8 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		 
 		 newinstance.remove(0); // remove base
 		 
+		
+		 
 		 dc.setNumClusters(k-1); // 0 for base
 		
 		 dc.buildClusterer(newinstance);
@@ -2470,7 +2480,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		 
 		 clusters[0].add(0); //base
 		 
-		// printClusters(clusters);
+		 printClusters(clusters);
 		 
 		 int j = k;
 		 for(Integer t: targetmaps.keySet())
@@ -2533,7 +2543,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 	
 
 	public static double[] wekaClusteringWithDO(int base, int dest, int ncluster, int radius, int dmax, 
-			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter, int slavelimit, int pathlimit) throws Exception
+			int nRes, int nTargets, ArrayList<TargetNode> targets, HashMap<Integer, TargetNode> targetmaps, int iter, int slavelimit, int pathlimit, int abstractionlevel) throws Exception
 	{
 		
 		
@@ -2659,7 +2669,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		
 		while(true)
 		{
-			ncluster = targetstocluster.size()/5;
+			ncluster = targetstocluster.size()/abstractionlevel;
 			
 			System.out.println("Outer loop...Master");
 
