@@ -78,13 +78,24 @@ public class Main {
 	
 		
 		
-		int nrow = 17;
+		int nrow = 10;
 		
-		int ncol = 17;
+		int ncol = 10;
 		
-		int dmax = 65;
+		int dmax = 30;
 		
-		int graphk = 35; // number of cluster when I built an example
+		int graphk = 20; // number of cluster when I built an example
+		
+		int ITER = 5;
+		
+		int als[] = {5}; //DO + weka + CON target per cluster
+		int rs[] = {2}; // PACMAN
+		int rs1[] = {2}; // attack cluster
+		
+		int ranges[][] = {{0,1},{6,8},{9, 10}};
+		int[] percforranges = {80, 10, 10};
+		
+		
 		
 		int solverk = 20; // number of cluster for solver
 		
@@ -92,7 +103,7 @@ public class Main {
 		
 		int RADIUS = 1;
 		
-		int ITER = 2;
+		
 		
 		
 		
@@ -121,8 +132,7 @@ public class Main {
 		int nTargets = nrow*ncol;
 		
 		int ncat = 3;
-		int ranges[][] = {{0,1},{6,8},{9, 10}};
-		int[] percforranges = {80, 10, 10};
+		
 		int[] targetsincat = getTargetsInCats(nTargets, percforranges);
 		double[][] density=SecurityGameContraction.generateRandomDensityV2(ncat, ITER, ranges, nTargets, targetsincat);
 		
@@ -222,7 +232,7 @@ public class Main {
 				SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
 				SecurityGameContraction.targets.clear();
 				
-				int als[] = {2,3,4,5,6};
+				
 				
 				for(int al: als)
 				{
@@ -233,19 +243,21 @@ public class Main {
 				
 				
 				
-				int rs[] = {1,2,3,4,5};
+				
 				
 				for(int r: rs)
 				{
 				
-					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
 				}
 				
 				
-				for(int r: rs)
+				
+				
+				for(int r: rs1)
 				{
 			////  activate clustering from the beginning, slave limit 10, path 10
-					ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+				   ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
 				}
 		
 		

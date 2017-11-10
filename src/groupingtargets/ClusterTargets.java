@@ -11884,7 +11884,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			
 			
 			
-			//printClusters(realclusters);
+		printClusters(realclusters);
 			
 			
 			
@@ -12662,8 +12662,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			ArrayList<Integer> clus = attackclustershisotry.get(clusid);
 			int center = clustercenters.get(clusid);
 			
-			if(clus.size()==5)
-				continue;
+			//if(clus.size()==5)
+				//continue;
 			
 			// find the distance from center to attackedtarget
 			TargetNode centertarget = tmpgraphmaps.get(center);
@@ -12673,8 +12673,11 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			
 			if(centertarget.getNeighbors().contains(attackednode))
 			{
+				
+				double diff = Math.abs(centertarget.attackerreward - attackednode.attackerreward);
+				
 				double dist = centertarget.getDistance(attackednode);
-				if((dist<=RADIUS) && (dist<mindist) && (clus.size()<5))
+				if((dist<=RADIUS) && (dist<mindist) && (diff<=2)/*&& (clus.size()<5)*/)
 				{
 					mindist = dist;
 					minclus = clusid;
@@ -14505,7 +14508,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			int category = -1;
 			
 			
-			
+			if(tempst.stid==8)
+			{
+				System.out.println("Computing ap for ST "+ tempst.stid);
+			}
 			
 
 			if(tempst.nodes.size()>1)
@@ -14544,7 +14550,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 					double dista1a2 = travelingGreedyPathAP(tempst.nodes, dmax, tempst.nodes.size(), a1, a2, tmpa1a2spath);
 					//double dddd = pathAPForST(tempst.nodes, dmax, tempst.nodes.size(), a1.getTargetid(), a2.getTargetid(), 1, tmpa1a2spath);
 					//shortestdist(a1,a2, tempst, dmax, tmpa1a2spath);
-					if(dista1a2 == 0 || dista1a2>dmax)
+					if(dista1a2 == 0 || dista1a2>=dmax)
 					{
 						//throw new Exception("No path found to compute AP for st "+ tempst.stid);
 						//System.out.println("Disjpint cluster need longer path "+ tempst.stid);
@@ -15585,7 +15591,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithAttackCluster3"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("dOWithAttackCluster3-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
@@ -15667,7 +15673,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithWeka+CON"+abstractionlevel,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("dOWithWeka+CON-"+abstractionlevel,(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
@@ -15837,7 +15843,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("DOWithPACMANClusteing"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER,
+		SecurityGameContraction.writeInFile("DOWithPACMANClusteing-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER,
 				sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
