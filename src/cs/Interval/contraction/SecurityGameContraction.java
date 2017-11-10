@@ -30138,7 +30138,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		 * 1. sort the targets
 		 */
 		int[][] targetssorted = sortTargets(targets);
-		printSortedTargets(targetssorted);
+		//printSortedTargets(targetssorted);
 
 		ArrayList<Integer> currenttargets = buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
 		//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
@@ -30191,18 +30191,18 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		while(true)
 		{
 			
-			System.out.println("Outer loop...Master");
+			//System.out.println("Outer loop...Master");
 
 			pathseq = new ArrayList<ArrayList<Integer>>();
 
-			System.out.println("\nCurrent place : "+ currentPlace);
+			//System.out.println("\nCurrent place : "+ currentPlace);
 
-			System.out.print("Current target list : ");
+			//System.out.print("Current target list : ");
 
-			for(int i=0; i<currenttargets.size(); i++)
+			/*for(int i=0; i<currenttargets.size(); i++)
 			{
 				System.out.print(currenttargets.get(i)+",");
-			}
+			}*/
 
 
 			tmpgraph = getDuplicateGraph(targets);
@@ -30213,13 +30213,13 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 				domindatednodes.clear();
 			}
 
-			System.out.print("\nDom targets : ");
+			/*System.out.print("\nDom targets : ");
 			for(TargetNode s: domindatednodes)
 			{
 				System.out.print(s.getTargetid()+" ");
 			}
 			System.out.println();
-
+*/
 			
 
 

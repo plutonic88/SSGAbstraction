@@ -78,24 +78,31 @@ public class Main {
 	
 		
 		
-		int nrow = 14;
+		int nrow = 17;
 		
-		int ncol = 14;
+		int ncol = 17;
 		
-		int dmax = 50;
+		int dmax = 65;
 		
-		int graphk = 28; // number of cluster when I built an example
+		int graphk = 35; // number of cluster when I built an example
 		
 		int solverk = 20; // number of cluster for solver
+		
+		int abstractionlevel = 2; // For DO with COntraction and weka clus
+		
+		int RADIUS = 1;
+		
+		int ITER = 2;
+		
+		
+		
 		
 		int blockdim = 2; // block = blockdim x blockdim
 		
 		// nrow has to be divisible by block
 		int naivencluster = (nrow*ncol)/(blockdim*blockdim);
 		
-		int RADIUS = 1;
 		
-		int ITER = 5;
 
 		
 		
@@ -208,7 +215,53 @@ public class Main {
 		
 		
 		
-		////exp 10 , with increased distance....
+				///exp2 effect of #cluster/ radius
+		
+		
+				//4 DO + GC multi + GP 3 + LP + GC multi 
+				SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+				SecurityGameContraction.targets.clear();
+				
+				int als[] = {2,3,4,5,6};
+				
+				for(int al: als)
+				{
+				
+				// DO+ COntration + weka
+					ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
+				}
+				
+				
+				
+				int rs[] = {1,2,3,4,5};
+				
+				for(int r: rs)
+				{
+				
+					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+				}
+				
+				
+				for(int r: rs)
+				{
+			////  activate clustering from the beginning, slave limit 10, path 10
+					ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+				}
+		
+		
+		
+			////  activate clustering from the beginning, slave limit 10, path 10
+		
+			
+			
+			
+			
+			//ClusterTargets.wekaClusteringWithDOExp(nrow,ncol,base, dest, solverk, radius, dmax, nRes, nTargets, ITER, ap, alltargets, alltargetmaps, 10, 10, 5);
+		
+		
+		
+		
+		
 		
 		
 		
@@ -217,6 +270,18 @@ public class Main {
 		//4 DO + GC multi + GP 3 + LP + GC multi 
 		//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
 		SecurityGameContraction.targets.clear();
+		
+		// DO+ COntration + weka
+		//ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, abstractionlevel);
+		
+		
+		
+		
+		
+		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		
+	////  activate clustering from the beginning, slave limit 10, path 10
+		//ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
 
 		
 		//intra cluster path tries to cover all the targets rather than shortest path (224->272)
@@ -234,8 +299,7 @@ public class Main {
 		
 		
 		
-		////  activate clustering from the beginning, slave limit 10, path 10
-		ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		
 		
 		
 		
@@ -270,7 +334,7 @@ public class Main {
 		
 		
 		// try without contraction
-		//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10);
+		
 		SecurityGameContraction.targets.clear();
 	
 		
