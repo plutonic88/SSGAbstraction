@@ -86,11 +86,13 @@ public class Main {
 		
 		int graphk = 20; // number of cluster when I built an example
 		
-		int ITER = 5;
+		int ITER = 20;
 		
 		int als[] = {5}; //DO + weka + CON target per cluster
 		int rs[] = {2}; // PACMAN
 		int rs1[] = {2}; // attack cluster
+		int rs2[] = {2}; // attack cluster + weka
+		int abslevel = 2; // attack cluster + weka
 		
 		int ranges[][] = {{0,1},{6,8},{9, 10}};
 		int[] percforranges = {80, 10, 10};
@@ -238,7 +240,7 @@ public class Main {
 				{
 				
 				// DO+ COntration + weka
-					ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
+				ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
 				}
 				
 				
@@ -251,13 +253,17 @@ public class Main {
 					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
 				}
 				
-				
-				
-				
 				for(int r: rs1)
 				{
 			////  activate clustering from the beginning, slave limit 10, path 10
 				   ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+				}
+				
+				
+				for(int r: rs2)
+				{
+			////  activate clustering from the beginning, slave limit 10, path 10
+				   ClusterTargets.dOWithAttackClusterWithWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10, abslevel);
 				}
 		
 		
