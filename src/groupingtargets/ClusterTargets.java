@@ -9868,7 +9868,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 }
 
 
-private static double[] dOWithAttackClusterWithWeka(int[][] gamedata,
+private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int abslevel2) throws Exception {
 
@@ -12560,10 +12560,20 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 			}
 		}
+		
+		int ntargetsforclusterfornotattackset = 1;
+
+		if(notattackset.size()<abslevel)
+		{
+			ntargetsforclusterfornotattackset = 1;
+		}
+		else
+		{
+			ntargetsforclusterfornotattackset = 2;
+		}
 
 
-
-		int nclusterfornotattackset = notattackset.size()/abslevel;
+		int nclusterfornotattackset = notattackset.size()/ntargetsforclusterfornotattackset;
 
 		// create clusters
 
@@ -12613,7 +12623,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		}
 		
 		
-		System.out.println("New instance size  "+ newinstance.size());
+		//System.out.println("New instance size  "+ newinstance.size());
 		
 		/**
 		 * cluster
@@ -12670,10 +12680,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		}
 		
 		
-		System.out.println("\n \n \nrealnotattacksetclusters\n \n \n");
-		printClusters(realnotattacksetclusters);
-		System.out.println("\n \n \n attacksetclusters \n \n \n");
-		printClusters(attacksetclusters);
+		//System.out.println("\n \n \nrealnotattacksetclusters\n \n \n");
+		//printClusters(realnotattacksetclusters);
+		//System.out.println("\n \n \n attacksetclusters \n \n \n");
+		//printClusters(attacksetclusters);
 
 		
 		
@@ -12727,9 +12737,9 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			finalcluster[0].add(0);
 			
 			
-			System.out.println("\n \n \n Final cluster \n \n \n");
+			//System.out.println("\n \n \n Final cluster \n \n \n");
 			
-			printClusters(finalcluster);
+			//printClusters(finalcluster);
 			
 			
 			
@@ -12763,7 +12773,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				
 			}
 			
-			printSuperTargets(sts);
+			//printSuperTargets(sts);
 			
 			
 			return sts;
@@ -16669,7 +16679,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void dOWithAttackClusterWithWekaTest(double[][] density,
+	public static void dOWithAttackClusterAndWekaTest(double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int abslevel) throws Exception {
@@ -16715,7 +16725,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackClusterWithWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abslevel);
+			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abslevel);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16742,7 +16752,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithAttackClusterWithWeka-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("dOWithAttackClusterAndWeka-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
