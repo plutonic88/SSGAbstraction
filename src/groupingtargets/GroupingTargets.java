@@ -4489,9 +4489,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 
 	}
 	
-	public static void wekaClusteringWithDOExpRW(int nrow, int ncol, int base, int dest, int k, int radius, int dmax, int nRes, int nTargets,
-			int LIMIT,int ap,HashMap<Integer,ArrayList<Integer>[]> allclus, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps ) throws Exception
+	public static void wekaClusteringWithDOExpRW(int nrow, int ncol, int base, int dest, int k, int radius, int dmax, int nRes) throws Exception
 	{
 
 
@@ -4504,25 +4502,10 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 		long clusteringtime = 0;
 		long slavetime = 0;
 		int finalsize = 0;
+		int LIMIT = 1;
 
 		for(int iter=0; iter<LIMIT; iter++)
 		{
-			/*ArrayList<Integer>[] clus = allclus.get(iter);
-			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
-			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
-			*/
-			
-			
-			
-			
-			
-			
-			
-		/*	ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
-			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
-			
-			
-			ArrayList<Integer>[] clus = GroupingTargets.createGraph3(targets, targetmaps);*/
 			
 			
 			
@@ -4533,6 +4516,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 			double elevation [][] = new double[560][560];
 			double u [][] = new double[nrow][ncol];
 			double e [][] = new double[nrow][ncol];
+			int nTargets = nrow*ncol;
 			
 			
 			

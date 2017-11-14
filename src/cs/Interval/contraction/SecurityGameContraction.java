@@ -13479,7 +13479,7 @@ public class SecurityGameContraction
 				tmp.setAnimaldensity(u[row][col]);
 				
 				try {
-					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("/Users/anjonsunny/Documents/workspace/IntervalSGAbstraction/"+"realdata3.csv"),true));
+					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("realdata.csv"),true));
 					
 					pw.append(tmp.getTargetid()+","+u[row][col]+ ","+(row*50) + ","+(col*50)+ "\n");
 					pw.close();
@@ -20561,6 +20561,79 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
 
 		//writeInFile("4",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets);
+		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
+		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
+
+	}
+	
+	
+	
+	public static void DORWTest(double[][] density,
+			int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+		int totalslaveiter = 0;
+		
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+			
+			
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			
+			
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			gamedata = constructGameData(targets);
+
+			Date start = new Date();
+			long l1 = start.getTime();
+			double[] res = DO(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+			
+			//long t1= System.nanoTime();
+
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			
+			//SecurityGameContraction.writeRes("DO", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
+
+			//writeInFile(sumthreshold/ITER, sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, 0);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+
+		writeInFile("DO",(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER,totaltime/ITER, nTargets, totalslaveiter/ITER,0, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 

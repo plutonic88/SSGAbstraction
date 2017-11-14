@@ -75,29 +75,40 @@ public class Main {
 		//int nRes=1;
 		//double dmax = 4;//Integer.parseInt(args[2]);
 
-	
+		int[][] e1 = {
+				/*{30, 30, 85, 150},*/
+				/*{40, 25, 125, 165},*/
+				//{40, 30, 145, 200}
+				/*{40, 40, 120, 266}*/
+				/*50,40,185,333*/
+		};
 		
 		
-		int nrow = 17;
+		int nrow = 14;
 		
-		int ncol = 17;
+		int ncol = 14;
 		
-		int dmax = 65;
+		int dmax = 56;
 		
-		int graphk = 35; // number of cluster when I built an example
+		int graphk = 33; // number of cluster when I built an example
 		
-		int ITER = 10;
+		int ITER = 5;
 		
-		int als[] = {5}; //DO + weka + CON target per cluster
-		int rs[] = {2}; // PACMAN
-		int rs1[] = {2}; // attack cluster
-		int rs2[] = {2}; // attack cluster + weka
-		int abslevelforattackclusterwithweka = 30; // attack cluster + weka
+		int als[] = {2}; //DO + weka + CON target per cluster
+		//radius
+		int rs[] = {1}; // PACMAN
+		int rs1[] = {1}; // attack cluster
+		int rs2[] = {1}; // attack cluster + weka
+		int percentagethreshold = 30; // perc of targets in restricted set other than attack set
+		int als1[] = {2};// #targets in cluster for Attackcluster + weka
 		
-		int ranges[][] = {{0,1},{6,8},{9, 10}};
-		int[] percforranges = {80, 10, 10};
+		int ranges[][] = {{0,1},{3,8},{9, 10}};
+		int[] percforranges = {75, 20, 5};
 		
+		/*int ranges[][] = {{0,7},{6,8},{8, 10}};
+		int[] percforranges = {90, 0, 10};*/
 		
+		int nRes=2;
 		
 		int solverk = 20; // number of cluster for solver
 		
@@ -128,7 +139,7 @@ public class Main {
 		
 		
 				
-		int nRes=2;
+		
 		int utiliy_l=0;
 		int utility_h=10;
 		int nTargets = nrow*ncol;
@@ -195,7 +206,7 @@ public class Main {
 		HashMap<Integer, ArrayList<TargetNode>> alltargets = new HashMap<Integer, ArrayList<TargetNode>>();
 		HashMap<Integer, HashMap<Integer, TargetNode>> alltargetmaps = new HashMap<Integer, HashMap<Integer, TargetNode>>();
 		//HashMap<Integer, ArrayList<Integer>[]> allclus = new HashMap<Integer, ArrayList<Integer>[]>();
-		//HashMap<Integer, ArrayList<Integer>[]> allclus = new HashMap<Integer, ArrayList<Integer>[]>();
+		HashMap<Integer, ArrayList<Integer>[]> allclus = new HashMap<Integer, ArrayList<Integer>[]>();
 		//double[][] density=SecurityGameContraction.generateRandomDensity( perc, ITER, lstart, lend,  hstart, hend, nTargets, false);
 		
 		//double[][] density = new double[ITER][nTargets];
@@ -220,60 +231,159 @@ public class Main {
 			ArrayList<Integer>[] clus = GroupingTargets.makeClusterWithRange(graphk , nTargets, utiliy_l, utility_h, 
 					targets, targetmaps, density, iter, ranges, percforranges);
 			ClusterTargets.buildFile(nrow,ncol,density,targets, iter );
-			//allclus.put(iter, clus);
+			allclus.put(iter, clus);
 			
 			
 		}
 		
 		
 		
-				///exp2 effect of #cluster/ radius
+		
+		
+		
+		
+		
+		
+		
+		
+		//////real world data/////
+		
+		
+		
+		int k=20;
+		nrow = 50;
+		ncol = 50;
+		ITER = 1;
+		GroupingTargets.wekaClusteringWithDOExpRW(nrow,ncol,base, dest, k, radius, dmax, nRes);
+		
+		SecurityGameContraction.DORWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+		
+		
+		int al = 4;
+		
+		ClusterTargets.dOWithWekaCONRWExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
+		
+		
+		int r = 1;
+		
+		ClusterTargets.DOWithPACMANClusteringRWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
+		
+		ClusterTargets.dOWithAttackClusterRWTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+		
+		
+		int p = 30;
+		
+		ClusterTargets.dOWithAttackClusterAndWekaRWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al);
+		
+		/////////////////////////////////////////
+		
+		
+		
+		
+				//////////////exp1/////////////////
 		
 		
 				//4 DO + GC multi + GP 3 + LP + GC multi 
-				SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+				//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
 				SecurityGameContraction.targets.clear();
-				
-				
 				
 				for(int al: als)
 				{
 				
 				// DO+ COntration + weka
-				   ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
+				   //ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, al);
 				}
-				
-				
-				
-				
 				
 				for(int r: rs)
 				{
 				
-					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
+					//ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
 				}
 				
 				for(int r: rs1)
 				{
-			////  activate clustering from the beginning, slave limit 10, path 10
-				   ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+					//activate clustering from the beginning, slave limit 10, path 10
+				   //ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
 				}
 				
+				//int all[] = {10,15,20,25,30,35,40,50};
 				
 				for(int r: rs2)
 				{
-			////  activate clustering from the beginning, slave limit 10, path 10
-				   ClusterTargets.dOWithAttackClusterAndWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10, abslevelforattackclusterwithweka);
+				
+					for(int al: als1)
+					{
+						
+						int[] pt = {1,2,5,10,15,20,25,30};
+						for(int p: pt)
+						{
+							//ClusterTargets.dOWithAttackClusterAndWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al);
+						}
+					}
 				}
 		
 		
 				
 				
+				///////exp2 ///// effect of targets per cluster
+				/*int al[] = {2,5,7,10,12};
+				
+				for(int a: al)
+				{
+				
+				// DO+ COntration + weka
+				   ClusterTargets.dOWithWekaCONExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, RADIUS, 10, 10, a);
+				}
 				
 				
 				
+				for(int a: al)
+				{
+					
+					int[] pt = {30};
+					for(int p: pt)
+					{
+						// r =2
+						ClusterTargets.dOWithAttackClusterAndWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 2, 10, 10,  p, a);
+					}
+				}*/
+				
+				//////////////////////////////////////
 				
 				
+				///////exp3 ////// effect of radius
+				
+				/*
+				int rss [] = {1,2,3,4};
+				for(int r: rss)
+				{
+
+					ClusterTargets.DOWithPACMANClusteringTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps,r , 10, 10);
+				}
+
+				for(int r: rss)
+				{
+					//activate clustering from the beginning, slave limit 10, path 10
+					ClusterTargets.dOWithAttackClusterTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+				}
+
+				for(int r: rss)
+				{
+					int[] pt = {30};
+					for(int p: pt)
+					{
+						// al =2
+						ClusterTargets.dOWithAttackClusterAndWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, 2);
+					}
+				}*/
+				
+				///////////////////////////////
+				
+				
+				////exp4 ////use exp1
+				
+				
+			
 				
 				
 				

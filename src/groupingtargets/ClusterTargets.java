@@ -9870,7 +9870,8 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
-		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int abslevel2) throws Exception {
+		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps,
+		int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
 
 
 	
@@ -10049,7 +10050,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 
 			
 			sts = constructSuperTargetsWithAttackClusterWeka(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, abslevel2, iter);
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, percthreshold, iter, als1);
 			
 			
 
@@ -10535,8 +10536,8 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 	}*/
 	
 	
-	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
-	//grid.drawPayoffGrid(nrow, ncol);
+	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithAttackClusWeka");
+    //grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
 
 
@@ -11224,8 +11225,8 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 	}*/
 	
 	
-	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
-	//grid.drawPayoffGrid(nrow, ncol);
+	ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
+	grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
 
 
@@ -12503,7 +12504,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> newtargetstocluster, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int abslevel, int iter) throws Exception {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int percthreshold, int iter, int als1) throws Exception {
 		
 			
 			// for now build a cluster
@@ -12562,16 +12563,56 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		}
 		
 		int ntargetsforclusterfornotattackset = 1;
-
-		if(notattackset.size()<abslevel)
+		
+		
+		double x = notattackset.size();
+		double y = tmpgraphmaps.size();
+		
+		double cursetperc = (x/y)*100.0;
+		
+		
+		//int al = (int)Math.ceil(cursetperc);
+		
+		
+		/*if(cursetperc>10 && cursetperc<20)
 		{
-			ntargetsforclusterfornotattackset = 1;
+			ntargetsforclusterfornotattackset = 2;
+			
+		}
+		else if(cursetperc>=20 && cursetperc<30)
+		{
+			ntargetsforclusterfornotattackset = 2;
+			
+		}
+		else if(cursetperc>=30 && cursetperc<40)
+		{
+			ntargetsforclusterfornotattackset = 3;
+			
+		}
+		else if(cursetperc>=40 && cursetperc<50)
+		{
+			ntargetsforclusterfornotattackset = 4;
+			
+		}
+		else if(cursetperc>=50)
+		{
+			ntargetsforclusterfornotattackset = 5;
+			
 		}
 		else
 		{
 			ntargetsforclusterfornotattackset = 2;
 		}
+		
+		*/
+		
+		
 
+		if(cursetperc > percthreshold)
+		{
+			ntargetsforclusterfornotattackset = als1;
+		}
+		
 
 		int nclusterfornotattackset = notattackset.size()/ntargetsforclusterfornotattackset;
 
@@ -13756,7 +13797,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				double diff = Math.abs(centertarget.attackerreward - attackednode.attackerreward);
 				
 				double dist = centertarget.getDistance(attackednode);
-				if((dist<=RADIUS) && (dist<mindist) && (diff<=2)/*&& (clus.size()<5)*/)
+				if((dist<=RADIUS) && (dist<mindist) /*&&(clus.size()<5)*/)
 				{
 					mindist = dist;
 					minclus = clusid;
@@ -16597,6 +16638,87 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
+	public static void dOWithAttackClusterRWTest3(double[][] density,
+			int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+		int totalslaveiter = 0;
+		long sumclustertime = 0;
+		
+		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+			
+			
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			/*if(iter==4)
+			{
+				System.out.println("xx");
+			}
+			*/
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			
+			
+			
+			gamedata = constructGameData(targets);
+
+			Date start = new Date();
+			long l1 = start.getTime();
+			
+			double[] res = dOWithAttackCluster3(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			sumclustertime += res[7];
+			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
+
+			//SecurityGameContraction.writeRes("DOClus", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+		
+		//writeClusterHist(clusterhistogram, ITER, nTargets);
+
+		SecurityGameContraction.writeInFile("DOWithAttackCluster3-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
+		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
+		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
+
+	}
+	
+	
 	public static void dOWithAttackClusterTest3(double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
@@ -16670,7 +16792,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithAttackCluster3-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("DOWithAttackCluster3-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
@@ -16682,7 +16804,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	public static void dOWithAttackClusterAndWekaTest(double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int abslevel) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16725,7 +16847,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abslevel);
+			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
+					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16752,7 +16875,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithAttackClusterAndWeka-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("DOWithAttackClusterAndWeka-"+(RADIUS)+"-"+(als1)+"-"+(percthreshold),(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
@@ -16835,12 +16958,95 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//writeClusterHist(clusterhistogram, ITER, nTargets);
 
-		SecurityGameContraction.writeInFile("dOWithWeka+CON-"+abstractionlevel,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+		SecurityGameContraction.writeInFile("DOWithWeka-"+abstractionlevel,(int)sumfinaltargetsize/ITER, sumsol/ITER,
 				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
 		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
 	}
+	
+	
+	public static void dOWithWekaCONRWExp(double[][] density,
+			int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int abstractionlevel) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+		int totalslaveiter = 0;
+		long sumclustertime = 0;
+		
+		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+			
+			
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			/*if(iter==4)
+			{
+				System.out.println("xx");
+			}
+			*/
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			
+			
+			
+			gamedata = constructGameData(targets);
+
+			Date start = new Date();
+			long l1 = start.getTime();
+			
+			double[] res = dOWithWekaCON(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
+					targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abstractionlevel);
+			
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			sumclustertime += res[7];
+			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
+
+			//SecurityGameContraction.writeRes("DOClus", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+		
+		//writeClusterHist(clusterhistogram, ITER, nTargets);
+
+		SecurityGameContraction.writeInFile("DOWithWeka-"+abstractionlevel,(int)sumfinaltargetsize/ITER, sumsol/ITER,
+				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
+		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
+		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
+
+	}
+	
 	
 	
 	
@@ -17011,6 +17217,91 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
 
 	}
+	
+	
+	public static void DOWithPACMANClusteringRWTest(double[][] density,
+			int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+		int totalslaveiter = 0;
+		long sumclustertime = 0;
+		
+		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+			
+			
+			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
+			
+			/*if(iter==4)
+			{
+				System.out.println("xx");
+			}
+			*/
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
+			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
+			
+			
+			
+			
+			gamedata = constructGameData(targets);
+
+			Date start = new Date();
+			long l1 = start.getTime();
+			
+			double[] res = DOWithPACMANClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+			
+			//long t1= System.nanoTime();
+
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			sumclustertime += res[7];
+			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
+
+		//	SecurityGameContraction.writeRes("DOWithPACMANClusteing", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+		
+		//writeClusterHist(clusterhistogram, ITER, nTargets);
+
+		SecurityGameContraction.writeInFile("DOWithPACMANClusteing-"+RADIUS,(int)sumfinaltargetsize/ITER, sumsol/ITER, sumcontractiontime/ITER,
+				sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
+		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
+		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
+
+	}
+	
 	
 	
 	public static void DOWithSplitPACMANClusteringTest(double[][] density,
