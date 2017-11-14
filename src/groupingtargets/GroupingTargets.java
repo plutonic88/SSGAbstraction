@@ -117,7 +117,7 @@ public class GroupingTargets {
 		//ReadData.createCSVData(560, 560, utility, elevation);
 		//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
 		ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
-		SecurityGameContraction.buildcsvGraph(nrow,ncol,utility, elevation,targets );
+		//SecurityGameContraction.buildcsvGraph(nrow,ncol,utility, elevation,targets );
 	}
 	
 	

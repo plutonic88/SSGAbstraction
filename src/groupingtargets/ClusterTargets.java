@@ -24,6 +24,7 @@ import cs.Interval.contraction.Logger;
 import cs.Interval.contraction.SecurityGameContraction;
 import cs.Interval.contraction.TargetNode;
 import cs.com.allpair.AllPairShortestPath;
+import cs.com.realworld.ReadData;
 import weka.clusterers.EM;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -11225,8 +11226,8 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 	}*/
 	
 	
-	ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
-	grid.drawPayoffGrid(nrow, ncol);
+	//ButtonGrid grid = new ButtonGrid(targetmaps, sts, "DOWithClus");
+	//grid.drawPayoffGrid(nrow, ncol);
 	//grid.drawCluster(nrow, ncol);
 
 
@@ -16662,24 +16663,31 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		{
 
 			
+			double utility [][] = new double[560][560];
+			double elevation [][] = new double[560][560];
+			double u [][] = new double[nrow][ncol];
+			double e [][] = new double[nrow][ncol];
+			nTargets = nrow*ncol;
 			
-			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
-			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
 			
-			/*if(iter==4)
+			
+			
+			ReadData.readData(560, 560, utility, elevation);
+			ReadData.getChunk(utility, elevation, 0, 0, nrow, ncol, u, e);
+			
+			
+			ReadData.createCSVData(560, 560, utility, elevation);
+			//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
+			ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
+			SecurityGameContraction.buildcsvGraph(nrow,ncol,u, e,targets );
+			
+			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
+			for(TargetNode t: targets)
 			{
-				System.out.println("xx");
+				targetmaps.put(t.getTargetid(), t);
 			}
-			*/
 			
-			//printNodesWithNeighborsAndPath(targetmaps);
-
-			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
-			
-			
-			
-			
-			gamedata = constructGameData(targets);
+			int[][] gamedata = constructGameData(targets);
 
 			Date start = new Date();
 			long l1 = start.getTime();
@@ -16883,6 +16891,96 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
+	public static void dOWithAttackClusterAndWekaRWTest(double[][] density,
+			int ITER, int nrow, int ncol,
+			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
+		// TODO Auto-generated method stub
+
+		int nTargets = nrow*ncol;
+		double sumsol=0;
+		long sumcontractiontime = 0;
+		long sumsolvtime =0;
+		long sumfinaltargetsize = 0;
+		long sumthreshold = 0;
+		long sumslavetime = 0;
+		long totaltime = 0;
+		int totalslaveiter = 0;
+		long sumclustertime = 0;
+		
+		HashMap<Integer, Integer> clusterhistogram = new HashMap<Integer, Integer>();
+
+
+		for(int iter=0; iter<ITER; iter++)
+		{
+
+			
+			double utility [][] = new double[560][560];
+			double elevation [][] = new double[560][560];
+			double u [][] = new double[nrow][ncol];
+			double e [][] = new double[nrow][ncol];
+			nTargets = nrow*ncol;
+			
+			
+			
+			
+			ReadData.readData(560, 560, utility, elevation);
+			ReadData.getChunk(utility, elevation, 0, 0, nrow, ncol, u, e);
+			
+			
+			ReadData.createCSVData(560, 560, utility, elevation);
+			//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
+			ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
+			SecurityGameContraction.buildcsvGraph(nrow,ncol,u, e,targets );
+			
+			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
+			for(TargetNode t: targets)
+			{
+				targetmaps.put(t.getTargetid(), t);
+			}
+			
+			int[][] gamedata = constructGameData(targets);
+			Date start = new Date();
+			long l1 = start.getTime();
+			
+			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
+					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1);
+			
+			Date stop = new Date();
+			long l2 = stop.getTime();
+			long diff = l2 - l1;
+			totaltime += diff;
+
+
+			System.out.println("\nDef exp utility : "+ res[0]);
+			sumsol += res[0];
+			sumcontractiontime += res[1];
+			sumsolvtime += res[2];
+			sumfinaltargetsize += res[3];
+			sumthreshold += res[4];
+			sumslavetime += res[5];
+			totalslaveiter += res[6];
+			sumclustertime += res[7];
+			//writeInFile(Integer.toString(iter),  (int)res[3], res[0], sumcontractiontime/iter, sumsolvtime/iter, sumslavetime/10, totaltime/10);
+
+			//SecurityGameContraction.writeRes("DOClus", iter, (int)sumfinaltargetsize/ITER, res[0], sumcontractiontime/ITER, sumsolvtime/ITER, totaltime/ITER);
+
+		}
+
+		System.out.println("\nDef avg exp utility : "+ sumsol/ITER);
+		
+		//writeClusterHist(clusterhistogram, ITER, nTargets);
+
+		SecurityGameContraction.writeInFile("DOWithAttackClusterAndWeka-"+(RADIUS)+"-"+(als1)+"-"+(percthreshold),(int)sumfinaltargetsize/ITER, sumsol/ITER,
+				sumcontractiontime/ITER, sumsolvtime/ITER, sumslavetime/ITER, totaltime/ITER, nTargets, totalslaveiter/ITER, sumclustertime/ITER, slavelimit, pathlimit);
+		//writeInFile("4",(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10);
+		//(int)sumfinaltargetsize/10, sumsol/10, sumcontractiontime/10, sumsolvtime/10, sumslavetime/10, totaltime/10
+
+	}
+	
+	
+	
+	
 	
 	public static void dOWithWekaCONExp(double[][] density,
 			int ITER, int nrow, int ncol,
@@ -16991,14 +17089,14 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 			
 			
-			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
+			/*ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
 			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
 			
-			/*if(iter==4)
+			if(iter==4)
 			{
 				System.out.println("xx");
 			}
-			*/
+			
 			
 			//printNodesWithNeighborsAndPath(targetmaps);
 
@@ -17007,10 +17105,48 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			
 			
 			
-			gamedata = constructGameData(targets);
+			gamedata = constructGameData(targets);*/
+			
+			
+			
+
+			
+			/*int nrow = 50;
+			int ncol = 50;*/
+			double utility [][] = new double[560][560];
+			double elevation [][] = new double[560][560];
+			double u [][] = new double[nrow][ncol];
+			double e [][] = new double[nrow][ncol];
+			nTargets = nrow*ncol;
+			
+			
+			
+			
+			ReadData.readData(560, 560, utility, elevation);
+			ReadData.getChunk(utility, elevation, 0, 0, nrow, ncol, u, e);
+			
+			
+			ReadData.createCSVData(560, 560, utility, elevation);
+			//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
+			ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
+			SecurityGameContraction.buildcsvGraph(nrow,ncol,u, e,targets );
+			
+			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
+			for(TargetNode t: targets)
+			{
+				targetmaps.put(t.getTargetid(), t);
+			}
+			
+			int[][] gamedata = constructGameData(targets);
+			
+			
+			//printNodesWithNeighborsAndPath(targetmaps);
+
 
 			Date start = new Date();
 			long l1 = start.getTime();
+			
+			
 			
 			double[] res = dOWithWekaCON(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
 					targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abstractionlevel);
@@ -17242,25 +17378,31 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		for(int iter=0; iter<ITER; iter++)
 		{
 
+			double utility [][] = new double[560][560];
+			double elevation [][] = new double[560][560];
+			double u [][] = new double[nrow][ncol];
+			double e [][] = new double[nrow][ncol];
+			nTargets = nrow*ncol;
 			
 			
-			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
-			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
 			
-			/*if(iter==4)
+			
+			ReadData.readData(560, 560, utility, elevation);
+			ReadData.getChunk(utility, elevation, 0, 0, nrow, ncol, u, e);
+			
+			
+			ReadData.createCSVData(560, 560, utility, elevation);
+			//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
+			ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
+			SecurityGameContraction.buildcsvGraph(nrow,ncol,u, e,targets );
+			
+			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
+			for(TargetNode t: targets)
 			{
-				System.out.println("xx");
+				targetmaps.put(t.getTargetid(), t);
 			}
-			*/
 			
-			//printNodesWithNeighborsAndPath(targetmaps);
-
-			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
-			
-			
-			
-			
-			gamedata = constructGameData(targets);
+			int[][] gamedata = constructGameData(targets);
 
 			Date start = new Date();
 			long l1 = start.getTime();

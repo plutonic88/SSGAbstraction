@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.text.Format;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -13419,7 +13418,7 @@ public class SecurityGameContraction
 	}
 	
 	
-	public static void buildcsvGraph(int numRow, int numCol, double[][] u, double[][] e, ArrayList<TargetNode> targets) 
+	public static void buildcsvGraph(int numRow, int numCol, double[][] u, double[][] e, ArrayList<TargetNode> targets) throws IOException 
 	{
 		/**
 		 * create the nodes and add to the target list
@@ -13455,8 +13454,31 @@ public class SecurityGameContraction
 		 * build the connections and graph
 		 */
 		int targetid = 0;
-		
-		
+
+
+		try {
+
+			new File("result").mkdirs();
+
+			File f = new File("result/realdata"+0+".csv");
+
+			if(f.exists())
+			{
+				f.delete();
+				f.createNewFile();
+			}
+
+
+			PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/realdata"+0+".csv"),true));
+
+			pw.append("Id,U,X,Y"+"\n");
+			pw.close();
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+
 		for(int row=0; row<numRow; row++)
 		{
 			for(int col=0; col<numCol; col++)
@@ -13466,21 +13488,21 @@ public class SecurityGameContraction
 				 */
 
 				TargetNode tmp = targets.get(targetid);
-				
-				
+
+
 				tmp.setRowCol(row, col);
-				
-				
+
+
 				tmp.setCoinvalue(u[row][col]);
 				tmp.defenderreward = 0;
 				tmp.defenderpenalty = -u[row][col];
 				tmp.attackerreward = u[row][col];
 				tmp.attackerpenalty = 0;
 				tmp.setAnimaldensity(u[row][col]);
-				
+
 				try {
-					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("realdata.csv"),true));
-					
+					PrintWriter pw = new PrintWriter(new FileOutputStream(new File("result/realdata"+0+".csv"),true));
+
 					pw.append(tmp.getTargetid()+","+u[row][col]+ ","+(row*50) + ","+(col*50)+ "\n");
 					pw.close();
 				} catch (FileNotFoundException e1) {
@@ -13488,8 +13510,8 @@ public class SecurityGameContraction
 					e1.printStackTrace();
 				}
 
-				
-				
+
+
 				
 				
 				
@@ -20589,18 +20611,31 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		{
 
 			
+			double utility [][] = new double[560][560];
+			double elevation [][] = new double[560][560];
+			double u [][] = new double[nrow][ncol];
+			double e [][] = new double[nrow][ncol];
+			nTargets = nrow*ncol;
 			
-			ArrayList<TargetNode> targets = alltargets.get(iter);//new ArrayList<TargetNode>();
-			HashMap<Integer,TargetNode> targetmaps = alltargetmaps.get(iter); //new HashMap<Integer, TargetNode>();
 			
 			
 			
+			ReadData.readData(560, 560, utility, elevation);
+			ReadData.getChunk(utility, elevation, 0, 0, nrow, ncol, u, e);
 			
-			//printNodesWithNeighborsAndPath(targetmaps);
-
-			int[][] gamedata = new int[nTargets][4];//SecurityGameAbstraction.parseSecurityGameFile("inputr-0.700000.csv", iter);
 			
-			gamedata = constructGameData(targets);
+			ReadData.createCSVData(560, 560, utility, elevation);
+			//int[][] gamedata = SecurityGameContraction.constructGameData(utility);
+			ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
+			SecurityGameContraction.buildcsvGraph(nrow,ncol,u, e,targets );
+			
+			HashMap<Integer,TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
+			for(TargetNode t: targets)
+			{
+				targetmaps.put(t.getTargetid(), t);
+			}
+			
+			int[][] gamedata = constructGameData(targets);
 
 			Date start = new Date();
 			long l1 = start.getTime();

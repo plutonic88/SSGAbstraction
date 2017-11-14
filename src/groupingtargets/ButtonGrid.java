@@ -66,7 +66,7 @@ class ButtonGrid {
 
 				
 				
-				au *= 10;
+				//au *= 10;
 				
 				
 
