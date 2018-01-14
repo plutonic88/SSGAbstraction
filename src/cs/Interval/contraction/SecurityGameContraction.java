@@ -30246,7 +30246,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		 * 1. sort the targets
 		 */
 		int[][] targetssorted = sortTargets(targets);
-		//printSortedTargets(targetssorted);
+		printSortedTargets(targetssorted);
 
 		ArrayList<Integer> currenttargets = buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
 		//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);

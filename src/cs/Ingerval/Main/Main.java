@@ -84,26 +84,26 @@ public class Main {
 		};
 		
 		
-		int nrow = 25;
+		int nrow = 30;
 		
-		int ncol = 25;
+		int ncol = 30;
 		
-		int dmax = 16000;
+		int dmax = 20000;
 		
-		int graphk = 33; // number of cluster when I built an example
+		int graphk = 66; // number of cluster when I built an example
 		
 		int ITER = 1;
 		
 		int als[] = {2}; //DO + weka + CON target per cluster
 		//radius
-		int rs[] = {1}; // PACMAN
-		int rs1[] = {1}; // attack cluster
-		int rs2[] = {1}; // attack cluster + weka
+		int rs[] = {100}; // PACMAN
+		int rs1[] = {100}; // attack cluster
+		int rs2[] = {100}; // attack cluster + weka
 		int percentagethreshold = 30; // perc of targets in restricted set other than attack set
 		int als1[] = {2};// #targets in cluster for Attackcluster + weka
 		
-		int ranges[][] = {{0,1},{3,8},{9, 10}};
-		int[] percforranges = {75, 20, 5};
+		int ranges[][] = {{0,2},{3,8},{9, 10}};
+		int[] percforranges = {80, 10, 10};
 		
 		/*int ranges[][] = {{0,7},{6,8},{8, 10}};
 		int[] percforranges = {90, 0, 10};*/
@@ -213,7 +213,7 @@ public class Main {
 		
 		//double[][] density = new double[ITER][nTargets];
 		
-		/*
+		
 		
 		for(int iter = 0; iter<ITER; iter++)
 		{
@@ -238,7 +238,7 @@ public class Main {
 			
 		}
 		
-		*/
+		
 		
 		
 		
@@ -254,7 +254,7 @@ public class Main {
 		
 		//GroupingTargets.wekaClusteringWithDOExpRW(nrow,ncol,base, dest, k, radius, dmax, nRes);
 		
-		SecurityGameContraction.DORWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+		//SecurityGameContraction.DORWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
 		
 		
 		//int al = 4;
@@ -266,7 +266,7 @@ public class Main {
 			{
 			
 				// ris not needed
-				ClusterTargets.dOWithWekaCONRWExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10, al);
+				//ClusterTargets.dOWithWekaCONRWExp(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10, al);
 			}
 		}
 		
@@ -281,7 +281,7 @@ public class Main {
 		for(int r: rs1)
 		{
 		
-		ClusterTargets.dOWithAttackClusterRWTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
+			//ClusterTargets.dOWithAttackClusterRWTest3(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10);
 		}
 		
 		
@@ -291,9 +291,11 @@ public class Main {
 			
 			for(int r: rs2)
 			{
-				int[] pt = {1,2,5,10,20,30};
+				int[] pt = {/*1,2,5,10,20,30,*/50};
 				for(int p: pt)
 				{
+					//if(al==4 && p<=30)
+					//	continue;
 					ClusterTargets.dOWithAttackClusterAndWekaRWTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al);
 				}
 			}
@@ -308,8 +310,8 @@ public class Main {
 		
 		
 				//4 DO + GC multi + GP 3 + LP + GC multi 
-				//SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
-				/*SecurityGameContraction.targets.clear();
+				SecurityGameContraction.DOTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, 10, 10 );
+				SecurityGameContraction.targets.clear();
 				
 				for(int al: als)
 				{
@@ -338,14 +340,17 @@ public class Main {
 					for(int al: als1)
 					{
 						
-						int[] pt = {1,2,5,10,15,20,25,30};
+						int[] pt = {/*5,10,15,20,25,*/30};
 						for(int p: pt)
 						{
 							//ClusterTargets.dOWithAttackClusterAndWekaTest(density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al);
+							// make a version with pacman
 						}
 					}
 				}
-		*/
+				
+				
+		
 		
 				
 				

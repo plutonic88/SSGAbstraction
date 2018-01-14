@@ -12574,10 +12574,52 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		//int al = (int)Math.ceil(cursetperc);
 		
+		int nt = (int)(cursetperc/100.0)*tmpgraphmaps.size();
 		
-		/*if(cursetperc>10 && cursetperc<20)
+		if(nt<10)
+		{
+			ntargetsforclusterfornotattackset = 1;
+			
+		}
+		else if(nt>10 && nt<20)
+		{
+			ntargetsforclusterfornotattackset = 1;
+			
+		}
+		else if(nt>=20 && nt<30)
+		{
+			ntargetsforclusterfornotattackset = 1;
+			
+		}
+		else if(nt>=30 && nt<40)
 		{
 			ntargetsforclusterfornotattackset = 2;
+			
+		}
+		else if(nt>=40 && nt<50)
+		{
+			ntargetsforclusterfornotattackset = 2;
+			
+		}
+		else if(nt>=50 && nt<100)
+		{
+			ntargetsforclusterfornotattackset = 3;
+			
+		}
+		else
+		{
+			ntargetsforclusterfornotattackset = 3;
+		}
+		
+		
+		/*if(cursetperc<10)
+		{
+			ntargetsforclusterfornotattackset = 1;
+			
+		}
+		else if(cursetperc>10 && cursetperc<20)
+		{
+			ntargetsforclusterfornotattackset = 1;
 			
 		}
 		else if(cursetperc>=20 && cursetperc<30)
@@ -12587,32 +12629,32 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		}
 		else if(cursetperc>=30 && cursetperc<40)
 		{
-			ntargetsforclusterfornotattackset = 3;
+			ntargetsforclusterfornotattackset = 2;
 			
 		}
 		else if(cursetperc>=40 && cursetperc<50)
 		{
-			ntargetsforclusterfornotattackset = 4;
+			ntargetsforclusterfornotattackset = 2;
 			
 		}
 		else if(cursetperc>=50)
 		{
-			ntargetsforclusterfornotattackset = 5;
+			ntargetsforclusterfornotattackset = 2;
 			
 		}
 		else
 		{
 			ntargetsforclusterfornotattackset = 2;
 		}
-		
 		*/
 		
 		
+		
 
-		if(cursetperc > percthreshold)
+		/*if(cursetperc > percthreshold)
 		{
 			ntargetsforclusterfornotattackset = als1;
-		}
+		}*/
 		
 
 		int nclusterfornotattackset = notattackset.size()/ntargetsforclusterfornotattackset;
@@ -12671,7 +12713,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		 * cluster
 		 */
 		
-		if(nclusterfornotattackset<=2)
+		if(nclusterfornotattackset<2)
 		{
 			nclusterfornotattackset = 3;
 		}
@@ -13798,7 +13840,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				double diff = Math.abs(centertarget.attackerreward - attackednode.attackerreward);
 				
 				double dist = centertarget.getDistance(attackednode);
-				if((dist<=RADIUS) && (dist<mindist) /*&&(clus.size()<5)*/)
+				if((dist<=RADIUS) && (dist<mindist) && (clus.size()<5))
 				{
 					mindist = dist;
 					minclus = clusid;
