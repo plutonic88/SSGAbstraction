@@ -10931,12 +10931,12 @@ public class SecurityGameContraction
 	
 	
 
-	public static ArrayList<ArrayList<Integer>> generatePathsGreedy3WithAPSP(double dmax, int[][] gamedata, ArrayList<TargetNode> targets,
+	public static ArrayList<ArrayList<Integer>> generateGRDYPaths( int baseid, double dmax, int[][] gamedata, ArrayList<TargetNode> targets,
 			ArrayList<Integer> currenttargets, int nRes) throws Exception
 			{
 
 
-		TargetNode base = getTargetNode(0, targets);
+		TargetNode base = getTargetNode(baseid, targets);
 		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
 		
 		
@@ -10974,7 +10974,7 @@ public class SecurityGameContraction
 
 		for(TargetNode dest: targets)
 		{
-			if(dest.getTargetid()!=0)
+			if(dest.getTargetid()!=base.getTargetid())
 			{
 
 				//System.out.println("FInding shortest dist for target "+ dest.getTargetid());
@@ -11106,12 +11106,12 @@ public class SecurityGameContraction
 	
 	
 	
-	public static void pathForAT(double dmax, ArrayList<TargetNode> targets,
+	public static void pathForAT(int baseid, double dmax, ArrayList<TargetNode> targets,
 			ArrayList<Integer> currenttargets, int nRes, ArrayList<Integer> attackedtarget, ArrayList<ArrayList<Integer>> newpathseq) throws Exception
 			{
 
 
-		TargetNode base = getTargetNode(0, targets);
+		TargetNode base = getTargetNode(baseid, targets);
 		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
 		
 		
@@ -11291,12 +11291,12 @@ public class SecurityGameContraction
 	
 	
 	
-	public static ArrayList<ArrayList<Integer>> generatePathsForSuperTargetsAPSP(double dmax, HashMap<Integer, SuperTarget> sts,
+	public static ArrayList<ArrayList<Integer>> generatePathsForSuperTargetsAPSP(int base_stid, double dmax, HashMap<Integer, SuperTarget> sts,
 			HashMap<Integer,TargetNode> targetmaps, int nRes, HashMap<Integer,Double> dstravel) throws Exception
 			{
 
 
-		SuperTarget base = sts.get(0);
+		SuperTarget base = sts.get(base_stid);
 		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
 		
 		
@@ -11338,7 +11338,7 @@ public class SecurityGameContraction
         for(SuperTarget dest: sts.values())
         {
         	//System.out.println("Src 0"+ ", dest "+ dest.stid);
-        	if(dest.stid!=0)
+        	if(dest.stid!=base_stid)
         	{
 
         		//System.out.println("FInding shortest dist for target "+ dest.stid);
@@ -11409,10 +11409,6 @@ public class SecurityGameContraction
     				{
     					pathnodes.add(tmppathnodes.get(tmppathnodes.size()-k-1));
     				}
-    				
-    				
-    				
-    				
     				
     				
     				if(tmppathnodes.size()==0)
@@ -11496,7 +11492,7 @@ public class SecurityGameContraction
 			{
 
 
-		SuperTarget base = sts.get(0);
+		SuperTarget base_st = sts.get(0);
 		ArrayList<ArrayList<Integer>> paths = new ArrayList<ArrayList<Integer>>();
 		
 		
@@ -11546,10 +11542,10 @@ public class SecurityGameContraction
         		//System.out.println("FInding shortest dist for target "+ dest.stid);
         		ArrayList<Integer>  pathnodes = new ArrayList<Integer>();
         		ArrayList<SuperTarget>  pnodes = new ArrayList<SuperTarget>();
-        		if(base.neighbors.containsKey(dest.stid))
+        		if(base_st.neighbors.containsKey(dest.stid))
 				{
 					//pnodes = base.getPath(dest);
-        			int src = base.stid;
+        			int src = base_st.stid;
             		int des = dest.stid;
 
 
@@ -11579,7 +11575,7 @@ public class SecurityGameContraction
         			//System.out.print("dist covered "+ distcovered1+"\n");
 
 
-        			int src = base.stid;
+        			int src = base_st.stid;
         			int des = dest.stid;
 
 
@@ -11670,7 +11666,7 @@ public class SecurityGameContraction
 
         		ArrayList<Integer> tmppath = new ArrayList<Integer>();
         		//System.out.print("\n0->");
-        		tmppath.add(base.stid);
+        		tmppath.add(base_st.stid);
         		for(int k=0; k<pathnodes.size(); k++)
         		{
         			tmppath.add(pathnodes.get(pathnodes.size()-k-1));
@@ -17097,7 +17093,7 @@ public class SecurityGameContraction
 	
 	
 	public static ArrayList<ArrayList<Integer>> buildSTSlavePaths(
-			HashMap<Integer, TargetNode> targetmaps, double dmax, int nTargets, int base, 
+			HashMap<Integer, TargetNode> targetmaps, double dmax, int nTargets, int base_st, 
 			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, 
 			HashMap<Integer,Double> dstravel, int pathlimit) {
 
@@ -17138,7 +17134,7 @@ public class SecurityGameContraction
 
 
 
-		return greedySTSlavePaths(base, targetmaps, dmax, targetssorted, apsp, map,mapback, nRes, attackerstrategy, sts, dstravel, pathlimit);
+		return greedySTSlavePaths(base_st, targetmaps, dmax, targetssorted, apsp, map,mapback, nRes, attackerstrategy, sts, dstravel, pathlimit);
 	}
 	
 	
@@ -18495,7 +18491,7 @@ public class SecurityGameContraction
 	
 	
 	
-	private static ArrayList<ArrayList<Integer>> greedySTSlavePaths(int base, HashMap<Integer, TargetNode> targets,
+	private static ArrayList<ArrayList<Integer>> greedySTSlavePaths(int base_st, HashMap<Integer, TargetNode> targets,
 			double dmax, int[][] targetssorted, int[][] apspmat,
 			HashMap<Integer, Integer> map, HashMap<Integer, Integer> mapback,
 			int nRes, HashMap<Integer,Double> attackerstrategy, HashMap<Integer, SuperTarget> sts, HashMap<Integer,Double> dstravel, int pathlimit) 
@@ -18546,13 +18542,13 @@ public class SecurityGameContraction
 				//System.out.println("res = "+res);
 				//System.out.println("Adding base to greedy path : ");
 				greedypath.clear();
-				greedypath.add(base);
-				greedypath.add(base);
+				greedypath.add(base_st);
+				greedypath.add(base_st);
 				//printGreedyPath(greedypath);
 				int totaldist = 0;
-				totalcoin = totalcoin + remaincoin.get(base);
-				remaincoin.remove(base);
-				remaincoin.put(base, 0.0);
+				totalcoin = totalcoin + remaincoin.get(base_st);
+				remaincoin.remove(base_st);
+				remaincoin.put(base_st, 0.0);
 				while(i<tsrt.size())
 				{
 					int besttotaldisttemp = -1;
@@ -18662,10 +18658,10 @@ public class SecurityGameContraction
 					}
 					i++;
 				} // while loop
-				if(greedypath.size()==2 && greedypath.get(0)==base && greedypath.get(0)==base)
+				if(greedypath.size()==2 && greedypath.get(0)==base_st && greedypath.get(0)==base_st)
 				{
 					greedypath.clear();
-					greedypath.add(base);
+					greedypath.add(base_st);
 				}
 				if(greedypath.size()>=3)
 				{
@@ -20142,7 +20138,7 @@ public class SecurityGameContraction
 	
 
 
-	public static void doubleOracleGCSingleGP3LPGCMultiTest(double[][] density,
+	public static void doubleOracleGCSingleGP3LPGCMultiTest(int base, double[][] density,
 			int ITER, int nrow, int ncol, int[] percentages, int[] thresholds,
 			double dmax, int nRes) throws Exception {
 		// TODO Auto-generated method stub
@@ -20164,7 +20160,7 @@ public class SecurityGameContraction
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = doubleOracleGCSingleGP3LPGCMulti(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
+			double[] res = doubleOracleGCSingleGP3LPGCMulti(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -20196,7 +20192,7 @@ public class SecurityGameContraction
 	
 
 
-	public static void doubleOracleGCSingleGP3LPSamplePathTest(double[][] density,
+	public static void doubleOracleGCSingleGP3LPSamplePathTest(int base, double[][] density,
 			int ITER, int nrow, int ncol, int[] percentages, int[] thresholds,
 			double dmax, int nRes) throws Exception {
 		// TODO Auto-generated method stub
@@ -20218,7 +20214,7 @@ public class SecurityGameContraction
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = doubleOracleGCSingleGP3LPSamplePath(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
+			double[] res = doubleOracleGCSingleGP3LPSamplePath(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -20590,7 +20586,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 	
-	public static void DORWTest(double[][] density,
+	public static void DORWTest(int base, int dest, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit) throws Exception {
 		// TODO Auto-generated method stub
@@ -20639,7 +20635,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = DO(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
+			double[] res = DO(base, dest, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -20676,7 +20672,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 	
-	public static void DOTest(double[][] density,
+	public static void DOTest(int base, int dest, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int slavelimit, int pathlimit) throws Exception {
 		// TODO Auto-generated method stub
@@ -20712,7 +20708,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = DO(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
+			double[] res = DO(base, dest, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, slavelimit, pathlimit);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;
@@ -23410,7 +23406,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 
-	private static double[] doubleOracleGCSingleGP3LPGCMulti(int[][] gamedata,
+	private static double[] doubleOracleGCSingleGP3LPGCMulti(int base, int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
 			dmax, int iter, int nrow, int ncol) throws Exception {
 
@@ -23526,7 +23522,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(base, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -23865,7 +23861,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 
-	private static double[] doubleOracleGCSingleGP3LPSamplePath(int[][] gamedata,
+	private static double[] doubleOracleGCSingleGP3LPSamplePath(int base, int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
 			dmax, int iter, int nrow, int ncol) throws Exception {
 
@@ -23981,7 +23977,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(base, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -26365,7 +26361,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -26832,7 +26828,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -27332,7 +27328,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0,dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -27831,7 +27827,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -28334,7 +28330,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -28835,7 +28831,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -29339,7 +29335,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -29845,7 +29841,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -30225,7 +30221,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 	
 	
 	
-	private static double[] DO(int[][] gamedata,
+	private static double[] DO(int base, int dest, int[][] gamedata,
 			int nTargets, int nRes, double[][] density, double
 			dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int slavelimit, int pathlimit) throws Exception {
 
@@ -30248,7 +30244,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		int[][] targetssorted = sortTargets(targets);
 		printSortedTargets(targetssorted);
 
-		ArrayList<Integer> currenttargets = buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+		ArrayList<Integer> currenttargets = buildGreedyCoverMultRes(targets, dmax, nTargets, base, nRes); //  new ArrayList<Integer>();
 		//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
 		/*currenttargets.add(targetssorted[0][0]);
 		currenttargets.add(targetssorted[1][0]);*/
@@ -30358,7 +30354,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(base, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -30372,7 +30368,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 			}
 			//makePathSeq(pathseq, goals, goals.size(), tmpgraph.size(), map, mapback, tmpgraph);
-			//printPaths(pathseq);
+			printPaths(pathseq);
 			System.out.println("Total path with duplicates "+pathseq.size());
 			pathseq = removeDuplicatePathSimple(pathseq);
 			System.out.println("Total path without duplicates "+pathseq.size()+"\n");
@@ -30380,7 +30376,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 
 
 
-			//printPaths(pathseq);
+			printPaths(pathseq);
 
 			/**
 			 * keep only nRes*3 paths from the end
@@ -30558,11 +30554,11 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 					l1 = start.getTime();
 
 
-					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyPath(tmpgraph, dmax, tmpgraph.size(), 0, nRes, attackerstrategy, slavelimit, pathlimit);
+					ArrayList<ArrayList<Integer>> newpathseq = buildGreedyPath(tmpgraph, dmax, tmpgraph.size(), base, nRes, attackerstrategy, slavelimit, pathlimit);
 					
 					
 										
-					pathForAT(dmax, tmpgraph, currenttargets, nRes, curattackset, newpathseq);
+					pathForAT(base, dmax, tmpgraph, currenttargets, nRes, curattackset, newpathseq);
 					
 					//removeDuplicatePathSimple(newpathseq);
 					
@@ -30642,7 +30638,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 						break;
 					}*/
 
-					//printPaths(pathseq);
+					printPaths(pathseq);
 
 
 				} // end if else
@@ -32315,7 +32311,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -32966,7 +32962,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -33882,7 +33878,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+			pathseq =  generateGRDYPaths(0, dmax, gamedata, tmpgraph, currenttargets, nRes);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount =0;
@@ -35472,7 +35468,7 @@ public static int[][] constructGameData(ArrayList<TargetNode> u) {
 		
 		
 		
-		pathseq =  generatePathsGreedy3WithAPSP(dmax, gamedata, targets, currenttargets, nRes);
+		pathseq =  generateGRDYPaths(0, dmax, gamedata, targets, currenttargets, nRes);
 		
 		int icount =0;
 		//map = new HashMap<Integer, Integer>();

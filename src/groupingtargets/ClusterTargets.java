@@ -1073,7 +1073,7 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 	}
 
 	
-	public static HashMap<Integer, SuperTarget> clusterTargetsWeka(ArrayList<Integer> targetstocluster, 
+	public static HashMap<Integer, SuperTarget> clusterTargetsWeka(int base, ArrayList<Integer> targetstocluster, 
 			ArrayList<TargetNode> graph, HashMap<Integer, TargetNode> targetmaps, double dmax, int k, int radius,
 			HashMap<Integer, Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, EM dc,
 			Instances instances, HashMap<Integer,Integer> apspmap, int[][] apspmat, AllPairShortestPath apsp, HashMap<Integer,Integer> apspmapback) throws Exception
@@ -1239,7 +1239,7 @@ private static boolean areBothNei(SuperTarget s1, SuperTarget s2, SuperTarget te
 			// if cluster is chnaged then compute AP
 			// if not changed then use the previous AP
 			
-			chooseDegreeBasedAPV2(sts, targetmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, (int)dmax, null, null);
+			chooseDegreeBasedAPV2(base, sts, targetmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, (int)dmax, null, null);
 			
 			
 		}
@@ -2576,7 +2576,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 	}
 	
 	
-	private static ArrayList<Integer>[] clusterWithAttackWekaCON(int k, Instances newinstance, int totalcluster,
+	private static ArrayList<Integer>[] clusterWithAttackWekaCON(int base, int k, Instances newinstance, int totalcluster,
 			ArrayList<Integer> targetstocluster, HashMap<Integer, TargetNode> targetmaps, EM dc,
 			HashMap<Integer,Integer> apspmap, int[][] apspmat) throws Exception {
 		
@@ -2639,7 +2639,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			 System.out.println("instance  "+i +", cluster "+ dc.clusterInstance(newinstance.get(i))+1);
 			 int clusterid = dc.clusterInstance(newinstance.get(i));
 			 int tid = (int)newinstance.get(i).value(0);
-			 if(tid!=0)
+			 if(tid!=base)
 			 {
 				 clusters[clusterid].add(tid);
 			 }
@@ -2673,7 +2673,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 	}
 	
 	
-	private static ArrayList<Integer>[] clusterWithWekaCON(int k, Instances newinstance, int totalcluster,
+	private static ArrayList<Integer>[] clusterWithWekaCON(int base, int k, Instances newinstance, int totalcluster,
 			ArrayList<Integer> targetstocluster, HashMap<Integer, TargetNode> targetmaps, EM dc,
 			HashMap<Integer,Integer> apspmap, int[][] apspmat) throws Exception {
 		
@@ -2714,13 +2714,26 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 		 
 		//SimpleKMeans dc = new SimpleKMeans();
 		
+		
+		int baseindex = -1;
+		
+		for(int i=0; i<newinstance.size(); i++)
+		{
 		 
-		 if(newinstance.get(0).value(0) != 0)
+		 if(newinstance.get(i).value(0) == base)
 		 {
-			 throw new Exception("0 is not the base");
+			 baseindex = i;
+			 break;
+			 
 		 }
+		}
+		
+		if(baseindex==-1)
+		{
+			throw new Exception("0 is not the base");
+		}
 		 
-		 newinstance.remove(0); // remove base
+		 newinstance.remove(baseindex); // remove base
 		 
 		
 		 
@@ -2736,7 +2749,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			 System.out.println("instance  "+i +", cluster "+ dc.clusterInstance(newinstance.get(i))+1);
 			 int clusterid = dc.clusterInstance(newinstance.get(i));
 			 int tid = (int)newinstance.get(i).value(0);
-			 if(tid!=0)
+			 if(tid!=base)
 			 {
 				 clusters[clusterid+1].add(tid);
 			 }
@@ -2744,9 +2757,9 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			 
 		 }
 		 
-		 clusters[0].add(0); //base
+		 clusters[0].add(base); //base
 		 
-		// printClusters(clusters);
+		 printClusters(clusters);
 		 
 		/* int j = k;
 		 for(Integer t: targetmaps.keySet())
@@ -2985,7 +2998,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 
 			
 			
-			HashMap<Integer, SuperTarget> currentst = clusterTargetsWeka(targetstocluster, tmpgraph, 
+			HashMap<Integer, SuperTarget> currentst = clusterTargetsWeka(base, targetstocluster, tmpgraph, 
 					tmptargetmaps, dmax, ncluster, radius, dstravel, stpaths, dc, instances, apspmap, apspmat, apsp, apspmapback );
 			
 			targetsize= currentst.size();
@@ -3055,7 +3068,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, tmptargetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, currentst, tmptargetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -3661,7 +3674,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 
 			
 			
-			HashMap<Integer, SuperTarget> currentst = clusterTargetsWeka(targetstocluster, tmpgraph, 
+			HashMap<Integer, SuperTarget> currentst = clusterTargetsWeka(base, targetstocluster, tmpgraph, 
 					tmptargetmaps, dmax, ncluster, radius, dstravel, stpaths, dc, instances, apspmap, apspmat, apsp, apspmapback );
 			
 			targetsize= currentst.size();
@@ -3731,7 +3744,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, tmptargetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, currentst, tmptargetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -4330,7 +4343,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 
 			
 			
-			currentst = clusterTargetsWeka(targetstocluster, tmpgraph, 
+			currentst = clusterTargetsWeka(base, targetstocluster, tmpgraph, 
 					tmptargetmaps, dmax, ncluster, radius, dstravel, stpaths, dc, instances, apspmap, apspmat, apsp, apspmapback );
 			
 			targetsize= currentst.size();
@@ -4401,7 +4414,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, tmptargetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, currentst, tmptargetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -5010,7 +5023,7 @@ private static double shortestdist(TargetNode a1, TargetNode a2, SuperTarget tem
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, tmptargetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, currentst, tmptargetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -5784,7 +5797,7 @@ public static ArrayList<ArrayList<Integer>>  generatePaths(ArrayList<TargetNode>
 	
 	
 	
-	ArrayList<ArrayList<Integer>> pathseq =  SecurityGameContraction.generatePathsGreedy3WithAPSP(dmax, gamedata, tmpgraph, currenttargets, nRes);
+	ArrayList<ArrayList<Integer>> pathseq =  SecurityGameContraction.generateGRDYPaths(0,dmax, gamedata, tmpgraph, currenttargets, nRes);
 	//map = new HashMap<Integer, Integer>();
 	//mapback = new HashMap<Integer, Integer>();
 	int icount =0;
@@ -5896,9 +5909,10 @@ public static double pathAPForST( HashMap<Integer,TargetNode> nodes, double dmax
 
 	
 
-private static double[] DOWithPACMANClus(int[][] gamedata,
+private static double[] DOWithPACMANClus(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
-		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
+		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, 
+		int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 
 
 	
@@ -5934,7 +5948,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 	
 	
 
-	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, base, nRes); //  new ArrayList<Integer>();
 	//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
 	/*currenttargets.add(targetssorted[0][0]);
 	currenttargets.add(targetssorted[1][0]);*/
@@ -6087,9 +6101,9 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			
 
 
-			
-			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, newtargetstocluster, domindatednodes, RADIUS, tmpgraph, clusterap);
+			// here base is the targetid for the original graph
+			sts = constructSuperTargets(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, newtargetstocluster, domindatednodes, RADIUS, tmpgraph, clusterap, clussizelimit);
 			
 			
 
@@ -6100,11 +6114,11 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			//printSuperTargets(sts, stpaths, dstravel);
+			printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(sts.get(0).stid, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			
 			if(pathseq.size()==0)
@@ -6116,7 +6130,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			//SecurityGameContraction.printPaths(pathseq);
+			SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -6367,7 +6381,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 					
 					//printSuperTargets(sts);
 					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, 
-							dmax, sts.size(), 0, nRes, attackerstrategy, sts, dstravel, pathlimit);
+							dmax, sts.size(), sts.get(0).stid, nRes, attackerstrategy, sts, dstravel, pathlimit);
 					
 					
 					
@@ -6445,7 +6459,9 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 					//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" slaveitr "+itr +" New path seq size "+ pathseq.size());
 
 
-					//SecurityGameContraction.printPaths(pathseq);
+					SecurityGameContraction.printPaths(pathseq);
+					
+					int c=0;
 
 				} // end if else
 			}
@@ -6576,7 +6592,7 @@ private static double[] DOWithPACMANClus(int[][] gamedata,
 }
 
 
-private static double[] DOWithSplitPACMANClus(int[][] gamedata,
+private static double[] DOWithSplitPACMANClus(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
 
@@ -6768,8 +6784,8 @@ private static double[] DOWithSplitPACMANClus(int[][] gamedata,
 
 
 			
-			sts = constructSuperTargetsV2(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, newtargetstocluster, domindatednodes, RADIUS, tmpgraph, clusterap, notaddedst);
+			sts = constructSuperTargetsV2(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, newtargetstocluster, domindatednodes, RADIUS, tmpgraph, clusterap, notaddedst, 5);
 			
 			
 
@@ -6784,7 +6800,7 @@ private static double[] DOWithSplitPACMANClus(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			
 			if(pathseq.size()==0)
@@ -7418,9 +7434,10 @@ private static double getDist(SuperTarget p1, SuperTarget p2, ArrayList<TargetNo
 }
 
 
-private static double[] dOWithAttackCluster(int[][] gamedata,
+private static double[] dOWithAttackCluster(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
-		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
+		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, 
+		int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 
 
 	
@@ -7602,8 +7619,8 @@ private static double[] dOWithAttackCluster(int[][] gamedata,
 
 
 			
-			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
+			sts = constructSuperTargets(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, clussizelimit);
 			
 			
 
@@ -7618,7 +7635,7 @@ private static double[] dOWithAttackCluster(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -8266,7 +8283,7 @@ private static double[] dOWithAttackCluster(int[][] gamedata,
 
 
 
-private static double[] dOWithAttackCluster2(int[][] gamedata,
+private static double[] dOWithAttackCluster2(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
 
@@ -8450,8 +8467,8 @@ private static double[] dOWithAttackCluster2(int[][] gamedata,
 
 
 			
-			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
+			sts = constructSuperTargets(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, 5);
 			
 			
 
@@ -8466,7 +8483,7 @@ private static double[] dOWithAttackCluster2(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -9183,9 +9200,10 @@ private static double[] dOWithAttackCluster2(int[][] gamedata,
 
 
 
-private static double[] dOWithAttackCluster3(int[][] gamedata,
+private static double[] dOWithAttackCluster3(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
-		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
+		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram,
+		int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 
 
 	
@@ -9221,7 +9239,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 	
 	
 
-	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, base, nRes); //  new ArrayList<Integer>();
 	//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
 	/*currenttargets.add(targetssorted[0][0]);
 	currenttargets.add(targetssorted[1][0]);*/
@@ -9363,8 +9381,8 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 
 
 			
-			sts = constructSuperTargets(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
+			sts = constructSuperTargets(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, clussizelimit);
 			
 			
 
@@ -9379,7 +9397,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(sts.get(0).stid, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -9391,7 +9409,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			//SecurityGameContraction.printPaths(pathseq);
+			SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -9641,7 +9659,7 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 					l1 = start.getTime();
 					
 					//printSuperTargets(sts);
-					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), 0, nRes, attackerstrategy, sts, dstravel, pathlimit);
+					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), sts.get(0).stid, nRes, attackerstrategy, sts, dstravel, pathlimit);
 					
 					//ArrayList<ArrayList<Integer>> newpathseq = new ArrayList<ArrayList<Integer>>();
 					
@@ -9717,7 +9735,9 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 							break;
 						}*/
 
-						//SecurityGameContraction.printPaths(pathseq);
+						SecurityGameContraction.printPaths(pathseq);
+						
+						int c = 0;
 
 				} // end if else
 			}
@@ -9869,10 +9889,10 @@ private static double[] dOWithAttackCluster3(int[][] gamedata,
 }
 
 
-private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
+private static double[] dOWithAttackClusterAndWeka(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps,
-		int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
+		int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int percthreshold, int als1, int clussizelimit) throws Exception {
 
 
 	
@@ -9908,7 +9928,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 	
 	
 
-	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, base, nRes); //  new ArrayList<Integer>();
 	//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
 	/*currenttargets.add(targetssorted[0][0]);
 	currenttargets.add(targetssorted[1][0]);*/
@@ -10050,8 +10070,8 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 			//int abslevel = 2;
 
 			
-			sts = constructSuperTargetsWithAttackClusterWeka(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, percthreshold, iter, als1);
+			sts = constructSuperTargetsWithAttackClusterWeka(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, percthreshold, iter, als1, clussizelimit);
 			
 			
 
@@ -10066,7 +10086,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(sts.get(0).stid, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -10078,7 +10098,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			//SecurityGameContraction.printPaths(pathseq);
+			SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -10328,7 +10348,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 					l1 = start.getTime();
 					
 					//printSuperTargets(sts);
-					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), 0, nRes, attackerstrategy, sts, dstravel, pathlimit);
+					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), sts.get(0).stid, nRes, attackerstrategy, sts, dstravel, pathlimit);
 					
 					//ArrayList<ArrayList<Integer>> newpathseq = new ArrayList<ArrayList<Integer>>();
 					
@@ -10404,7 +10424,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 							break;
 						}*/
 
-						//SecurityGameContraction.printPaths(pathseq);
+						SecurityGameContraction.printPaths(pathseq);
 
 				} // end if else
 			}
@@ -10558,7 +10578,7 @@ private static double[] dOWithAttackClusterAndWeka(int[][] gamedata,
 
 
 
-private static double[] dOWithWekaCON(int[][] gamedata,
+private static double[] dOWithWekaCON(int base, int dest, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, 
 		int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit, int abstractionlevel) throws Exception {
@@ -10597,7 +10617,7 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 	
 	
 
-	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, 0, nRes); //  new ArrayList<Integer>();
+	ArrayList<Integer> currenttargets = SecurityGameContraction.buildGreedyCoverMultRes(targets, dmax, nTargets, base, nRes); //  new ArrayList<Integer>();
 	//ArrayList<Integer> currenttargets = buildGreedyCover(targets, dmax, nTargets, 0);
 	/*currenttargets.add(targetssorted[0][0]);
 	currenttargets.add(targetssorted[1][0]);*/
@@ -10739,7 +10759,7 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 
 			int k = currenttargets.size()/abstractionlevel;
 			
-			sts = constructSuperTargetsWithWeka(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+			sts = constructSuperTargetsWithWeka(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
 					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, abstractionlevel, iter, k, currenttargets);
 			
 			
@@ -10751,11 +10771,13 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 			clusteringtime += diff;
 			
 
-			//printSuperTargets(sts, stpaths, dstravel);
+			printSuperTargets(sts, stpaths, dstravel);
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			
+			// 0th index of sts will always hold the base station
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(sts.get(0).stid, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -10767,7 +10789,7 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 			//SecurityGameContraction.printPaths(pathseq);
 			SecurityGameContraction.removeDuplicatePathSimple(pathseq);
 			//System.out.println("\n clusteringactivated "+clusteringactivated +" masteritr "+masteritr+" Paths after removing duplicate : ");
-			//SecurityGameContraction.printPaths(pathseq);
+			SecurityGameContraction.printPaths(pathseq);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -11017,7 +11039,7 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 					l1 = start.getTime();
 					
 					//printSuperTargets(sts);
-					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), 0, nRes, attackerstrategy, sts, dstravel, pathlimit);
+					ArrayList<ArrayList<Integer>> newpathseq = SecurityGameContraction.buildSTSlavePaths(tmpgraphmaps, dmax, sts.size(), sts.get(0).stid, nRes, attackerstrategy, sts, dstravel, pathlimit);
 					
 					//ArrayList<ArrayList<Integer>> newpathseq = new ArrayList<ArrayList<Integer>>();
 					
@@ -11093,7 +11115,9 @@ private static double[] dOWithWekaCON(int[][] gamedata,
 							break;
 						}*/
 
-						//SecurityGameContraction.printPaths(pathseq);
+						SecurityGameContraction.printPaths(pathseq);
+						
+						int c=0;
 
 				} // end if else
 			}
@@ -11268,7 +11292,7 @@ private static double[] dOWithWekaCON(int[][] gamedata,
  * @return
  * @throws Exception
  */
-private static double[] dOWithAttackCluster4(int[][] gamedata,
+private static double[] dOWithAttackCluster4(int base, int[][] gamedata,
 		int nTargets, int nRes, double[][] density, double
 		dmax, int iter, int nrow, int ncol, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, int RADIUS, HashMap<Integer, Integer> clusterhistogram, int slavelimit, int pathlimit) throws Exception {
 
@@ -11449,8 +11473,8 @@ private static double[] dOWithAttackCluster4(int[][] gamedata,
 
 			// dominated targets will be single cluster/ super target
 			
-			sts = constructSuperTargetsV3(tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
-					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap);
+			sts = constructSuperTargetsV3(base, tmpgraphmaps, attackhistory, apsp, apspmat, apspmap,apspmapback, dstravel, stpaths, (int) dmax, attackclustershisotry,
+					clusteredtargets, clustercenters, currentattackedtargets, domindatednodes, RADIUS, tmpgraph, clusterap, 5);
 			
 			
 
@@ -11465,7 +11489,7 @@ private static double[] dOWithAttackCluster4(int[][] gamedata,
 			preparePaths(dstravel, stpaths, sts);
 			assignSTValues(sts, tmpgraphmaps);
 			
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, sts, tmpgraphmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, sts, tmpgraphmaps, nRes, dstravel);
 			
 			if(pathseq.size()==0)
 			{
@@ -12354,13 +12378,13 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	private static HashMap<Integer, SuperTarget> constructSuperTargets(HashMap<Integer, TargetNode> tmpgraphmaps,
+	private static HashMap<Integer, SuperTarget> constructSuperTargets(int base, HashMap<Integer, TargetNode> tmpgraphmaps,
 			 ArrayList<Integer> attackhistory, AllPairShortestPath apsp, int[][] apspmat,
 			HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> newtargetstocluster, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap) {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int clussizelimit) {
 		
 			
 			// for now build a cluster
@@ -12398,7 +12422,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 
-		ArrayList<Integer> changedcluster = updateClusters(attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
+		ArrayList<Integer> changedcluster = updateClusters(base, attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, tmpgraphmaps, 
+				RADIUS, domindatednodes, tmpgraph, clussizelimit);
 
 
 
@@ -12418,7 +12443,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			clusters[i] = new ArrayList<Integer>();
 		}
 
-		clusters[0].add(0);
+		clusters[0].add(base);
 
 		int clusindex = 1;
 		for(ArrayList<Integer> attackcluster: attackclustershisotry.values())
@@ -12439,7 +12464,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			
 			TargetNode tnode = tmpgraphmaps.get(t);
 			
-			if(t != 0 && !clusteredtargets.contains(t) && (!domindatednodes.contains(tnode)))
+			if(t != base && !clusteredtargets.contains(t) && (!domindatednodes.contains(tnode)))
 			{
 				
 				// use t for weka to cluster
@@ -12480,7 +12505,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				// if not changed then use the previous AP
 				
 				try {
-					chooseDegreeBasedAPV2(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+					chooseDegreeBasedAPV2(sts.get(0).stid, sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -12499,13 +12524,13 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	private static HashMap<Integer, SuperTarget> constructSuperTargetsWithAttackClusterWeka(HashMap<Integer, TargetNode> tmpgraphmaps,
+	private static HashMap<Integer, SuperTarget> constructSuperTargetsWithAttackClusterWeka(int base, HashMap<Integer, TargetNode> tmpgraphmaps,
 			 ArrayList<Integer> attackhistory, AllPairShortestPath apsp, int[][] apspmat,
 			HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> newtargetstocluster, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int percthreshold, int iter, int als1) throws Exception {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int percthreshold, int iter, int als1, int clussizelimit) throws Exception {
 		
 			
 			// for now build a cluster
@@ -12543,14 +12568,15 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 
-		ArrayList<Integer> changedcluster = updateClusters(attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
+		ArrayList<Integer> changedcluster = updateClusters(base, attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, 
+				tmpgraphmaps, RADIUS, domindatednodes, tmpgraph, clussizelimit);
 
 		// contains target not in attackhistory cluster and which is not base station
 		ArrayList<Integer> notattackset = new ArrayList<Integer>(); 
 		for(Integer t: tmpgraphmaps.keySet())
 		{
 			TargetNode tnode = tmpgraphmaps.get(t);
-			if(t != 0 && !clusteredtargets.contains(t) && (!domindatednodes.contains(tnode)))
+			if(t != base && !clusteredtargets.contains(t) && (!domindatednodes.contains(tnode)))
 			{
 				
 				// use t for weka to cluster
@@ -12722,7 +12748,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 		EM dc = new EM();
-		ArrayList<Integer>[] notattacksetclusters = clusterWithAttackWekaCON(nclusterfornotattackset, newinstance, nclusterfornotattackset, notattackset,tmpgraphmaps, dc, apspmap, apspmat);
+		ArrayList<Integer>[] notattacksetclusters = clusterWithAttackWekaCON(base,nclusterfornotattackset, newinstance, nclusterfornotattackset, notattackset,tmpgraphmaps, dc, apspmap, apspmat);
 		
 		
 
@@ -12818,12 +12844,12 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				
 			}
 			
-			finalcluster[0].add(0);
+			finalcluster[0].add(base);
 			
 			
 			//System.out.println("\n \n \n Final cluster \n \n \n");
 			
-			//printClusters(finalcluster);
+			printClusters(finalcluster);
 			
 			
 			
@@ -12848,7 +12874,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				// if not changed then use the previous AP
 				
 				try {
-					chooseDegreeBasedAPV2(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+					chooseDegreeBasedAPV2(sts.get(0).stid, sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -12869,7 +12895,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	private static HashMap<Integer, SuperTarget> constructSuperTargetsWithWeka(HashMap<Integer, TargetNode> tmpgraphmaps,
+	private static HashMap<Integer, SuperTarget> constructSuperTargetsWithWeka(int base, HashMap<Integer, TargetNode> tmpgraphmaps,
 			 ArrayList<Integer> attackhistory, AllPairShortestPath apsp, int[][] apspmat,
 			HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
@@ -12971,7 +12997,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		int totalcluster = k /*+ (instances.size()-newinstance.size())*/;
 		
-		if(!currenttargets.contains(0))
+		if(!currenttargets.contains(base))
 		{
 			System.out.println("No base mmmmmmm  "+ newinstance.size());
 
@@ -12979,7 +13005,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 		EM dc = new EM();
-		ArrayList<Integer>[] clusters = clusterWithWekaCON(k, newinstance, totalcluster, currenttargets,tmpgraphmaps, dc, apspmap, apspmat);
+		ArrayList<Integer>[] clusters = clusterWithWekaCON(base, k, newinstance, totalcluster, currenttargets,tmpgraphmaps, dc, apspmap, apspmat);
 		
 		
 		//ArrayList<Integer>[] clusters = (ArrayList<Integer>[])new ArrayList[targetmaps.size()];
@@ -13073,7 +13099,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				// if not changed then use the previous AP
 				
 				try {
-					chooseDegreeBasedAPV2(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, null);
+					chooseDegreeBasedAPV2(sts.get(0).stid, sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, null);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -13178,13 +13204,13 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	 * @param clusterap
 	 * @return
 	 */
-	private static HashMap<Integer, SuperTarget> constructSuperTargetsV3(HashMap<Integer, TargetNode> tmpgraphmaps,
+	private static HashMap<Integer, SuperTarget> constructSuperTargetsV3(int base, HashMap<Integer, TargetNode> tmpgraphmaps,
 			 ArrayList<Integer> attackhistory, AllPairShortestPath apsp, int[][] apspmat,
 			HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> newtargetstocluster, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap) {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, int clussizelimit) {
 		
 			
 			// for now build a cluster
@@ -13222,7 +13248,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 
-		ArrayList<Integer> changedcluster = updateClusters(attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
+		ArrayList<Integer> changedcluster = updateClusters(base,attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, 
+				tmpgraphmaps, RADIUS, domindatednodes, tmpgraph, clussizelimit);
 
 
 
@@ -13297,7 +13324,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				// if not changed then use the previous AP
 				
 				try {
-					chooseDegreeBasedAPV2(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+					chooseDegreeBasedAPV2(base, sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -13338,13 +13365,13 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	 * @param notaddedst 
 	 * @return
 	 */
-	private static HashMap<Integer, SuperTarget> constructSuperTargetsV2(HashMap<Integer, TargetNode> tmpgraphmaps,
+	private static HashMap<Integer, SuperTarget> constructSuperTargetsV2(int base, HashMap<Integer, TargetNode> tmpgraphmaps,
 			 ArrayList<Integer> attackhistory, AllPairShortestPath apsp, int[][] apspmat,
 			HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback,
 			HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax,
 			HashMap<Integer, ArrayList<Integer>> attackclustershisotry, ArrayList<Integer> clusteredtargets, 
 			HashMap<Integer,Integer> clustercenters, ArrayList<Integer> newtargetstocluster, ArrayList<TargetNode> domindatednodes, 
-			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, ArrayList<Integer> notaddedst) {
+			int RADIUS, ArrayList<TargetNode> tmpgraph, HashMap<Integer, int[]> clusterap, ArrayList<Integer> notaddedst, int clussizelimit) {
 		
 			
 			// for now build a cluster
@@ -13502,7 +13529,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		
 		
 
-		ArrayList<Integer> changedcluster = updateClusters(attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, tmpgraphmaps, RADIUS, domindatednodes, tmpgraph);
+		ArrayList<Integer> changedcluster = updateClusters(base, attackclustershisotry, clusteredtargets, clustercenters, newtargetstocluster, 
+				tmpgraphmaps, RADIUS, domindatednodes, tmpgraph, clussizelimit);
 
 
 
@@ -13577,7 +13605,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				// if not changed then use the previous AP
 				
 				try {
-					chooseDegreeBasedAPV2(sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
+					chooseDegreeBasedAPV2(base, sts, tmpgraphmaps, sts.get(i), apsp, apspmat, apspmap, apspmapback, dstravel, stpaths, dmax, clusterap, changedcluster);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -13609,10 +13637,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 
 
-	private static ArrayList<Integer> updateClusters(HashMap<Integer, ArrayList<Integer>> attackclustershisotry,
+	private static ArrayList<Integer> updateClusters(int base, HashMap<Integer, ArrayList<Integer>> attackclustershisotry,
 			ArrayList<Integer> clusteredtargets, HashMap<Integer, Integer> clustercenters,
 			ArrayList<Integer> newtargetstocluster, HashMap<Integer,TargetNode> tmpgraphmaps, 
-			int RADIUS, ArrayList<TargetNode> domindatednodes, ArrayList<TargetNode> tmpgraph) {
+			int RADIUS, ArrayList<TargetNode> domindatednodes, ArrayList<TargetNode> tmpgraph, int clussizelimit) {
 		
 		
 		boolean clusterhappened = false;
@@ -13628,9 +13656,9 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 		{
 
 
-			if(newtargetstocluster.contains(0))
+			if(newtargetstocluster.contains(base))
 			{
-				int index = newtargetstocluster.indexOf(0);
+				int index = newtargetstocluster.indexOf(base);
 				newtargetstocluster.remove(index);
 			}
 
@@ -13681,7 +13709,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				{
 					clusterhappened = true;
 					// try to insert it in a cluster with min dist from center
-					int assignedcluster = assignToCluster(at, attackclustershisotry, clustercenters, tmpgraphmaps, RADIUS);
+					int assignedcluster = assignToCluster(at, attackclustershisotry, clustercenters, tmpgraphmaps, RADIUS, clussizelimit);
 					// if -1 then create a new cluster ...
 					if(assignedcluster != -1)
 					{
@@ -13751,7 +13779,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			//if(tmpclus.size()<5)
 			{
 
-				addMoreToCluster(tmpclus, centerid, clusteredtargets, tmpgraphmaps, clusid,RADIUS, tmpgraph);
+				addMoreToCluster(base, tmpclus, centerid, clusteredtargets, tmpgraphmaps, clusid,RADIUS, tmpgraph, clussizelimit);
 			}
 			
 			//attackclustershisotry.remove(clusid);
@@ -13792,15 +13820,15 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 
 
-	private static void addMoreToCluster(ArrayList<Integer> tmpclus, int targetid, ArrayList<Integer> clusteredtargets,
-			HashMap<Integer, TargetNode> tmpgraphmaps, int clusid, int RADIUS, ArrayList<TargetNode> tmpgraph) {
+	private static void addMoreToCluster(int base, ArrayList<Integer> tmpclus, int targetid, ArrayList<Integer> clusteredtargets,
+			HashMap<Integer, TargetNode> tmpgraphmaps, int clusid, int RADIUS, ArrayList<TargetNode> tmpgraph, int classlimit) {
 		
 		
 		TargetNode centernode = tmpgraphmaps.get(targetid);
 		
 		for(TargetNode nei: centernode.getNeighbors())
 		{
-			if((tmpclus.size()<5) && (nei.getTargetid() != 0) && (!clusteredtargets.contains(nei.getTargetid()))  && (centernode.getDistance(nei) <= RADIUS) && tmpgraph.contains(nei) )
+			if((tmpclus.size()<classlimit) && (nei.getTargetid() != base) && (!clusteredtargets.contains(nei.getTargetid()))  && (centernode.getDistance(nei) <= RADIUS) && tmpgraph.contains(nei) )
 			{
 				
 				System.out.println("adding target "+ nei.getTargetid() + " to cluster "+ clusid + " dist("+centernode.getTargetid()+","+nei.getTargetid()+ "="+centernode.getDistance(nei));
@@ -13813,7 +13841,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 
 	private static int assignToCluster(Integer attackedtarget, HashMap<Integer, ArrayList<Integer>> attackclustershisotry,
-			HashMap<Integer, Integer> clustercenters, HashMap<Integer, TargetNode> tmpgraphmaps, int RADIUS) {
+			HashMap<Integer, Integer> clustercenters, HashMap<Integer, TargetNode> tmpgraphmaps, int RADIUS, int clussizelimit) {
 		
 		
 		double mindist = Double.MAX_VALUE;
@@ -13840,7 +13868,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 				double diff = Math.abs(centertarget.attackerreward - attackednode.attackerreward);
 				
 				double dist = centertarget.getDistance(attackednode);
-				if((dist<=RADIUS) && (dist<mindist) && (clus.size()<5))
+				if((dist<=RADIUS) && (dist<mindist) && (clus.size()<clussizelimit))
 				{
 					mindist = dist;
 					minclus = clusid;
@@ -15629,7 +15657,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	 * @param changedcluster
 	 * @throws Exception
 	 */
-	private static void chooseDegreeBasedAPV2(HashMap<Integer, SuperTarget> sts, HashMap<Integer, TargetNode> targetmaps, SuperTarget tempst,
+	private static void chooseDegreeBasedAPV2(int base_st, HashMap<Integer, SuperTarget> sts, HashMap<Integer, TargetNode> targetmaps, SuperTarget tempst,
 			 AllPairShortestPath apsp,
 				int[][] apspmat, HashMap<Integer,Integer> apspmap, HashMap<Integer,Integer> apspmapback, 
 				HashMap<Integer,Double> dstravel, HashMap<Integer,ArrayList<Integer>> stpaths, int dmax, HashMap<Integer,int[]> clusterap, ArrayList<Integer> changedcluster) throws Exception {
@@ -15686,7 +15714,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 				//check if 0 is its neighbor if so just keep the ap that connects to base
 
-				if(tempst.neighbors.containsKey(0) && sts.size()>2)
+				if(tempst.neighbors.containsKey(base_st) && sts.size()>2)
 				{
 					System.out.println("Here for ST" + tempst.stid);
 
@@ -15751,7 +15779,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 
 				}
-				else if(tempst.neighbors.containsKey(0) && sts.size()==2)
+				else if(tempst.neighbors.containsKey(base_st) && sts.size()==2)
 				{
 					//compute every parameter
 					
@@ -16518,10 +16546,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 
 
-	public static void dOWithAttackClusterTest(double[][] density,
+	public static void dOWithAttackClusterTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16564,7 +16592,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackCluster(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = dOWithAttackCluster(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16600,7 +16628,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void dOWithAttackClusterTest2(double[][] density,
+	public static void dOWithAttackClusterTest2(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
@@ -16646,7 +16674,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackCluster2(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = dOWithAttackCluster2(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16681,10 +16709,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	public static void dOWithAttackClusterRWTest3(double[][] density,
+	public static void dOWithAttackClusterRWTest3(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16734,7 +16762,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackCluster3(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = dOWithAttackCluster3(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16769,10 +16797,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	public static void dOWithAttackClusterTest3(double[][] density,
+	public static void dOWithAttackClusterTest3(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16815,7 +16843,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackCluster3(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = dOWithAttackCluster3(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16851,10 +16879,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void dOWithAttackClusterAndWekaTest(double[][] density,
+	public static void dOWithAttackClusterAndWekaTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16897,8 +16925,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
-					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1);
+			double[] res = dOWithAttackClusterAndWeka(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
+					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -16933,10 +16961,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	public static void dOWithAttackClusterAndWekaRWTest(double[][] density,
+	public static void dOWithAttackClusterAndWekaRWTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int percthreshold, int als1, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -16985,8 +17013,8 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackClusterAndWeka(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
-					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1);
+			double[] res = dOWithAttackClusterAndWeka(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, 
+					targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, percthreshold, als1, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -17024,7 +17052,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void dOWithWekaCONExp(double[][] density,
+	public static void dOWithWekaCONExp(int base, int dest, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int abstractionlevel) throws Exception {
@@ -17070,7 +17098,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithWekaCON(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
+			double[] res = dOWithWekaCON(base, dest, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
 					targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abstractionlevel);
 			
 			Date stop = new Date();
@@ -17106,7 +17134,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	public static void dOWithWekaCONRWExp(double[][] density,
+	public static void dOWithWekaCONRWExp(int base, int dest, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int abstractionlevel) throws Exception {
@@ -17190,7 +17218,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			
 			
 			
-			double[] res = dOWithWekaCON(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
+			double[] res = dOWithWekaCON(base, dest, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, 
 					targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, abstractionlevel);
 			
 			Date stop = new Date();
@@ -17229,7 +17257,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void dOWithAttackClusterTest4(double[][] density,
+	public static void dOWithAttackClusterTest4(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
@@ -17275,7 +17303,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = dOWithAttackCluster4(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = dOWithAttackCluster4(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -17313,10 +17341,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void DOWithPACMANClusteringTest(double[][] density,
+	public static void DOWithPACMANClusteringTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -17359,7 +17387,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = DOWithPACMANClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = DOWithPACMANClus(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -17397,10 +17425,10 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	}
 	
 	
-	public static void DOWithPACMANClusteringRWTest(double[][] density,
+	public static void DOWithPACMANClusteringRWTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
-			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
+			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit, int clussizelimit) throws Exception {
 		// TODO Auto-generated method stub
 
 		int nTargets = nrow*ncol;
@@ -17449,7 +17477,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 			Date start = new Date();
 			long l1 = start.getTime();
 			
-			double[] res = DOWithPACMANClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = DOWithPACMANClus( base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit, clussizelimit);
 			
 			Date stop = new Date();
 			long l2 = stop.getTime();
@@ -17488,7 +17516,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 	
 	
 	
-	public static void DOWithSplitPACMANClusteringTest(double[][] density,
+	public static void DOWithSplitPACMANClusteringTest(int base, double[][] density,
 			int ITER, int nrow, int ncol,
 			double dmax, int nRes, HashMap<Integer,ArrayList<TargetNode>> alltargets, 
 			HashMap<Integer,HashMap<Integer,TargetNode>> alltargetmaps, int RADIUS, int slavelimit, int pathlimit) throws Exception {
@@ -17533,7 +17561,7 @@ private static void writeMasterSlaveRes(ArrayList<Double[]> masterslaveres) {
 
 			Date start = new Date();
 			long l1 = start.getTime();
-			double[] res = DOWithSplitPACMANClus(gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
+			double[] res = DOWithSplitPACMANClus(base, gamedata, nTargets, nRes, density, dmax, iter, nrow, ncol, targets, targetmaps, RADIUS, clusterhistogram, slavelimit, pathlimit);
 			Date stop = new Date();
 			long l2 = stop.getTime();
 			long diff = l2 - l1;

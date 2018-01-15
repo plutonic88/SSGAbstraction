@@ -1434,7 +1434,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 
 
 
-	public static ArrayList<Integer>[] makeCluster(int k, int nTargets, int utility_l, 
+	public static ArrayList<Integer>[] makeCluster(int base, int k, int nTargets, int utility_l, 
 			int utility_h, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps, double[][] density, int iter)
 	{
 		//ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
@@ -1495,7 +1495,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 				
 				
 				
-				int nodeid = pickNode(targetmaps, done, nodepercluster, cluster[cid]);
+				int nodeid = pickNode(base, targetmaps, done, nodepercluster, cluster[cid]);
 				if((nodeid == -1) || (done.size()==targetmaps.size()))
 				{
 					break;
@@ -1562,7 +1562,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 	
 	public static ArrayList<Integer>[] makeClusterWithRange(int k, int nTargets, int utility_l, 
 			int utility_h, ArrayList<TargetNode> targets, HashMap<Integer,TargetNode> targetmaps,
-			double[][] density, int iter, int[][] ranges, int[] percforranges)
+			double[][] density, int iter, int[][] ranges, int[] percforranges, int base, int dest)
 	{
 		//ArrayList<TargetNode> targets = new ArrayList<TargetNode>();
 		//HashMap<Integer, TargetNode> targetmaps = new HashMap<Integer, TargetNode>();
@@ -1579,7 +1579,8 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 		{
 			cluster[i] = new ArrayList<Integer>();
 		}
-		cluster[0].add(0); // base
+		cluster[0].add(base); // base
+		
 
 		int curindex = 0;
 		int tleft = nTargets-1;
@@ -1600,7 +1601,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 
 		
 		ArrayList<Integer> done = new ArrayList<Integer>();
-		done.add(0);
+		done.add(base);
 		
 		
 		int cid = 1;
@@ -1622,13 +1623,13 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 				
 				
 				
-				int nodeid = pickNode(targetmaps, done, nodepercluster, cluster[cid]);
+				int nodeid = pickNode(base, targetmaps, done, nodepercluster, cluster[cid]);
 				if((nodeid == -1) || (done.size()==targetmaps.size()))
 				{
 					break;
 				}
 				cluster[cid].add(nodeid);
-				if(nodeid==0)
+				if(nodeid==base)
 				{
 					System.out.println("fffff count  "+ count + ", nodeperclus "+ nodepercluster);
 
@@ -1736,7 +1737,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 					
 					int utility = randInt(ranges[2][0], ranges[2][1]);
 					density[iter][n] = utility;
-					if(n==0)
+					if(n==base)
 					{
 						density[iter][n] = ranges[2][1];
 					}
@@ -1751,7 +1752,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 				{
 					int utility = randInt(ranges[1][0], ranges[1][1]);
 					density[iter][n] = utility;
-					if(n==0)
+					if(n==base)
 					{
 						density[iter][n] = ranges[2][1];
 					}
@@ -1765,7 +1766,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 				{
 					int utility = randInt(ranges[0][0], ranges[0][1]);
 					density[iter][n] = utility;
-					if(n==0)
+					if(n==base)
 					{
 						density[iter][n] = ranges[2][1];
 					}
@@ -1811,7 +1812,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 	
 	
 
-	private static int pickNode(HashMap<Integer, TargetNode> targetmaps, ArrayList<Integer> done, int nodepercluster,
+	private static int pickNode(int base, HashMap<Integer, TargetNode> targetmaps, ArrayList<Integer> done, int nodepercluster,
 			ArrayList<Integer> cluster) {
 		
 		
@@ -1853,7 +1854,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 				for(TargetNode potnode: targetmaps.get(clusnode).getNeighbors())
 				{
 					// see if it's in done 
-					if(!done.contains(potnode.getTargetid()) && (potnode.getTargetid() != 0))
+					if(!done.contains(potnode.getTargetid()) && (potnode.getTargetid() != base))
 					{
 						potentialnode.add(potnode.getTargetid());
 					}
@@ -3023,7 +3024,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, targetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base,dmax, currentst, targetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
@@ -3591,7 +3592,7 @@ private static void updateNeighbors(HashMap<Integer, SuperTarget> sts) {
 			//TODO generate paths where there will be at least one target
 			//ArrayList<TargetNode> goals = generatePathsGreedy2(dmax, gamedata, tmpgraph, currenttargets, nRes);
 			//pathseq =  buildGreedyPathMultRes2(tmpgraph, dmax, tmpgraph.size(), 0, nRes);
-			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(dmax, currentst, targetmaps, nRes, dstravel);
+			pathseq = SecurityGameContraction.generatePathsForSuperTargetsAPSP(base, dmax, currentst, targetmaps, nRes, dstravel);
 			map = new HashMap<Integer, Integer>();
 			mapback = new HashMap<Integer, Integer>();
 			int icount = 0;
