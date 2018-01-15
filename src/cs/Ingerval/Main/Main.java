@@ -99,9 +99,9 @@ public class Main {
 
 		int als[] = {2}; //DO + weka + CON target per cluster
 		//radius
-		int rs[] = {100}; // PACMAN
-		int rs1[] = {100}; // attack cluster
-		int rs2[] = {100}; // attack cluster + weka
+		int rs[] = {1}; // PACMAN
+		int rs1[] = {1}; // attack cluster
+		int rs2[] = {1}; // attack cluster + weka
 		int percentagethreshold = 30; // perc of targets in restricted set other than attack set
 		int als1[] = {2};// #targets in cluster for Attackcluster + weka
 
@@ -272,6 +272,24 @@ public class Main {
 					for(int p: pt)
 					{
 						ClusterTargets.dOWithAttackClusterAndWekaTest(base, density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al, clussizelimit);
+						// make a version with pacman
+					}
+				}
+			}
+		}
+		
+		for(int r: rs2) // radius
+		{
+
+			for(int al: als1) // targets per cluster
+			{
+				for(int clussizelimit: CL_LIMIT)
+				{
+
+					int[] pt = {/*5,10,15,20,25,*/5, 30}; // when to use weka with attack cluster
+					for(int p: pt)
+					{
+						ClusterTargets.dOWithAttackClusterAndPACMANTest(base, density,ITER,nrow, ncol, dmax, nRes, alltargets, alltargetmaps, r, 10, 10,  p, al, clussizelimit);
 						// make a version with pacman
 					}
 				}
